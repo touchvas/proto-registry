@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/aegis";
+
+package grpc;
+import "google/protobuf/struct.proto";
+import "common/common.proto";
+// The device manager definition.
+service Aegis {
+  // endpoint to register a new device
+  rpc RegisterDevice (Device) returns (DeviceID) {}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
+}
+
+message DeviceID {
+  int64 DeviceID = 1;
+}
+
+message Device {
+  string Fingerprint = 1;
+  string UserAgent = 2;
+  string IP =3;
+  int64 ProfileID = 4;
+  string Action = 5;
+
+}

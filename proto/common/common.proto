@@ -1,0 +1,15 @@
+syntax = "proto3";
+package common;
+import "google/protobuf/struct.proto";
+option go_package = "github.com/touchvas/proto-registry/gen/go/common";
+
+message ServiceActionRequest {
+  google.protobuf.Struct Config = 1;
+  string ActionType = 2;
+  string Description = 3;
+}
+
+
+message GeneralAck {
+  string description = 1;
+}

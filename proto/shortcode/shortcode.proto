@@ -1,0 +1,30 @@
+syntax = "proto3";
+option go_package = "github.com/touchvas/proto-registry/gen/go/shortcode";
+package protobuf;
+
+// The Odds service definition.
+service Shortcode {
+  // Sends GetOdds status request
+  rpc IncomingSMS (IncomingRequest) returns (IncomingResponse) {}
+  rpc Ping (ShortCodePing) returns (ShortCodePong) {}
+}
+
+// The request message containing the selection details.
+message IncomingRequest {
+  int64 Msisdn = 1;
+  string Message = 2;
+}
+
+message IncomingResponse {
+  int32 Status = 1;
+  string Description = 2;
+}
+
+message ShortCodePing {
+
+}
+
+message ShortCodePong {
+  int64 Status = 1;
+  string Data = 2;
+}

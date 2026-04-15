@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+// Defines the Go package path for generated code.
+option go_package = "github.com/touchvas/proto-registry/gen/go/payment-gateway";
+// Defines the package name for the protobuf file.
+package paymentGateway;
+
+// --------------------------------------------------------------------------
+// SERVICE DEFINITION
+// --------------------------------------------------------------------------
+
+// The PaymentGateway service provides a set of RPC methods for processing
+// deposits and withdrawals. It acts as an intermediary between the application
+// and various payment service providers.
+service PaymentGateway {
+
+  // Health Check
+  // Used to check the health and liveness of the Payment Gateway service.
+  rpc PaymentGatewayPing (PaymentGatewayPingPayload) returns (PaymentGatewayPingResponse) {}
+
+  // ------------------------------------------------------------------------
+  // DEPOSIT CALLBACK METHODS
+  // ------------------------------------------------------------------------
+  // These methods handle the flow of funds from a customer's account
+  // into the system.
+
+  // DepositRequestCallback
+  // Used by the payment provider to update the status of a pending deposit
+  // request. This is typically called by the provider to inform the gateway
+  // that a transaction was successful, failed, or timed out.
+  rpc DepositRequestCallback(DepositRequestCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
+
+  // DepositCallback
+  // Used by the payment provider to send a direct, successful deposit transaction.
+  // This is used for transactions that don't follow a request-response pattern.
+  rpc DepositCallback (DepositCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
+  
+  // ------------------------------------------------------------------------
+  // WITHDRAWAL CALLBACK & SEND MONEY CALLBACK METHODS
+  // ------------------------------------------------------------------------
+  // These methods handle the flow of funds from the system to a customer's
+  // account.
+
+  // WithdrawRequest
+  // Used by the payment provider services to request funds to be withdrawn
+  // from a customer's account. This is a request from the provider.
+  rpc WithdrawRequest (WithdrawRequestPayload) returns (WithdrawRequestResponse) {}
+  
+  // SendMoneyCallback
+  // Used by the payment provider to update the status of a `SendMoney`
+  // request. This informs the gateway whether the transaction was successful.
+  rpc SendMoneyCallback (SendMoneyCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
+  //used by mpesa service to update stk status and description
+rpc RequestPaymentUpdate (RequestPaymentUpdateRequest) returns (RequestPaymentUpdateResponse) {}
+  //to be called by identity on registration
+  rpc CreateDefaultPaymentChannel(CreatePaymentChanelRequest) returns (CreatePaymentChanelResponse){}
+  // ------------------------------------------------------------------------
+  // COMMENTED OUT METHODS
+  // ------------------------------------------------------------------------
+  // NOTE: This method is currently commented out. Uncomment it if needed.
+  // Method used by payment provider services to update the status of a withdrawal request
+  // rpc WithdrawRequestCallback (WithdrawRequestCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
+}
+
+// --------------------------------------------------------------------------
+// MESSAGE DEFINITIONS
+// --------------------------------------------------------------------------
+message CreatePaymentChanelRequest {
+  int64 ProfileID =1;
+  string CountryCode=2;
+  int64 Msisdn =3;
+  int64 Mcc=4;
+  int64 Mnc = 5;
+}
+message CreatePaymentChanelResponse{
+  int64 status =1;
+  string Desc=2;
+}
+// A generic response payload for acknowledging requests.
+message PaymentGatewayGeneralResponsePayload {
+  // A status code (e.g., 200 for success, 400 for bad request).
+  int64 Status = 1;
+  // A human-readable description of the status.
+  string Description = 2;
+}
+
+// Health Check Messages
+message PaymentGatewayPingPayload {}
+message PaymentGatewayPingResponse {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message DepositRequestCallbackPayload {
+  // The unique transaction ID originally sent by the payment gateway.
+  int64 TransactionID = 1;
+
+  // The final status of the transaction (e.g., success, failure).
+  int64 Status = 2;
+
+  // A description of the final status.
+  string Description = 3;
+
+  // The payment provider's reference for a successful transaction.
+  string Reference = 4;
+
+  // The customer's full name, if available from the provider.
+  string Names = 5;
+
+  // A field for custom data from the provider.
+  string Others = 6;
+
+  // The transaction fees, if available.
+  float TransactionCharge = 7;
+
+}
+
+message DepositCallbackPayload {
+  // The destination account identifier (phone number or bank account).
+  string AccountNumber = 1;
+
+  // The account type identifier (e.g., bank code, mobile money code).
+  string AccountIdentifier = 2;
+
+  // The amount deposited.
+  float Amount = 3;
+
+  // The unique transaction or reference ID.
+  string TransactionID = 4;
+
+  // An optional description for the transaction.
+  string Description = 5;
+  string Reference =6;
+
+  // A field for custom data, such as customer names or other details.
+  string Others = 7;
+
+  // The transaction fees, if available.
+  float TransactionCharge = 8;
+  //transaction status
+  int64 Status =9;
+string Name=10;
+}
+
+
+message SendMoneyCallbackPayload {
+  // The unique transaction ID originally sent during the SendMoney request.
+  int64 TransactionID = 1;
+
+  // The final status of the request (e.g., success, failure).
+  int64 Status = 2;
+
+  // A description of the final status.
+  string Description = 3;
+
+  // The payment provider's reference for a successful transaction.
+  string Reference = 4;
+
+  // The customer's full name, if available.
+  string Names = 5;
+
+  // A field for custom data from the provider.
+  string Others = 6;
+
+  // The transaction fees, if available.
+  float TransactionCharge = 7;
+  int64 Amount =8;
+  int64 Msisdn=9;
+}
+
+// Withdrawal Messages
+message WithdrawRequestPayload {
+  // The account identifier to withdraw funds from.
+  string AccountNumber = 1;
+
+  // The account type identifier.
+  string AccountIdentifier = 2;
+
+  // The amount to withdraw.
+  float Amount = 3;
+
+  // A unique transaction/reference identifier.
+  string TransactionID = 4;
+
+  // An optional description.
+  string Description = 5;
+
+  // A field for custom data.
+  string Others = 6;
+}
+
+message WithdrawRequestResponse {
+  // A status code indicating the request was processed.
+  int64 Status = 1;
+  // A description of the status.
+  string Description = 2;
+  //important for determining insufficient funds
+  int64 statusCode =3;
+  int64 TransactionID =4;
+}
+message RequestPaymentUpdateRequest {
+  int64 TransactionID = 1;
+  int64 Status = 2;
+  string Description = 3;
+  string lang = 4; // Add lang field
+}
+
+message RequestPaymentUpdateResponse {
+  int64 Status = 1;
+  string Description = 2;
+  string lang = 3; // Add lang field
+}

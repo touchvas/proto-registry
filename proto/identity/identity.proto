@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity";
+
+package grpc;
+import "common/common.proto";
+
+// The Identity service definition.
+service Identity {
+  rpc GetProfileByID (ProfileID) returns (Profile) {}
+  rpc GetProfileByMsisdn (Msisdn) returns (Profile) {}
+  rpc SearchProfile (Search) returns (Profile) {}
+  rpc CreateUser (NewUser) returns (ResponseStatus) {}
+  rpc ChangeStatus (StatusRequest) returns (StatusRequest) {}
+  rpc RequestCode (CodeRequest) returns (CodeResponse) {}
+  rpc TokenValidation (VerifyTokenRequest) returns (VerifyTokenResponse) {}
+  rpc Ping (PingRequest) returns (PongRequest) {}
+  rpc GetUserBtag(BtagRequest) returns (BtagResponse) {}
+  rpc Summary(SummaryRequest) returns (SummaryResponse) {}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
+}
+message BtagRequest{
+  int64 profileID =1;
+}
+message BtagResponse{
+  string Btag =1;
+}
+message SummaryRequest {
+  string startDate = 1;
+  string endDate = 2;
+  bool btag =3;
+}
+
+message SummaryItem {
+  string date = 1;
+  int64 profileId = 2;
+  string countryCode = 3;
+  string Btag = 4;
+  string Currency = 5;
+}
+
+message SummaryResponse {
+  repeated SummaryItem summaries = 1;
+}
+message PingRequest {
+  string lang = 1; // Add lang field
+}
+
+message PongRequest {
+  int64 status = 1;
+  string data = 2;
+}
+
+message ProfileID {
+  int64 profileID = 1;
+  string lang = 2; // Add lang field
+}
+
+message Profile {
+  int64 id = 1;
+  int64 status = 2;
+  string firstName = 3;
+  string lastName = 4;
+  int64 msisdn = 5;
+  string created = 6;
+  string username = 7;
+  string email = 8;
+  string countryCode = 9;
+  string language = 10;
+  string currency = 11;
+}
+
+message Msisdn {
+  int64 msisdn = 1;
+  string lang = 2; // Add lang field
+}
+
+message Search {
+  string search = 1;
+  string lang = 2; // Add lang field
+}
+
+message NewUser {
+  string firstName = 1;
+  string lastName = 2;
+  int64 msisdn = 3;
+  string lang = 4; // Add lang field
+  string CountryCode = 5;
+}
+
+message ResponseStatus {
+  int64 statusCode = 1;
+  string statusDescription = 2;
+  int64 newUser = 3;
+  Profile profile = 4;
+}
+
+message StatusRequest {
+  int64 profileID = 1;
+  int32 status = 2;
+  string reason = 3;
+  string lang = 4; // Add lang field
+  int64  userID = 5;
+}
+
+message CodeRequest {
+  int64 msisdn = 1;
+  string lang = 2; // Add lang field
+}
+
+message CodeResponse {
+  int64 code = 1;
+  string description = 2;
+  int64 status = 3;
+}
+
+message VerifyTokenRequest {
+  int64 profileID = 1;
+  string hash = 2;
+  string lang = 3; // Add lang field
+}
+
+message VerifyTokenResponse {
+  int64 status = 1;
+}

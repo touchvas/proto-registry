@@ -1,0 +1,30 @@
+syntax = "proto3";
+option go_package = "github.com/touchvas/proto-registry/gen/go/reports";
+package protobuf;
+
+// The Reports service definition.
+service Reports {
+  rpc SendReports (SyncRequest) returns (SyncResponse) {}
+  rpc Ping (ReportsPing) returns (ReportsPong) {}
+
+}
+
+message ReportsPing {
+
+}
+
+message ReportsPong {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message SyncRequest {
+  string Data = 1;
+  string UpdateType = 2;
+
+}
+
+message SyncResponse {
+  string Data = 1;
+
+}

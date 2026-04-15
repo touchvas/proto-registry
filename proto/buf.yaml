@@ -1,0 +1,10 @@
+version: v1
+# In v1, if buf.yaml is in the same folder as your protos,
+# you don't need 'build'.
+# If it's one level up, we use the directory as the module.
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE

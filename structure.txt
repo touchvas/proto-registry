@@ -1,0 +1,13 @@
+proto-registry/
+├── buf.gen.yaml        # Configures how Go code is generated
+├── proto/              # All your .proto files go here
+│   ├── buf.yaml        # Configures your linting and breaking change rules
+│   ├── identity/       # identity-service.proto
+│   ├── notification/   # notification-service.proto [cite: 25]
+│   ├── payment/        # payment-gateway.proto
+│   ├── reports/        # reports-service.proto [cite: 73]
+│   ├── shortcode/      # shortcode-service.proto [cite: 77]
+│   ├── wallet/         # wallet-service.proto
+│   └── aegis/          # aegis.proto [cite: 124]
+└── gen/                # This folder will hold the generated .pb.go files
+    └── go/
