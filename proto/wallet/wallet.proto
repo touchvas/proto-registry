@@ -1,6 +1,7 @@
 syntax = "proto3";
 option go_package = "github.com/touchvas/proto-registry/gen/go/wallet";
 package protobuf;
+import "common/common.proto";
 
 // The Odds service definition.
 service Wallet {
@@ -27,6 +28,8 @@ service Wallet {
   rpc GetAlertContacts (EmptyWalletRequest) returns (AlertContactsResponse) {}
   rpc GetWalletSettings (EmptyWalletRequest) returns (WalletSettingsResponse) {}
   rpc GetUserDeposits (GetUserDepositRequest) returns (GetUserDepositResponse){}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
 }
 message GetUserDepositRequest{
    int64 ProfileId=1;

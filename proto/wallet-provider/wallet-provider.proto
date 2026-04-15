@@ -1,0 +1,58 @@
+syntax = "proto3";
+option go_package = "github.com/touchvas/proto-registry/gen/go/wallet-provider";
+package protobuf;
+
+service WalletProvider {
+
+  rpc RequestPayment (RequestPaymentRequest) returns (RequestPaymentResponse) {}
+  rpc SendMoney (SendMoneyRequest) returns (SendMoneyResponse) {}
+  rpc TransactionStatus (TransactionStatusRequest) returns (TransactionStatusResponse) {}
+  rpc Ping (WalletProviderPing) returns (WalletProviderPong) {}
+
+}
+
+// The request message containing the selection details.
+message RequestPaymentRequest {
+  int64 msisdn = 1;
+  int64 transactionID = 2;
+  float amount = 3;
+  string account = 4;
+  string callbackUrl =5;
+}
+
+message SendMoneyRequest {
+  int64 msisdn = 1;
+  int64 transactionID = 2;
+  float amount = 3;
+  string callbackUrl =4;
+}
+
+message WalletProviderPing {
+
+}
+
+message WalletProviderPong {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message RequestPaymentResponse {
+  int64 Status = 1;
+  string Description = 2;
+}
+
+message SendMoneyResponse {
+  int64 Status = 1;
+  string Description = 2;
+}
+
+message TransactionStatusResponse {
+  int64 Status = 1;
+  string Description = 2;
+}
+
+message TransactionStatusRequest {
+  string TransactionID = 1;
+  int64 Msisdn =2;
+  string transactionType =3;
+}

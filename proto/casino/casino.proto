@@ -1,0 +1,117 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino";
+package protobuf;
+import "common/common.proto";
+
+// The Casino service definition.
+service Casino {
+  rpc CashBackSummary(CashBackSummaryRequest) returns (CashBackSummaryResponse) {}
+  rpc BetSummary(CasinoBetSummaryRequest) returns (CasinoBetSummaryResponse) {}
+  rpc AwardFreeSpin(AwardFreeSpinRequest) returns (AwardFreeSpinResponse) {}
+  rpc SupportsFreeBet (SupportsFreeBetRequest) returns (SupportsFreeBetResponse) {}
+  rpc Ping (EmptyBody) returns (CasinoPong) {}
+  rpc TrackingSummary(CasinoSummaryRequest) returns (CasinoSummaryResponse) {}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
+}
+
+message CasinoSummaryRequest {
+  string startDate = 1;
+  string endDate = 2;
+}
+
+message CasinoSummaryItem {
+  string date = 1;
+  int64 profileId = 2;
+  string currency = 3;
+  int64 bets =4;
+  float stake =5;
+  float ggr = 6;
+  float ngr =7;
+}
+
+message CasinoSummaryResponse {
+  repeated CasinoSummaryItem summaries = 1;
+}
+
+
+
+message EmptyBody {
+
+}
+
+message CasinoPong {
+  int64 Status = 1;
+  string Data = 2;
+  string Lang = 3;
+}
+
+// The request message containing the selection details.
+message CasinoBetSummaryRequest {
+  int32 profileID = 1;
+  string Lang = 2;
+}
+
+message CasinoBetSummaryResponse {
+  int32 NumberOfBets = 1;
+  float Stake = 2;
+  float Winning = 3;
+  string Lang = 4;
+}
+
+message AwardFreeSpinRequest {
+  int64 ProfileID = 1;
+  int64 Quantity = 2;
+  float MinimumCashout = 3;
+  int64 BonusID = 4;
+  int64 ProviderID = 5;
+  string Games = 6;
+  float Amount = 7;
+  string Lang = 8;
+}
+
+message AwardFreeSpinResponse {
+  int64 Status = 1;
+  string Data = 2;
+  string Lang = 3;
+}
+
+message SupportsFreeBetRequest {
+  int64 ProviderID = 1;
+  string Lang = 2;
+}
+
+message SupportsFreeBetResponse {
+  bool Response = 1;
+  string Lang = 2;
+}
+
+message CashBackSummaryRequest {
+  int64 ProviderID = 1;
+  int64 MinimumStake = 2;
+  int64 ProfileID = 3;
+  string Date = 4;
+  string Lang = 5;
+
+}
+
+message CashBackSummaryResponse {
+  int64 NumberOfBets = 1;
+  float Stake = 2;
+  float Winning = 3;
+  string Lang = 4;
+}

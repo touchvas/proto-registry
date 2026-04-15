@@ -1,0 +1,60 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+option go_package = "github.com/touchvas/proto-registry/gen/go/tax";
+package protobuf;
+
+// The Odds service definition.
+service Tax {
+  // Sends GetOdds status request
+  rpc TaxOnSportsStake(Stake) returns (TaxResponse) {}
+  rpc TaxOnCasinoStake(Stake) returns (TaxResponse) {}
+  rpc TaxOnSportsWinning(Winning) returns (TaxResponse) {}
+  rpc TaxOnCasinoWinning(Winning) returns (TaxResponse) {}
+  rpc TaxOnDeposit(Transaction) returns (TaxResponse) {}
+  rpc TaxOnWithdrawal(Transaction) returns (TaxResponse) {}
+  rpc Ping (TaxPing) returns (TaxPong) {}
+
+}
+
+message TaxPing {
+
+}
+
+message TaxPong {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message Stake {
+  int64 betId = 1;
+  float StakeAmt = 2;
+  float odds = 3;
+}
+
+message Winning {
+  int64 betId = 1;
+  float StakeAmt = 2;
+  float odds = 3;
+  float Winnings = 4;
+}
+
+message TaxResponse {
+  float TaxCharged = 1;
+}
+
+message Transaction {
+  float Amount = 1;
+}

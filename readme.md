@@ -2,7 +2,7 @@
 
 1. Every micro service should have its own folder and proto file inside the folder
 2. Every miccro service should have the auto generated files in its own folder under `gen/go`
-3. Whenever you change a .proto file: Run `buf generate.`
+3. Whenever you change a .proto file: Run `buf generate proto`
 4. Commit the changes and the newly generated .pb.go files. 
 5. Tag the release: `git tag v1.0.1 && git push origin v1.0.1`
 

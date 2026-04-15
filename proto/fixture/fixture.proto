@@ -1,0 +1,180 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/fixture";
+
+package protobuf;
+
+// The Fixture service definition.
+service Fixture {
+  // Sends GetOdds status request
+  rpc GetFixture (GetFixtureRequest) returns (GetFixtureReply) {}
+  rpc GetSMSGames(RequestSMSGame) returns (SMSGamesResponse) {}
+  rpc Ping (PingRequest) returns (PongRequest) {}
+  rpc GetOutcome (GetOutcomeRequest) returns (GetOutcomeReply) {}
+  rpc GetMarket (GetMarketRequest) returns (Market) {}
+  rpc GetOdds (OddGetOddsRequest) returns (OddsGetOddsReply) {}
+  rpc GetOddsByGameID (OddsByGameIdRequest) returns (OddsGetOddsReply) {}
+  rpc GetTournamentID (TournamentIDRequest) returns (TournamentIDReply) {}
+}
+
+message PingRequest {}
+
+message PongRequest {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message GetMatchStatusRequest {
+  int64 matchID = 1;
+}
+
+message GetMatchStatusReply {}
+
+message GetFixtureRequest {
+  int32 matchID = 1;
+}
+
+message OddGetOddsRequest {
+  int32 producerID = 1;
+  int64 eventID = 2;
+  int32 marketID = 3;
+  string specifier = 4;
+  string outcomeID = 5;
+}
+
+message GetOutcomeRequest {
+  int64 ProducerID = 1;
+  int64 matchID = 2;
+  int64 marketID = 3;
+  string specifier = 4;
+}
+
+message OddsByGameIdRequest {
+  int32 marketID = 1;
+  string specifier = 2;
+  string outcomeID = 3;
+  int64 gameID = 4;
+  int32 producerID = 5;
+  int64 eventID = 6;
+}
+
+// The response message containing the odds status
+message GetFixtureReply {
+  int64 matchId = 1;
+  string matchName = 2;
+  string tournament = 3;
+  string categoryName = 4;
+  string sportName = 5;
+  string matchStatus = 6;
+  string homeScore = 7;
+  string awayScore = 8;
+  int64 status = 9;
+  string date = 10;
+  int64 gameID = 11;
+  int64 sportID = 12;
+  int64 tournamentID = 13;
+  int64 GSSportID = 14; // this
+
+}
+
+message OddsGetOddsReply {
+  float odds = 1;
+  int32 status = 2;
+  string statusName = 3;
+  int32 active = 4;
+  int64 matchId = 5;
+  int64 marketId = 6;
+  string marketName = 7;
+  string specifier = 8;
+  string outcomeId = 9;
+  string outcomeName = 10;
+  string matchName = 11;
+  int64 sportId = 12;
+  int64 OddId = 13;
+  int64 ProducerId = 14;
+  int64 GameID = 15;
+}
+
+message Outcome  {
+  //Alias market alias
+  string  Alias = 1;
+
+  //OutcomeName outcome name
+  string  OutcomeName = 2;
+
+  //OutcomeID outcome ID
+  string OutcomeID = 3;
+
+  //Odds odds for this particular selection
+  float Odds = 4;
+
+  //Active when 1 (active) display the odds else dont shw the odds on the UI
+  int64  Active = 5;
+
+  //Status when 1 (active) display the odds else dont shw the odds on the UI
+  int64  Status = 6;
+
+  //Probability odds probability
+  float  Probability = 7;
+}
+
+message SMSGamesResponse {
+  repeated SMSGame games = 1;
+}
+
+message SMSGame  {
+  string  Name = 1;
+  int64  GameID = 2;
+  float Home = 3;
+  float Draw = 4;
+  float Away = 5;
+  string Date = 6;
+  int64 Priority = 7;
+}
+
+message RequestSMSGame  {
+  int64 Count = 1;
+  int64 FromPriority = 2;
+}
+
+message Market {
+  string MarketName = 1;
+  int64 MarketID = 2;
+  string Specifier = 3;
+  int64 Status = 4;
+  string StatusName = 5;
+  repeated Outcome Outcome = 6;
+}
+
+message GetOutcomeReply {
+  repeated Outcome Outcome = 1;
+}
+
+message GetMarketRequest {
+  int32 producerID = 1;
+  int32 eventID = 2;
+  int32 marketID = 3;
+  string specifier = 4;
+}
+
+message TournamentIDRequest {
+  int64 matchID = 1;
+}
+
+message TournamentIDReply {
+  int64 tournamentID = 1;
+}

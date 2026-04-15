@@ -1,0 +1,61 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+option java_multiple_files = true;
+option go_package = "github.com/touchvas/proto-registry/gen/go/mts";
+package protobuf;
+
+
+// The Betting service definition.
+service Mts {
+  rpc SubmitBet(MTSBet) returns (MtsGeneralAck) {}
+  rpc SubmitBetCancel(BetCancelRequest) returns (MtsGeneralAck) {}
+  rpc SubmitCashoutRequest(MTSBet) returns (MtsGeneralAck) {}
+
+}
+
+message MTSBetSlip {
+
+  int64 sportID = 1;
+  int64 producerID = 2;
+  int64 matchID = 3;
+  int64 marketID = 4;
+  string specifier = 5;
+  string outcomeID = 6;
+  int64 odds = 7;
+}
+
+message MTSBet {
+  float stake = 1;
+  int64 profileID = 2;
+  int64 betSource = 3;
+  string ipAddress = 4;
+  string betID = 5;
+  string returnChannel = 6;
+  repeated MTSBetSlip bets = 7;
+  string BetType = 8;
+  string Currency = 9;
+  int64 LimitID = 10;
+
+}
+
+message MtsGeneralAck {
+  string description = 1;
+}
+
+message BetCancelRequest {
+  string betID = 1;
+  int64 code = 2;
+}

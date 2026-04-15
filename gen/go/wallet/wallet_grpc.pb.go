@@ -8,6 +8,7 @@ package wallet
 
 import (
 	context "context"
+	common "github.com/touchvas/proto-registry/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -40,6 +41,7 @@ const (
 	Wallet_GetAlertContacts_FullMethodName                    = "/protobuf.Wallet/GetAlertContacts"
 	Wallet_GetWalletSettings_FullMethodName                   = "/protobuf.Wallet/GetWalletSettings"
 	Wallet_GetUserDeposits_FullMethodName                     = "/protobuf.Wallet/GetUserDeposits"
+	Wallet_ServiceRequest_FullMethodName                      = "/protobuf.Wallet/ServiceRequest"
 )
 
 // WalletClient is the client API for Wallet service.
@@ -68,6 +70,7 @@ type WalletClient interface {
 	GetAlertContacts(ctx context.Context, in *EmptyWalletRequest, opts ...grpc.CallOption) (*AlertContactsResponse, error)
 	GetWalletSettings(ctx context.Context, in *EmptyWalletRequest, opts ...grpc.CallOption) (*WalletSettingsResponse, error)
 	GetUserDeposits(ctx context.Context, in *GetUserDepositRequest, opts ...grpc.CallOption) (*GetUserDepositResponse, error)
+	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
 }
 
 type walletClient struct {
@@ -267,6 +270,15 @@ func (c *walletClient) GetUserDeposits(ctx context.Context, in *GetUserDepositRe
 	return out, nil
 }
 
+func (c *walletClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
+	out := new(common.GeneralAck)
+	err := c.cc.Invoke(ctx, Wallet_ServiceRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WalletServer is the server API for Wallet service.
 // All implementations must embed UnimplementedWalletServer
 // for forward compatibility
@@ -293,6 +305,7 @@ type WalletServer interface {
 	GetAlertContacts(context.Context, *EmptyWalletRequest) (*AlertContactsResponse, error)
 	GetWalletSettings(context.Context, *EmptyWalletRequest) (*WalletSettingsResponse, error)
 	GetUserDeposits(context.Context, *GetUserDepositRequest) (*GetUserDepositResponse, error)
+	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
 	mustEmbedUnimplementedWalletServer()
 }
 
@@ -362,6 +375,9 @@ func (UnimplementedWalletServer) GetWalletSettings(context.Context, *EmptyWallet
 }
 func (UnimplementedWalletServer) GetUserDeposits(context.Context, *GetUserDepositRequest) (*GetUserDepositResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserDeposits not implemented")
+}
+func (UnimplementedWalletServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
 }
 func (UnimplementedWalletServer) mustEmbedUnimplementedWalletServer() {}
 
@@ -754,6 +770,24 @@ func _Wallet_GetUserDeposits_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Wallet_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(common.ServiceActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServer).ServiceRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Wallet_ServiceRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServer).ServiceRequest(ctx, req.(*common.ServiceActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Wallet_ServiceDesc is the grpc.ServiceDesc for Wallet service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -844,6 +878,10 @@ var Wallet_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserDeposits",
 			Handler:    _Wallet_GetUserDeposits_Handler,
+		},
+		{
+			MethodName: "ServiceRequest",
+			Handler:    _Wallet_ServiceRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

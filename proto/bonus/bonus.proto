@@ -1,0 +1,161 @@
+syntax = "proto3";
+package protobuf;
+// This package defines the gRPC service and messages for the bonus service.
+option go_package = "github.com/touchvas/proto-registry/gen/go/bonus";
+import "common/common.proto";
+
+// The Bonus service provides functionality for managing bonus bets.
+service Bonus {
+
+  // PlaceBonusBet places a bonus bet on a user's account.
+  rpc PlaceBonusBet(UserBet) returns (PlaceBetResponse){}
+
+  // BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
+  rpc BonusBetEligibility(UserBet) returns (BonusBetEligibilityResponse){}
+
+  // UpdateBetID updates the bet ID after a bonus bet has been placed.
+  rpc UpdateBetID(UpdateBetIDRequest) returns (GeneralResponse){}
+
+  // SettleBonusBet settles a bonus bet, processing the win or loss.
+  rpc SettleBet(SettleBetRequest) returns (SettleBetResponse){}
+
+  // GetFreeBetBonus retrieves a free bet bonus for a user.
+  rpc GetFreeBetBonus(FreebetRequest) returns (FreebetResponse){}
+
+  // Ping is used for health checks to verify the service is running.
+  rpc Ping (BonusPing) returns (BonusPong) {}
+  // DebitBonus debit bonus wallet
+  rpc ReverseDebitBonus(ReverseBonusDebitRequest) returns (GeneralResponse){}
+  // BonusBalance gets bonus balance
+  rpc BonusBalance(BonusBalanceRequest) returns (BonusBalanceResponse){}
+  // BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
+}
+
+message BonusBalanceRequest {
+  int64 ProfileID = 1;
+  string Lang = 2;
+  int64 BonusID =3;
+  string CountryCode =4;
+}
+// BonusBetEligibilityResponse contains the result of an eligibility check.
+message BonusBetEligibilityResponse {
+  int64 status = 1; // The status code of the eligibility check.
+  string statusDescription = 2; // A description of the eligibility status.
+  string Lang = 3; // The language of the response.
+}
+// UserBet contains the details of a user's bet.
+message UserBet {
+  repeated BetSlip betslip = 1; // A list of individual bets within the slip.
+  int64 ProfileID = 2; // The unique identifier for the user.
+  float stake = 3; // The total amount staked on the bet.
+  float totalOdds = 4; // The total odds for the bet.
+  int32 bonusId = 5; // The bonus ID used for this bet.
+  string BonusCode = 6; // The bonus code used.
+  string UTMSource = 7; // The UTM source of the bet.
+  string Campaign = 8; // The campaign associated with the bet.
+  string Medium = 9; // The medium of the campaign.
+  string ip_address = 10; // The IP address of the user.
+  int64 BetID = 11; // The unique identifier for the bet.
+  string Lang = 12; // The language for the request.
+  bool UseCash = 13; // A flag to indicate if cash was used.
+  int64 StakeType = 14; // The type of stake used.
+  int64 deviceId = 15; // The device ID.
+}
+message BonusBalanceResponse {
+  float Balance = 1;
+  string ExpiryDate = 2;
+  string Lang = 3;
+  int64 RolloverCount = 4;
+}
+message ReverseBonusDebitRequest {
+  int64 BonusTransactionID = 1;
+  string Reasons = 2;
+}
+// FreebetRequest represents a request to get a free bet bonus.
+message FreebetRequest {
+  int64 ProfileID = 1; // The unique identifier for the user's profile.
+  int64 BonusID = 2;
+}
+
+// FreebetResponse returns the details of a free bet bonus.
+message FreebetResponse {
+  int64 BonusID = 1; // The unique identifier for the free bet bonus.
+  float Balance = 2;
+  string ExpiryDate = 3;
+}
+
+// BonusPing is a message used for the health check RPC.
+message BonusPing {
+  string Lang = 1; // The language for the response.
+}
+
+// BonusPong is the response message for the health check.
+message BonusPong {
+  int64 Status = 1; // The status code of the health check.
+  string Data = 2;  // The response data, e.g., "OK".
+}
+
+// UpdateBetIDRequest is the request to update a bet's ID.
+message UpdateBetIDRequest {
+  int64 TransactionID = 1; // The unique transaction ID.
+  int64 BetID = 2; // The new bet ID to be updated.
+  int64 ID = 3; // The record ID.
+  string Description = 4; // A description of the update.
+  string Lang = 5; // The language for the request.
+}
+
+// GeneralResponse is a generic response for operations that don't return complex data.
+message GeneralResponse {
+  string description = 1; // A human-readable description of the status.
+  int32 status = 2; // The status code (e.g., 200 for success, 500 for error).
+  string Lang = 3; // The language of the response.
+}
+
+
+
+// PlaceBetResponse contains the result of a PlaceBonusBet operation.
+message PlaceBetResponse {
+  int64 TransactionID = 1; // The unique transaction ID for the bet.
+  int64 status = 2; // The status code of the operation.
+  string statusDescription = 3; // A description of the status.
+  int64 PossibleWin = 4; // The potential win amount.
+  float CashDeducted = 5; // The amount of cash deducted from the user's balance.
+  float BonusDeducted = 6; // The amount of bonus deducted.
+  float BonusBalance = 7; // The user's remaining bonus balance.
+  float CashBalance = 8; // The user's remaining cash balance.
+  int64 BetID = 9; // The unique identifier for the bet.
+  string Lang = 10; // The language of the response.
+  int64 BonusTransactionID = 11; // The unique transaction ID for the bonus debit.
+  float Stake = 12; // The total stake.
+}
+
+// BetSlip contains the details of a single bet in a bet slip.
+message BetSlip {
+  int64 eventId = 1; // The unique identifier for the event.
+  int32 producerId = 2; // The ID of the producer.
+  float odds = 3; // The odds for this specific bet.
+  int64 sportId = 4; // The unique identifier for the sport.
+  string Lang = 5; // The language for the request.
+  int64 MarketID = 6; // The unique identifier for the market.
+}
+
+
+// SettleBetRequest is the request to settle a bet.
+message SettleBetRequest {
+  int64 ProfileID = 1; // The unique identifier for the user.
+  int64 BetID = 2; // The unique identifier for the bet to be settled.
+  float Amount = 3; // The win/loss amount.
+  int64 status = 4; // The status of the settlement.
+  string ShareCode = 5; // A shareable code.
+  int64 DeviceId = 6; // The device ID.
+}
+
+// SettleBetResponse returns the result of the settlement operation.
+message SettleBetResponse {
+  int64 Status = 1; // The status code of the settlement.
+  string Description = 2; // A description of the settlement result.
+  int64 TransactionID = 3; // The unique transaction ID for the settlement.
+  int64 BonusID =4;
+}

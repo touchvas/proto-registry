@@ -1,0 +1,163 @@
+syntax = "proto3";
+package protobuf;
+// This package defines the gRPC service and messages for the bonus service.
+option go_package = "github.com/touchvas/proto-registry/gen/go/betting";
+import "common/common.proto";
+
+// The Odds service definition.
+service Betting {
+  // Sends GetOdds status request
+  rpc BetSummary(BetSummaryRequest) returns (BetSummaryResponse) {}
+  rpc Ping (BettingPing) returns (BettingPong) {}
+  rpc BetStatus(BetStatusRequest) returns (BetStatusResponse) {}
+  rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponseMessage) {}
+  rpc ProfileSummary(ProfileSummaryRequest) returns (ProfileSummaryResponse) {}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
+  // MTS responses
+  // mts response handlers
+  rpc BetAcceptedResponse(MTSResponse) returns (common.GeneralAck) {}
+  rpc BetCancelledResponse(MTSResponse) returns (common.GeneralAck) {}
+  rpc CancelBetAcceptedResponse(MTSResponse) returns (common.GeneralAck) {}
+  rpc CancelBetRejectedResponse(MTSResponse) returns (common.GeneralAck) {}
+  rpc MtsConnectionChangeResponse(MTSConnectionStatus) returns (common.GeneralAck) {}
+  rpc CashoutAcceptedResponse(CashoutMTSResponse) returns (common.GeneralAck) {}
+  rpc CashoutRejectedResponse(CashoutMTSResponse) returns (common.GeneralAck) {}
+  rpc TrackingSummary(SummaryRequest) returns (SummaryResponse) {}
+}
+
+message SummaryRequest {
+  string startDate = 1;
+  string endDate = 2;
+  int64 profileID =3;
+}
+
+message SummaryItem {
+  string date = 1;
+  int64 profileId = 2;
+  string currency = 3;
+  int64 bets =4;
+  float stake =5;
+  float ggr = 6;
+  float ngr =7;
+}
+message SummaryResponse {
+  repeated SummaryItem summaries = 1;
+}
+message BettingPing {
+
+}
+
+message BettingPong {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+// The request message containing the selection details.
+message BetSummaryRequest {
+  int32 profileID = 1;
+}
+
+message BetSummaryResponse {
+  int32 NumberOfBets = 1;
+  float Stake = 2;
+  float Winning = 3;
+}
+
+message BetStatusRequest {
+  int64 profileID = 1;
+  string ShareCode = 2;
+}
+
+message SelectedSlips {
+
+  string MatchName = 1;
+  string Description = 2;
+  int64 Status = 3;
+
+}
+
+message BetStatusResponse {
+
+  int64  ID = 1;
+  string Description = 2;
+  int64 Status = 3;
+  float Payout = 4;
+  repeated SelectedSlips SelectedSlips = 5;
+
+}
+
+message PlaceBetRequest {
+  repeated Slips slips = 1;
+  int64 ProfileID = 2;
+  float stake = 3;
+  string source = 4;
+  string ipAddress = 5;
+  int64 betType = 6;
+  string BookingCode = 7;
+
+}
+
+message Slips {
+  int64  EventID = 1;
+  int64  ProducerID = 2;
+  int64  MarketID = 3;
+  string  Specifier = 4;
+  string  OutcomeID = 5;
+}
+
+message PlaceBetResponseMessage {
+  int64  status = 1;
+  string description = 2;
+  string shareCode = 3;
+}
+
+
+message CancelBetResponseMessage {
+  int64  status = 1;
+  string description = 2;
+}
+
+message CashOutResponseMessage {
+  int64  status = 1;
+  string description = 2;
+}
+
+message CashBackRequest {
+  int64 profileId = 1;
+}
+message CashbackResponseMessage {
+  bool awarded = 1;
+}
+
+message MTSResponse {
+  int64 code = 1;
+  string description = 2;
+  string betID = 3;
+}
+
+message MTSConnectionStatus {
+  int64 status = 1;
+  string description = 2;
+}
+
+message CashoutMTSResponse {
+  int64 code = 1;
+  string description = 2;
+  string betID = 3;
+}
+
+message ProfileSummaryRequest {
+  int64 profileID = 1;
+  string StartDate = 2;
+  string EndDate = 3;
+  float MinimumTotalOdds = 4;
+  float MinimumStake = 5;
+  float MinimumOddsPerEvent = 6;
+}
+
+message ProfileSummaryResponse {
+  float Stake = 1;
+  float Winning = 2;
+  int64 Bets = 3;
+}
