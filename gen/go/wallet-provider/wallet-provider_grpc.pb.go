@@ -19,200 +19,224 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	WalletProvider_RequestPayment_FullMethodName    = "/protobuf.WalletProvider/RequestPayment"
-	WalletProvider_SendMoney_FullMethodName         = "/protobuf.WalletProvider/SendMoney"
-	WalletProvider_TransactionStatus_FullMethodName = "/protobuf.WalletProvider/TransactionStatus"
-	WalletProvider_Ping_FullMethodName              = "/protobuf.WalletProvider/Ping"
+	PaymentProvider_PaymentProviderPing_FullMethodName = "/protobuf.PaymentProvider/PaymentProviderPing"
+	PaymentProvider_DepositRequest_FullMethodName      = "/protobuf.PaymentProvider/DepositRequest"
+	PaymentProvider_DepositStatusCheck_FullMethodName  = "/protobuf.PaymentProvider/DepositStatusCheck"
+	PaymentProvider_SendMoney_FullMethodName           = "/protobuf.PaymentProvider/SendMoney"
 )
 
-// WalletProviderClient is the client API for WalletProvider service.
+// PaymentProviderClient is the client API for PaymentProvider service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type WalletProviderClient interface {
-	RequestPayment(ctx context.Context, in *RequestPaymentRequest, opts ...grpc.CallOption) (*RequestPaymentResponse, error)
-	SendMoney(ctx context.Context, in *SendMoneyRequest, opts ...grpc.CallOption) (*SendMoneyResponse, error)
-	TransactionStatus(ctx context.Context, in *TransactionStatusRequest, opts ...grpc.CallOption) (*TransactionStatusResponse, error)
-	Ping(ctx context.Context, in *WalletProviderPing, opts ...grpc.CallOption) (*WalletProviderPong, error)
+type PaymentProviderClient interface {
+	// Health Check
+	// Used to check the health and liveness of the Payment Gateway service.
+	PaymentProviderPing(ctx context.Context, in *PaymentProviderPingPayload, opts ...grpc.CallOption) (*PaymentProviderPingResponse, error)
+	// DepositRequest
+	// Initiates a deposit request from a customer. This is also known as an
+	// "STK Push Request" for mobile money providers.
+	DepositRequest(ctx context.Context, in *DepositRequestPayload, opts ...grpc.CallOption) (*DepositRequestResponse, error)
+	// DepositStatusCheck
+	// Used by the payment gateway to query the status of a deposit request
+	// with the payment provider. This can be used for reconciliation or to
+	// check for missing transaction callbacks.
+	DepositStatusCheck(ctx context.Context, in *DepositStatusCheckPayload, opts ...grpc.CallOption) (*DepositStatusCheckResponse, error)
+	// SendMoney
+	// Used by the payment gateway to send a request to a payment service
+	// provider to send funds directly to a customer's account.
+	SendMoney(ctx context.Context, in *SendMoneyPayload, opts ...grpc.CallOption) (*SendMoneyResponse, error)
 }
 
-type walletProviderClient struct {
+type paymentProviderClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewWalletProviderClient(cc grpc.ClientConnInterface) WalletProviderClient {
-	return &walletProviderClient{cc}
+func NewPaymentProviderClient(cc grpc.ClientConnInterface) PaymentProviderClient {
+	return &paymentProviderClient{cc}
 }
 
-func (c *walletProviderClient) RequestPayment(ctx context.Context, in *RequestPaymentRequest, opts ...grpc.CallOption) (*RequestPaymentResponse, error) {
-	out := new(RequestPaymentResponse)
-	err := c.cc.Invoke(ctx, WalletProvider_RequestPayment_FullMethodName, in, out, opts...)
+func (c *paymentProviderClient) PaymentProviderPing(ctx context.Context, in *PaymentProviderPingPayload, opts ...grpc.CallOption) (*PaymentProviderPingResponse, error) {
+	out := new(PaymentProviderPingResponse)
+	err := c.cc.Invoke(ctx, PaymentProvider_PaymentProviderPing_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *walletProviderClient) SendMoney(ctx context.Context, in *SendMoneyRequest, opts ...grpc.CallOption) (*SendMoneyResponse, error) {
+func (c *paymentProviderClient) DepositRequest(ctx context.Context, in *DepositRequestPayload, opts ...grpc.CallOption) (*DepositRequestResponse, error) {
+	out := new(DepositRequestResponse)
+	err := c.cc.Invoke(ctx, PaymentProvider_DepositRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentProviderClient) DepositStatusCheck(ctx context.Context, in *DepositStatusCheckPayload, opts ...grpc.CallOption) (*DepositStatusCheckResponse, error) {
+	out := new(DepositStatusCheckResponse)
+	err := c.cc.Invoke(ctx, PaymentProvider_DepositStatusCheck_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentProviderClient) SendMoney(ctx context.Context, in *SendMoneyPayload, opts ...grpc.CallOption) (*SendMoneyResponse, error) {
 	out := new(SendMoneyResponse)
-	err := c.cc.Invoke(ctx, WalletProvider_SendMoney_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PaymentProvider_SendMoney_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *walletProviderClient) TransactionStatus(ctx context.Context, in *TransactionStatusRequest, opts ...grpc.CallOption) (*TransactionStatusResponse, error) {
-	out := new(TransactionStatusResponse)
-	err := c.cc.Invoke(ctx, WalletProvider_TransactionStatus_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletProviderClient) Ping(ctx context.Context, in *WalletProviderPing, opts ...grpc.CallOption) (*WalletProviderPong, error) {
-	out := new(WalletProviderPong)
-	err := c.cc.Invoke(ctx, WalletProvider_Ping_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// WalletProviderServer is the server API for WalletProvider service.
-// All implementations must embed UnimplementedWalletProviderServer
+// PaymentProviderServer is the server API for PaymentProvider service.
+// All implementations must embed UnimplementedPaymentProviderServer
 // for forward compatibility
-type WalletProviderServer interface {
-	RequestPayment(context.Context, *RequestPaymentRequest) (*RequestPaymentResponse, error)
-	SendMoney(context.Context, *SendMoneyRequest) (*SendMoneyResponse, error)
-	TransactionStatus(context.Context, *TransactionStatusRequest) (*TransactionStatusResponse, error)
-	Ping(context.Context, *WalletProviderPing) (*WalletProviderPong, error)
-	mustEmbedUnimplementedWalletProviderServer()
+type PaymentProviderServer interface {
+	// Health Check
+	// Used to check the health and liveness of the Payment Gateway service.
+	PaymentProviderPing(context.Context, *PaymentProviderPingPayload) (*PaymentProviderPingResponse, error)
+	// DepositRequest
+	// Initiates a deposit request from a customer. This is also known as an
+	// "STK Push Request" for mobile money providers.
+	DepositRequest(context.Context, *DepositRequestPayload) (*DepositRequestResponse, error)
+	// DepositStatusCheck
+	// Used by the payment gateway to query the status of a deposit request
+	// with the payment provider. This can be used for reconciliation or to
+	// check for missing transaction callbacks.
+	DepositStatusCheck(context.Context, *DepositStatusCheckPayload) (*DepositStatusCheckResponse, error)
+	// SendMoney
+	// Used by the payment gateway to send a request to a payment service
+	// provider to send funds directly to a customer's account.
+	SendMoney(context.Context, *SendMoneyPayload) (*SendMoneyResponse, error)
+	mustEmbedUnimplementedPaymentProviderServer()
 }
 
-// UnimplementedWalletProviderServer must be embedded to have forward compatible implementations.
-type UnimplementedWalletProviderServer struct {
+// UnimplementedPaymentProviderServer must be embedded to have forward compatible implementations.
+type UnimplementedPaymentProviderServer struct {
 }
 
-func (UnimplementedWalletProviderServer) RequestPayment(context.Context, *RequestPaymentRequest) (*RequestPaymentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RequestPayment not implemented")
+func (UnimplementedPaymentProviderServer) PaymentProviderPing(context.Context, *PaymentProviderPingPayload) (*PaymentProviderPingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentProviderPing not implemented")
 }
-func (UnimplementedWalletProviderServer) SendMoney(context.Context, *SendMoneyRequest) (*SendMoneyResponse, error) {
+func (UnimplementedPaymentProviderServer) DepositRequest(context.Context, *DepositRequestPayload) (*DepositRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositRequest not implemented")
+}
+func (UnimplementedPaymentProviderServer) DepositStatusCheck(context.Context, *DepositStatusCheckPayload) (*DepositStatusCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositStatusCheck not implemented")
+}
+func (UnimplementedPaymentProviderServer) SendMoney(context.Context, *SendMoneyPayload) (*SendMoneyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMoney not implemented")
 }
-func (UnimplementedWalletProviderServer) TransactionStatus(context.Context, *TransactionStatusRequest) (*TransactionStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TransactionStatus not implemented")
-}
-func (UnimplementedWalletProviderServer) Ping(context.Context, *WalletProviderPing) (*WalletProviderPong, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
-}
-func (UnimplementedWalletProviderServer) mustEmbedUnimplementedWalletProviderServer() {}
+func (UnimplementedPaymentProviderServer) mustEmbedUnimplementedPaymentProviderServer() {}
 
-// UnsafeWalletProviderServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to WalletProviderServer will
+// UnsafePaymentProviderServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PaymentProviderServer will
 // result in compilation errors.
-type UnsafeWalletProviderServer interface {
-	mustEmbedUnimplementedWalletProviderServer()
+type UnsafePaymentProviderServer interface {
+	mustEmbedUnimplementedPaymentProviderServer()
 }
 
-func RegisterWalletProviderServer(s grpc.ServiceRegistrar, srv WalletProviderServer) {
-	s.RegisterService(&WalletProvider_ServiceDesc, srv)
+func RegisterPaymentProviderServer(s grpc.ServiceRegistrar, srv PaymentProviderServer) {
+	s.RegisterService(&PaymentProvider_ServiceDesc, srv)
 }
 
-func _WalletProvider_RequestPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestPaymentRequest)
+func _PaymentProvider_PaymentProviderPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentProviderPingPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WalletProviderServer).RequestPayment(ctx, in)
+		return srv.(PaymentProviderServer).PaymentProviderPing(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WalletProvider_RequestPayment_FullMethodName,
+		FullMethod: PaymentProvider_PaymentProviderPing_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletProviderServer).RequestPayment(ctx, req.(*RequestPaymentRequest))
+		return srv.(PaymentProviderServer).PaymentProviderPing(ctx, req.(*PaymentProviderPingPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WalletProvider_SendMoney_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendMoneyRequest)
+func _PaymentProvider_DepositRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositRequestPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WalletProviderServer).SendMoney(ctx, in)
+		return srv.(PaymentProviderServer).DepositRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WalletProvider_SendMoney_FullMethodName,
+		FullMethod: PaymentProvider_DepositRequest_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletProviderServer).SendMoney(ctx, req.(*SendMoneyRequest))
+		return srv.(PaymentProviderServer).DepositRequest(ctx, req.(*DepositRequestPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WalletProvider_TransactionStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransactionStatusRequest)
+func _PaymentProvider_DepositStatusCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositStatusCheckPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WalletProviderServer).TransactionStatus(ctx, in)
+		return srv.(PaymentProviderServer).DepositStatusCheck(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WalletProvider_TransactionStatus_FullMethodName,
+		FullMethod: PaymentProvider_DepositStatusCheck_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletProviderServer).TransactionStatus(ctx, req.(*TransactionStatusRequest))
+		return srv.(PaymentProviderServer).DepositStatusCheck(ctx, req.(*DepositStatusCheckPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WalletProvider_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WalletProviderPing)
+func _PaymentProvider_SendMoney_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendMoneyPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WalletProviderServer).Ping(ctx, in)
+		return srv.(PaymentProviderServer).SendMoney(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WalletProvider_Ping_FullMethodName,
+		FullMethod: PaymentProvider_SendMoney_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletProviderServer).Ping(ctx, req.(*WalletProviderPing))
+		return srv.(PaymentProviderServer).SendMoney(ctx, req.(*SendMoneyPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// WalletProvider_ServiceDesc is the grpc.ServiceDesc for WalletProvider service.
+// PaymentProvider_ServiceDesc is the grpc.ServiceDesc for PaymentProvider service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var WalletProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protobuf.WalletProvider",
-	HandlerType: (*WalletProviderServer)(nil),
+var PaymentProvider_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "protobuf.PaymentProvider",
+	HandlerType: (*PaymentProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RequestPayment",
-			Handler:    _WalletProvider_RequestPayment_Handler,
+			MethodName: "PaymentProviderPing",
+			Handler:    _PaymentProvider_PaymentProviderPing_Handler,
+		},
+		{
+			MethodName: "DepositRequest",
+			Handler:    _PaymentProvider_DepositRequest_Handler,
+		},
+		{
+			MethodName: "DepositStatusCheck",
+			Handler:    _PaymentProvider_DepositStatusCheck_Handler,
 		},
 		{
 			MethodName: "SendMoney",
-			Handler:    _WalletProvider_SendMoney_Handler,
-		},
-		{
-			MethodName: "TransactionStatus",
-			Handler:    _WalletProvider_TransactionStatus_Handler,
-		},
-		{
-			MethodName: "Ping",
-			Handler:    _WalletProvider_Ping_Handler,
+			Handler:    _PaymentProvider_SendMoney_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

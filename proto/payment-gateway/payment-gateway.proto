@@ -4,6 +4,7 @@ syntax = "proto3";
 option go_package = "github.com/touchvas/proto-registry/gen/go/payment-gateway";
 // Defines the package name for the protobuf file.
 package paymentGateway;
+import "common/common.proto";
 
 // --------------------------------------------------------------------------
 // SERVICE DEFINITION
@@ -34,7 +35,7 @@ service PaymentGateway {
   // Used by the payment provider to send a direct, successful deposit transaction.
   // This is used for transactions that don't follow a request-response pattern.
   rpc DepositCallback (DepositCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
-  
+
   // ------------------------------------------------------------------------
   // WITHDRAWAL CALLBACK & SEND MONEY CALLBACK METHODS
   // ------------------------------------------------------------------------
@@ -45,21 +46,25 @@ service PaymentGateway {
   // Used by the payment provider services to request funds to be withdrawn
   // from a customer's account. This is a request from the provider.
   rpc WithdrawRequest (WithdrawRequestPayload) returns (WithdrawRequestResponse) {}
-  
+
   // SendMoneyCallback
   // Used by the payment provider to update the status of a `SendMoney`
   // request. This informs the gateway whether the transaction was successful.
   rpc SendMoneyCallback (SendMoneyCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
   //used by mpesa service to update stk status and description
-rpc RequestPaymentUpdate (RequestPaymentUpdateRequest) returns (RequestPaymentUpdateResponse) {}
+  rpc RequestPaymentUpdate (RequestPaymentUpdateRequest) returns (RequestPaymentUpdateResponse) {}
   //to be called by identity on registration
   rpc CreateDefaultPaymentChannel(CreatePaymentChanelRequest) returns (CreatePaymentChanelResponse){}
+  // Initiate Deposit via grpc, only suitable for mobile money
+  rpc STKPUSH (STKRequest) returns (STKResponse){}
   // ------------------------------------------------------------------------
   // COMMENTED OUT METHODS
   // ------------------------------------------------------------------------
   // NOTE: This method is currently commented out. Uncomment it if needed.
   // Method used by payment provider services to update the status of a withdrawal request
   // rpc WithdrawRequestCallback (WithdrawRequestCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
 }
 
 // --------------------------------------------------------------------------
@@ -75,6 +80,13 @@ message CreatePaymentChanelRequest {
 message CreatePaymentChanelResponse{
   int64 status =1;
   string Desc=2;
+}
+message STKRequest {
+  string AccountNumber =1;
+  int64 Amount=2;
+}
+message  STKResponse{
+  string Description =1;
 }
 // A generic response payload for acknowledging requests.
 message PaymentGatewayGeneralResponsePayload {
@@ -139,7 +151,7 @@ message DepositCallbackPayload {
   float TransactionCharge = 8;
   //transaction status
   int64 Status =9;
-string Name=10;
+  string Name=10;
 }
 
 

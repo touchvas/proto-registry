@@ -257,6 +257,7 @@ message DepositRequest {
   int64 status = 13;
   string Description =14;
   int64 TransactionCharge =15;
+  int64 DeviceID = 16;
 
 }
 
