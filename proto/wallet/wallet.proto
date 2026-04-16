@@ -137,6 +137,7 @@ message WithdrawRequest {
   string lang = 5; // Add lang field
   string Reference =6;
   bool USSDRequest = 7;
+  int64 DeviceID = 8;
 }
 
 message STKRequest {
@@ -146,6 +147,8 @@ message STKRequest {
   string Account = 3;
   string Channel = 4;
   string lang = 5; // Add lang field
+  int64 DeviceID = 6;
+  string ip_address = 7;
 }
 
 message WithdrawResponse {
@@ -258,6 +261,7 @@ message DepositRequest {
   int64 status = 13;
   string Description =14;
   int64 TransactionCharge =15;
+  int64 DeviceID = 16;
 
 }
 
