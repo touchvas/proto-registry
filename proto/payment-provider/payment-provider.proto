@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/touchvas/proto-registry/gen/go/wallet-provider";
+option go_package = "github.com/touchvas/proto-registry/gen/go/payment-provider";
 package protobuf;
 
 // --------------------------------------------------------------------------

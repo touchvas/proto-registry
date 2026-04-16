@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: payment-provider/payment-provider.proto
 
-package wallet_provider
+package payment_provider
 
 import (
 	context "context"
