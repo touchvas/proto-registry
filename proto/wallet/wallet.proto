@@ -3,7 +3,7 @@ option go_package = "github.com/touchvas/proto-registry/gen/go/wallet";
 package protobuf;
 import "common/common.proto";
 
-// The Odds service definition.
+//  service definition.
 service Wallet {
   rpc DebitAccount (DebitRequest) returns (DebitResponse) {}
   rpc CreditAccount (DebitRequest) returns (DebitResponse) {}
@@ -154,6 +154,7 @@ message WithdrawResponse {
   string Description = 2;
   string lang = 3; // Add lang field
   int64 TransactionID = 4;
+  int64 StatusCode =5;
 
 }
 
@@ -257,7 +258,6 @@ message DepositRequest {
   int64 status = 13;
   string Description =14;
   int64 TransactionCharge =15;
-  int64 DeviceID = 16;
 
 }
 
