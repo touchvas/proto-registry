@@ -48,7 +48,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WalletClient interface {
-	// Sends GetOdds status request
 	DebitAccount(ctx context.Context, in *DebitRequest, opts ...grpc.CallOption) (*DebitResponse, error)
 	CreditAccount(ctx context.Context, in *DebitRequest, opts ...grpc.CallOption) (*DebitResponse, error)
 	GetBalance(ctx context.Context, in *BalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
@@ -283,7 +282,6 @@ func (c *walletClient) ServiceRequest(ctx context.Context, in *common.ServiceAct
 // All implementations must embed UnimplementedWalletServer
 // for forward compatibility
 type WalletServer interface {
-	// Sends GetOdds status request
 	DebitAccount(context.Context, *DebitRequest) (*DebitResponse, error)
 	CreditAccount(context.Context, *DebitRequest) (*DebitResponse, error)
 	GetBalance(context.Context, *BalanceRequest) (*BalanceResponse, error)

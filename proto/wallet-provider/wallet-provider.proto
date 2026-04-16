@@ -39,6 +39,7 @@ message WalletProviderPong {
 message RequestPaymentResponse {
   int64 Status = 1;
   string Description = 2;
+  string url=3;
 }
 
 message SendMoneyResponse {
