@@ -176,6 +176,7 @@ message SettleBetRequest {
   string ShareCode = 5; // A shareable code.
   int64 DeviceId = 6; // The device ID.
   string CountryCode = 7; // The country code of the user.
+  float Odds = 8;
 }
 
 // SettleBetResponse returns the result of the settlement operation.
