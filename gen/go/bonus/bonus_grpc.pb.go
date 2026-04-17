@@ -8,7 +8,6 @@ package bonus
 
 import (
 	context "context"
-	common "github.com/touchvas/proto-registry/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,15 +19,21 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Bonus_PlaceBonusBet_FullMethodName       = "/protobuf.Bonus/PlaceBonusBet"
-	Bonus_BonusBetEligibility_FullMethodName = "/protobuf.Bonus/BonusBetEligibility"
-	Bonus_UpdateBetID_FullMethodName         = "/protobuf.Bonus/UpdateBetID"
-	Bonus_SettleBet_FullMethodName           = "/protobuf.Bonus/SettleBet"
-	Bonus_GetFreeBetBonus_FullMethodName     = "/protobuf.Bonus/GetFreeBetBonus"
-	Bonus_Ping_FullMethodName                = "/protobuf.Bonus/Ping"
-	Bonus_ReverseDebitBonus_FullMethodName   = "/protobuf.Bonus/ReverseDebitBonus"
-	Bonus_BonusBalance_FullMethodName        = "/protobuf.Bonus/BonusBalance"
-	Bonus_ServiceRequest_FullMethodName      = "/protobuf.Bonus/ServiceRequest"
+	Bonus_PlaceBonusBet_FullMethodName           = "/protobuf.Bonus/PlaceBonusBet"
+	Bonus_PlaceCasinoBonusBet_FullMethodName     = "/protobuf.Bonus/PlaceCasinoBonusBet"
+	Bonus_BonusBetEligibility_FullMethodName     = "/protobuf.Bonus/BonusBetEligibility"
+	Bonus_UpdateBetID_FullMethodName             = "/protobuf.Bonus/UpdateBetID"
+	Bonus_SettleBet_FullMethodName               = "/protobuf.Bonus/SettleBet"
+	Bonus_SettleCasinoBet_FullMethodName         = "/protobuf.Bonus/SettleCasinoBet"
+	Bonus_GetFreeBetBonus_FullMethodName         = "/protobuf.Bonus/GetFreeBetBonus"
+	Bonus_GetCasinoBetBonus_FullMethodName       = "/protobuf.Bonus/GetCasinoBetBonus"
+	Bonus_Ping_FullMethodName                    = "/protobuf.Bonus/Ping"
+	Bonus_ReverseDebitBonus_FullMethodName       = "/protobuf.Bonus/ReverseDebitBonus"
+	Bonus_ReverseCasinoDebitBonus_FullMethodName = "/protobuf.Bonus/ReverseCasinoDebitBonus"
+	Bonus_BonusBalance_FullMethodName            = "/protobuf.Bonus/BonusBalance"
+	Bonus_GetUserBonuses_FullMethodName          = "/protobuf.Bonus/GetUserBonuses"
+	Bonus_DebitBonus_FullMethodName              = "/protobuf.Bonus/DebitBonus"
+	Bonus_GetUserBalances_FullMethodName         = "/protobuf.Bonus/GetUserBalances"
 )
 
 // BonusClient is the client API for Bonus service.
@@ -37,22 +42,32 @@ const (
 type BonusClient interface {
 	// PlaceBonusBet places a bonus bet on a user's account.
 	PlaceBonusBet(ctx context.Context, in *UserBet, opts ...grpc.CallOption) (*PlaceBetResponse, error)
+	// PlaceCasinoBonusBet place a bonus bet
+	PlaceCasinoBonusBet(ctx context.Context, in *UserBet, opts ...grpc.CallOption) (*PlaceBetResponse, error)
 	// BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
 	BonusBetEligibility(ctx context.Context, in *UserBet, opts ...grpc.CallOption) (*BonusBetEligibilityResponse, error)
 	// UpdateBetID updates the bet ID after a bonus bet has been placed.
 	UpdateBetID(ctx context.Context, in *UpdateBetIDRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
 	// SettleBonusBet settles a bonus bet, processing the win or loss.
 	SettleBet(ctx context.Context, in *SettleBetRequest, opts ...grpc.CallOption) (*SettleBetResponse, error)
+	SettleCasinoBet(ctx context.Context, in *SettleBetRequest, opts ...grpc.CallOption) (*SettleBetResponse, error)
 	// GetFreeBetBonus retrieves a free bet bonus for a user.
 	GetFreeBetBonus(ctx context.Context, in *FreebetRequest, opts ...grpc.CallOption) (*FreebetResponse, error)
+	GetCasinoBetBonus(ctx context.Context, in *CasinoBetRequest, opts ...grpc.CallOption) (*CasinoBetResponse, error)
 	// Ping is used for health checks to verify the service is running.
 	Ping(ctx context.Context, in *BonusPing, opts ...grpc.CallOption) (*BonusPong, error)
 	// DebitBonus debit bonus wallet
 	ReverseDebitBonus(ctx context.Context, in *ReverseBonusDebitRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
+	ReverseCasinoDebitBonus(ctx context.Context, in *ReverseBonusDebitRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
 	// BonusBalance gets bonus balance
 	BonusBalance(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error)
 	// BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
-	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
+	//for raventrack
+	GetUserBonuses(ctx context.Context, in *GetUserBonusRequest, opts ...grpc.CallOption) (*GetUserBonusResponse, error)
+	//deduct bonus balance for correct score
+	DebitBonus(ctx context.Context, in *DebitBonusRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
+	//get all user balances
+	GetUserBalances(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error)
 }
 
 type bonusClient struct {
@@ -66,6 +81,15 @@ func NewBonusClient(cc grpc.ClientConnInterface) BonusClient {
 func (c *bonusClient) PlaceBonusBet(ctx context.Context, in *UserBet, opts ...grpc.CallOption) (*PlaceBetResponse, error) {
 	out := new(PlaceBetResponse)
 	err := c.cc.Invoke(ctx, Bonus_PlaceBonusBet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bonusClient) PlaceCasinoBonusBet(ctx context.Context, in *UserBet, opts ...grpc.CallOption) (*PlaceBetResponse, error) {
+	out := new(PlaceBetResponse)
+	err := c.cc.Invoke(ctx, Bonus_PlaceCasinoBonusBet_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +123,27 @@ func (c *bonusClient) SettleBet(ctx context.Context, in *SettleBetRequest, opts 
 	return out, nil
 }
 
+func (c *bonusClient) SettleCasinoBet(ctx context.Context, in *SettleBetRequest, opts ...grpc.CallOption) (*SettleBetResponse, error) {
+	out := new(SettleBetResponse)
+	err := c.cc.Invoke(ctx, Bonus_SettleCasinoBet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bonusClient) GetFreeBetBonus(ctx context.Context, in *FreebetRequest, opts ...grpc.CallOption) (*FreebetResponse, error) {
 	out := new(FreebetResponse)
 	err := c.cc.Invoke(ctx, Bonus_GetFreeBetBonus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bonusClient) GetCasinoBetBonus(ctx context.Context, in *CasinoBetRequest, opts ...grpc.CallOption) (*CasinoBetResponse, error) {
+	out := new(CasinoBetResponse)
+	err := c.cc.Invoke(ctx, Bonus_GetCasinoBetBonus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +168,15 @@ func (c *bonusClient) ReverseDebitBonus(ctx context.Context, in *ReverseBonusDeb
 	return out, nil
 }
 
+func (c *bonusClient) ReverseCasinoDebitBonus(ctx context.Context, in *ReverseBonusDebitRequest, opts ...grpc.CallOption) (*GeneralResponse, error) {
+	out := new(GeneralResponse)
+	err := c.cc.Invoke(ctx, Bonus_ReverseCasinoDebitBonus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bonusClient) BonusBalance(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error) {
 	out := new(BonusBalanceResponse)
 	err := c.cc.Invoke(ctx, Bonus_BonusBalance_FullMethodName, in, out, opts...)
@@ -135,9 +186,27 @@ func (c *bonusClient) BonusBalance(ctx context.Context, in *BonusBalanceRequest,
 	return out, nil
 }
 
-func (c *bonusClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
-	out := new(common.GeneralAck)
-	err := c.cc.Invoke(ctx, Bonus_ServiceRequest_FullMethodName, in, out, opts...)
+func (c *bonusClient) GetUserBonuses(ctx context.Context, in *GetUserBonusRequest, opts ...grpc.CallOption) (*GetUserBonusResponse, error) {
+	out := new(GetUserBonusResponse)
+	err := c.cc.Invoke(ctx, Bonus_GetUserBonuses_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bonusClient) DebitBonus(ctx context.Context, in *DebitBonusRequest, opts ...grpc.CallOption) (*GeneralResponse, error) {
+	out := new(GeneralResponse)
+	err := c.cc.Invoke(ctx, Bonus_DebitBonus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bonusClient) GetUserBalances(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error) {
+	out := new(BonusBalanceResponse)
+	err := c.cc.Invoke(ctx, Bonus_GetUserBalances_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,22 +219,32 @@ func (c *bonusClient) ServiceRequest(ctx context.Context, in *common.ServiceActi
 type BonusServer interface {
 	// PlaceBonusBet places a bonus bet on a user's account.
 	PlaceBonusBet(context.Context, *UserBet) (*PlaceBetResponse, error)
+	// PlaceCasinoBonusBet place a bonus bet
+	PlaceCasinoBonusBet(context.Context, *UserBet) (*PlaceBetResponse, error)
 	// BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
 	BonusBetEligibility(context.Context, *UserBet) (*BonusBetEligibilityResponse, error)
 	// UpdateBetID updates the bet ID after a bonus bet has been placed.
 	UpdateBetID(context.Context, *UpdateBetIDRequest) (*GeneralResponse, error)
 	// SettleBonusBet settles a bonus bet, processing the win or loss.
 	SettleBet(context.Context, *SettleBetRequest) (*SettleBetResponse, error)
+	SettleCasinoBet(context.Context, *SettleBetRequest) (*SettleBetResponse, error)
 	// GetFreeBetBonus retrieves a free bet bonus for a user.
 	GetFreeBetBonus(context.Context, *FreebetRequest) (*FreebetResponse, error)
+	GetCasinoBetBonus(context.Context, *CasinoBetRequest) (*CasinoBetResponse, error)
 	// Ping is used for health checks to verify the service is running.
 	Ping(context.Context, *BonusPing) (*BonusPong, error)
 	// DebitBonus debit bonus wallet
 	ReverseDebitBonus(context.Context, *ReverseBonusDebitRequest) (*GeneralResponse, error)
+	ReverseCasinoDebitBonus(context.Context, *ReverseBonusDebitRequest) (*GeneralResponse, error)
 	// BonusBalance gets bonus balance
 	BonusBalance(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error)
 	// BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
-	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
+	//for raventrack
+	GetUserBonuses(context.Context, *GetUserBonusRequest) (*GetUserBonusResponse, error)
+	//deduct bonus balance for correct score
+	DebitBonus(context.Context, *DebitBonusRequest) (*GeneralResponse, error)
+	//get all user balances
+	GetUserBalances(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error)
 	mustEmbedUnimplementedBonusServer()
 }
 
@@ -176,6 +255,9 @@ type UnimplementedBonusServer struct {
 func (UnimplementedBonusServer) PlaceBonusBet(context.Context, *UserBet) (*PlaceBetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlaceBonusBet not implemented")
 }
+func (UnimplementedBonusServer) PlaceCasinoBonusBet(context.Context, *UserBet) (*PlaceBetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlaceCasinoBonusBet not implemented")
+}
 func (UnimplementedBonusServer) BonusBetEligibility(context.Context, *UserBet) (*BonusBetEligibilityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BonusBetEligibility not implemented")
 }
@@ -185,8 +267,14 @@ func (UnimplementedBonusServer) UpdateBetID(context.Context, *UpdateBetIDRequest
 func (UnimplementedBonusServer) SettleBet(context.Context, *SettleBetRequest) (*SettleBetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SettleBet not implemented")
 }
+func (UnimplementedBonusServer) SettleCasinoBet(context.Context, *SettleBetRequest) (*SettleBetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SettleCasinoBet not implemented")
+}
 func (UnimplementedBonusServer) GetFreeBetBonus(context.Context, *FreebetRequest) (*FreebetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFreeBetBonus not implemented")
+}
+func (UnimplementedBonusServer) GetCasinoBetBonus(context.Context, *CasinoBetRequest) (*CasinoBetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCasinoBetBonus not implemented")
 }
 func (UnimplementedBonusServer) Ping(context.Context, *BonusPing) (*BonusPong, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -194,11 +282,20 @@ func (UnimplementedBonusServer) Ping(context.Context, *BonusPing) (*BonusPong, e
 func (UnimplementedBonusServer) ReverseDebitBonus(context.Context, *ReverseBonusDebitRequest) (*GeneralResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReverseDebitBonus not implemented")
 }
+func (UnimplementedBonusServer) ReverseCasinoDebitBonus(context.Context, *ReverseBonusDebitRequest) (*GeneralResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReverseCasinoDebitBonus not implemented")
+}
 func (UnimplementedBonusServer) BonusBalance(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BonusBalance not implemented")
 }
-func (UnimplementedBonusServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
+func (UnimplementedBonusServer) GetUserBonuses(context.Context, *GetUserBonusRequest) (*GetUserBonusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserBonuses not implemented")
+}
+func (UnimplementedBonusServer) DebitBonus(context.Context, *DebitBonusRequest) (*GeneralResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DebitBonus not implemented")
+}
+func (UnimplementedBonusServer) GetUserBalances(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserBalances not implemented")
 }
 func (UnimplementedBonusServer) mustEmbedUnimplementedBonusServer() {}
 
@@ -227,6 +324,24 @@ func _Bonus_PlaceBonusBet_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BonusServer).PlaceBonusBet(ctx, req.(*UserBet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bonus_PlaceCasinoBonusBet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).PlaceCasinoBonusBet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_PlaceCasinoBonusBet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).PlaceCasinoBonusBet(ctx, req.(*UserBet))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -285,6 +400,24 @@ func _Bonus_SettleBet_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bonus_SettleCasinoBet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SettleBetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).SettleCasinoBet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_SettleCasinoBet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).SettleCasinoBet(ctx, req.(*SettleBetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Bonus_GetFreeBetBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FreebetRequest)
 	if err := dec(in); err != nil {
@@ -299,6 +432,24 @@ func _Bonus_GetFreeBetBonus_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BonusServer).GetFreeBetBonus(ctx, req.(*FreebetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bonus_GetCasinoBetBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CasinoBetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).GetCasinoBetBonus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_GetCasinoBetBonus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).GetCasinoBetBonus(ctx, req.(*CasinoBetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -339,6 +490,24 @@ func _Bonus_ReverseDebitBonus_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bonus_ReverseCasinoDebitBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReverseBonusDebitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).ReverseCasinoDebitBonus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_ReverseCasinoDebitBonus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).ReverseCasinoDebitBonus(ctx, req.(*ReverseBonusDebitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Bonus_BonusBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BonusBalanceRequest)
 	if err := dec(in); err != nil {
@@ -357,20 +526,56 @@ func _Bonus_BonusBalance_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Bonus_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.ServiceActionRequest)
+func _Bonus_GetUserBonuses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserBonusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BonusServer).ServiceRequest(ctx, in)
+		return srv.(BonusServer).GetUserBonuses(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Bonus_ServiceRequest_FullMethodName,
+		FullMethod: Bonus_GetUserBonuses_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BonusServer).ServiceRequest(ctx, req.(*common.ServiceActionRequest))
+		return srv.(BonusServer).GetUserBonuses(ctx, req.(*GetUserBonusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bonus_DebitBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DebitBonusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).DebitBonus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_DebitBonus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).DebitBonus(ctx, req.(*DebitBonusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bonus_GetUserBalances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BonusBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).GetUserBalances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_GetUserBalances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).GetUserBalances(ctx, req.(*BonusBalanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -387,6 +592,10 @@ var Bonus_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Bonus_PlaceBonusBet_Handler,
 		},
 		{
+			MethodName: "PlaceCasinoBonusBet",
+			Handler:    _Bonus_PlaceCasinoBonusBet_Handler,
+		},
+		{
 			MethodName: "BonusBetEligibility",
 			Handler:    _Bonus_BonusBetEligibility_Handler,
 		},
@@ -399,8 +608,16 @@ var Bonus_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Bonus_SettleBet_Handler,
 		},
 		{
+			MethodName: "SettleCasinoBet",
+			Handler:    _Bonus_SettleCasinoBet_Handler,
+		},
+		{
 			MethodName: "GetFreeBetBonus",
 			Handler:    _Bonus_GetFreeBetBonus_Handler,
+		},
+		{
+			MethodName: "GetCasinoBetBonus",
+			Handler:    _Bonus_GetCasinoBetBonus_Handler,
 		},
 		{
 			MethodName: "Ping",
@@ -411,12 +628,24 @@ var Bonus_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Bonus_ReverseDebitBonus_Handler,
 		},
 		{
+			MethodName: "ReverseCasinoDebitBonus",
+			Handler:    _Bonus_ReverseCasinoDebitBonus_Handler,
+		},
+		{
 			MethodName: "BonusBalance",
 			Handler:    _Bonus_BonusBalance_Handler,
 		},
 		{
-			MethodName: "ServiceRequest",
-			Handler:    _Bonus_ServiceRequest_Handler,
+			MethodName: "GetUserBonuses",
+			Handler:    _Bonus_GetUserBonuses_Handler,
+		},
+		{
+			MethodName: "DebitBonus",
+			Handler:    _Bonus_DebitBonus_Handler,
+		},
+		{
+			MethodName: "GetUserBalances",
+			Handler:    _Bonus_GetUserBalances_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

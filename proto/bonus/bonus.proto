@@ -5,11 +5,14 @@ option go_package = "github.com/touchvas/proto-registry/gen/go/bonus";
 import "common/common.proto";
 
 // The Bonus service provides functionality for managing bonus bets.
+
+// The Bonus service provides functionality for managing bonus bets.
 service Bonus {
 
   // PlaceBonusBet places a bonus bet on a user's account.
   rpc PlaceBonusBet(UserBet) returns (PlaceBetResponse){}
-
+  // PlaceCasinoBonusBet place a bonus bet
+  rpc PlaceCasinoBonusBet(UserBet) returns (PlaceBetResponse){}
   // BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
   rpc BonusBetEligibility(UserBet) returns (BonusBetEligibilityResponse){}
 
@@ -18,21 +21,41 @@ service Bonus {
 
   // SettleBonusBet settles a bonus bet, processing the win or loss.
   rpc SettleBet(SettleBetRequest) returns (SettleBetResponse){}
-
+  rpc SettleCasinoBet(SettleBetRequest) returns (SettleBetResponse){}
   // GetFreeBetBonus retrieves a free bet bonus for a user.
   rpc GetFreeBetBonus(FreebetRequest) returns (FreebetResponse){}
+  rpc GetCasinoBetBonus(CasinoBetRequest) returns (CasinoBetResponse){}
 
   // Ping is used for health checks to verify the service is running.
   rpc Ping (BonusPing) returns (BonusPong) {}
   // DebitBonus debit bonus wallet
   rpc ReverseDebitBonus(ReverseBonusDebitRequest) returns (GeneralResponse){}
+  rpc ReverseCasinoDebitBonus(ReverseBonusDebitRequest) returns (GeneralResponse){}
   // BonusBalance gets bonus balance
   rpc BonusBalance(BonusBalanceRequest) returns (BonusBalanceResponse){}
   // BonusBetEligibility checks if a user is eligible to use a bonus for a specific bet.
-  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+  //for raventrack
+  rpc GetUserBonuses (GetUserBonusRequest) returns (GetUserBonusResponse){}
+  //deduct bonus balance for correct score
+  rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
+  //get all user balances
+  rpc GetUserBalances (BonusBalanceRequest) returns (BonusBalanceResponse){}
+}
+message DebitBonusRequest {
+  int64 ProfileID = 1;
+  float Amount = 2;
+  int64 BonusID =3;
+  int64 TransactionID  =4;}
+
+message GetUserBonusRequest{
+  int64 ProfileId=1;
+  string startDate=2;
+  string endDate=3;
+}
+message GetUserBonusResponse {
+  float bonusesAwarded =1;
 
 }
-
 message BonusBalanceRequest {
   int64 ProfileID = 1;
   string Lang = 2;
@@ -62,6 +85,7 @@ message UserBet {
   bool UseCash = 13; // A flag to indicate if cash was used.
   int64 StakeType = 14; // The type of stake used.
   int64 deviceId = 15; // The device ID.
+  string CountryCode = 16; // The country code of the user.
 }
 message BonusBalanceResponse {
   float Balance = 1;
@@ -111,6 +135,7 @@ message GeneralResponse {
   string description = 1; // A human-readable description of the status.
   int32 status = 2; // The status code (e.g., 200 for success, 500 for error).
   string Lang = 3; // The language of the response.
+  int64 TransactionID = 4; // The unique transaction ID for the operation.
 }
 
 
@@ -150,6 +175,7 @@ message SettleBetRequest {
   int64 status = 4; // The status of the settlement.
   string ShareCode = 5; // A shareable code.
   int64 DeviceId = 6; // The device ID.
+  string CountryCode = 7; // The country code of the user.
 }
 
 // SettleBetResponse returns the result of the settlement operation.
@@ -158,4 +184,17 @@ message SettleBetResponse {
   string Description = 2; // A description of the settlement result.
   int64 TransactionID = 3; // The unique transaction ID for the settlement.
   int64 BonusID =4;
+}
+
+// CasinoBetRequest represents a request to get a free bet bonus.
+message CasinoBetRequest {
+  int64 ProfileID = 1; // The unique identifier for the user's profile.
+  int64 BonusID = 2;
+}
+
+// CasinoBetResponse returns the details of a free bet bonus.
+message CasinoBetResponse {
+  int64 BonusID = 1; // The unique identifier for the free bet bonus.
+  float Balance = 2;
+  string ExpiryDate = 3;
 }
