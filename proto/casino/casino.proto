@@ -32,6 +32,7 @@ service Casino {
 message CasinoSummaryRequest {
   string startDate = 1;
   string endDate = 2;
+  int64 profileID = 3;
 }
 
 message CasinoSummaryItem {
