@@ -40,6 +40,9 @@ service Bonus {
   rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
   //get all user balances
   rpc GetUserBalances (BonusBalanceRequest) returns (BonusBalanceResponse){}
+
+  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
+
 }
 message DebitBonusRequest {
   int64 ProfileID = 1;
@@ -61,6 +64,8 @@ message BonusBalanceRequest {
   string Lang = 2;
   int64 BonusID =3;
   string CountryCode =4;
+  int64 ReferenceID = 5;
+  string RewardType =6;
 }
 // BonusBetEligibilityResponse contains the result of an eligibility check.
 message BonusBetEligibilityResponse {
@@ -92,6 +97,7 @@ message BonusBalanceResponse {
   string ExpiryDate = 2;
   string Lang = 3;
   int64 RolloverCount = 4;
+  int64 BonusID =5;
 }
 message ReverseBonusDebitRequest {
   int64 BonusTransactionID = 1;

@@ -8,6 +8,7 @@ package bonus
 
 import (
 	context "context"
+	common "github.com/touchvas/proto-registry/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +35,7 @@ const (
 	Bonus_GetUserBonuses_FullMethodName          = "/protobuf.Bonus/GetUserBonuses"
 	Bonus_DebitBonus_FullMethodName              = "/protobuf.Bonus/DebitBonus"
 	Bonus_GetUserBalances_FullMethodName         = "/protobuf.Bonus/GetUserBalances"
+	Bonus_ServiceRequest_FullMethodName          = "/protobuf.Bonus/ServiceRequest"
 )
 
 // BonusClient is the client API for Bonus service.
@@ -68,6 +70,7 @@ type BonusClient interface {
 	DebitBonus(ctx context.Context, in *DebitBonusRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
 	//get all user balances
 	GetUserBalances(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error)
+	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
 }
 
 type bonusClient struct {
@@ -213,6 +216,15 @@ func (c *bonusClient) GetUserBalances(ctx context.Context, in *BonusBalanceReque
 	return out, nil
 }
 
+func (c *bonusClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
+	out := new(common.GeneralAck)
+	err := c.cc.Invoke(ctx, Bonus_ServiceRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BonusServer is the server API for Bonus service.
 // All implementations must embed UnimplementedBonusServer
 // for forward compatibility
@@ -245,6 +257,7 @@ type BonusServer interface {
 	DebitBonus(context.Context, *DebitBonusRequest) (*GeneralResponse, error)
 	//get all user balances
 	GetUserBalances(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error)
+	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
 	mustEmbedUnimplementedBonusServer()
 }
 
@@ -296,6 +309,9 @@ func (UnimplementedBonusServer) DebitBonus(context.Context, *DebitBonusRequest) 
 }
 func (UnimplementedBonusServer) GetUserBalances(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserBalances not implemented")
+}
+func (UnimplementedBonusServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
 }
 func (UnimplementedBonusServer) mustEmbedUnimplementedBonusServer() {}
 
@@ -580,6 +596,24 @@ func _Bonus_GetUserBalances_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bonus_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(common.ServiceActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).ServiceRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_ServiceRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).ServiceRequest(ctx, req.(*common.ServiceActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bonus_ServiceDesc is the grpc.ServiceDesc for Bonus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -646,6 +680,10 @@ var Bonus_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserBalances",
 			Handler:    _Bonus_GetUserBalances_Handler,
+		},
+		{
+			MethodName: "ServiceRequest",
+			Handler:    _Bonus_ServiceRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
