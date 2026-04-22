@@ -1,0 +1,135 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+option go_package = "github.com/touchvas/casino-manager/app/grpc/casino-provider";
+package protobuf;
+
+// The CasinoProvider service definition.
+service CasinoProvider {
+
+  // Sends GetOdds status request
+  rpc CreateClient (CreateClientRequest) returns (CreateClientResponse){}
+  rpc DeleteClient (ClientAccountRequest) returns (CreateClientResponse){}
+  rpc RequestGames (ClientAccountRequest) returns (CreateClientResponse){}
+  rpc UpdateGames (ClientAccountRequest) returns (UpdateGamesResponse){}
+  rpc GetLaunchUrl (LaunchUrlRequest) returns (LaunchUrlResponse){}
+  rpc Ping (CasinoProviderPing) returns (CasinoProviderPong) {}
+  rpc GetGames (GetGamesRequest) returns (Games) {}
+
+}
+
+message CasinoProviderPing {
+
+}
+
+message CasinoProviderPong {
+  int64 Status = 1;
+  string Data = 2;
+}
+
+message CreateClientResponse {
+  string description = 1;
+  int32 status = 2;
+}
+
+message CreateClientRequest {
+  int64 Account = 1;
+  string BaseUrl = 2;
+  string AuthenticationHeader = 3;
+  string AuthenticationString = 4;
+  // ExtraParams
+  repeated ExtraParam ExtraParams = 5;
+}
+
+message ClientAccountRequest {
+  int64 Account = 1;
+  // ExtraParams
+  repeated ExtraParam ExtraParams = 2;
+
+}
+
+message GetGamesRequest {
+  int64 ProviderID = 1;
+  int64 AccountId =2;
+  string  Currency = 3;
+  repeated ExtraParam ExtraParams = 4;
+}
+
+message LaunchUrlRequest {
+
+  //GameID games ID to launch
+  string  GameID = 1;
+
+  // ProfileID ID of the player
+  string  ProfileID = 2;
+
+  //AccountID casino account ID
+  int64  AccountID = 3;
+
+  //Demo casino account ID
+  int64  Demo = 4;
+
+  //ReturnURL where to return to when user exists
+  string  ReturnURL = 5;
+
+  //Device device type
+  string   Device = 6;
+
+  // IPAddress customer IP address
+  string   IPAddress = 7;
+
+  // Currency players currency
+  string   Currency = 8;
+
+  // Language players language
+  string   Language = 9;
+
+  // ExtraParams
+  repeated ExtraParam ExtraParams = 10;
+
+}
+
+message ExtraParam {
+  string Key = 1;
+  string Value = 2;
+}
+
+message LaunchUrlResponse {
+  string LaunchUrl = 1;
+  int64 Status = 2;
+  string Description = 3;
+}
+
+message Game {
+  string Category = 1;
+  string ProviderName = 2;
+  string GameID = 3;
+  string GameName = 4;
+  string Image = 5;
+  int64 ProviderID = 6;
+  int64 Demo=7;
+}
+
+message Games {
+  repeated Game games = 1;
+}
+
+message Empty {}
+
+message UpdateGamesResponse {
+
+  int64 Status = 1;
+
+}
