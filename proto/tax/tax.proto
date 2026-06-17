@@ -15,7 +15,7 @@
 syntax = "proto3";
 option go_package = "github.com/touchvas/proto-registry/gen/go/tax";
 package protobuf;
-
+import "common/common.proto";
 // The Odds service definition.
 service Tax {
   // Sends GetOdds status request
