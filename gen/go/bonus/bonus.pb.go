@@ -7,6 +7,7 @@
 package bonus
 
 import (
+	_ "github.com/touchvas/proto-registry/gen/go/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -1487,7 +1488,7 @@ var File_bonus_bonus_proto protoreflect.FileDescriptor
 
 const file_bonus_bonus_proto_rawDesc = "" +
 	"\n" +
-	"\x11bonus/bonus.proto\x12\bprotobuf\"\x89\x01\n" +
+	"\x11bonus/bonus.proto\x12\bprotobuf\x1a\x13common/common.proto\"\x89\x01\n" +
 	"\x11DebitBonusRequest\x12\x1c\n" +
 	"\tProfileID\x18\x01 \x01(\x03R\tProfileID\x12\x16\n" +
 	"\x06Amount\x18\x02 \x01(\x02R\x06Amount\x12\x18\n" +
@@ -1628,7 +1629,7 @@ const file_bonus_bonus_proto_rawDesc = "" +
 	"\x0eGetUserBonuses\x12\x1d.protobuf.GetUserBonusRequest\x1a\x1e.protobuf.GetUserBonusResponse\"\x00\x12F\n" +
 	"\n" +
 	"DebitBonus\x12\x1b.protobuf.DebitBonusRequest\x1a\x19.protobuf.GeneralResponse\"\x00\x12R\n" +
-	"\x0fGetUserBalances\x12\x1d.protobuf.BonusBalanceRequest\x1a\x1e.protobuf.BonusBalanceResponse\"\x00B2Z0github.com/touchvas/bonus-service/app/grpc/bonusb\x06proto3"
+	"\x0fGetUserBalances\x12\x1d.protobuf.BonusBalanceRequest\x1a\x1e.protobuf.BonusBalanceResponse\"\x00B3Z1github.com/touchvas/proto-registry/app/grpc/bonusb\x06proto3"
 
 var (
 	file_bonus_bonus_proto_rawDescOnce sync.Once
