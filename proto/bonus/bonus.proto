@@ -1,10 +1,7 @@
 syntax = "proto3";
 package protobuf;
 // This package defines the gRPC service and messages for the bonus service.
-option go_package = "github.com/touchvas/proto-registry/gen/go/bonus";
-import "common/common.proto";
-
-// The Bonus service provides functionality for managing bonus bets.
+option go_package = "github.com/touchvas/bonus-service/app/grpc/bonus";
 
 // The Bonus service provides functionality for managing bonus bets.
 service Bonus {
@@ -37,12 +34,9 @@ service Bonus {
   //for raventrack
   rpc GetUserBonuses (GetUserBonusRequest) returns (GetUserBonusResponse){}
   //deduct bonus balance for correct score
-  rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
+rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
   //get all user balances
   rpc GetUserBalances (BonusBalanceRequest) returns (BonusBalanceResponse){}
-
-  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
-
 }
 message DebitBonusRequest {
   int64 ProfileID = 1;
@@ -182,7 +176,6 @@ message SettleBetRequest {
   string ShareCode = 5; // A shareable code.
   int64 DeviceId = 6; // The device ID.
   string CountryCode = 7; // The country code of the user.
-  float Odds = 8;
 }
 
 // SettleBetResponse returns the result of the settlement operation.
