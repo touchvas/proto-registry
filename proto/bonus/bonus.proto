@@ -1,8 +1,8 @@
 syntax = "proto3";
 package protobuf;
 // This package defines the gRPC service and messages for the bonus service.
-option go_package = "github.com/touchvas/proto-registry/app/grpc/bonus";
-import "common/common.proto";
+option go_package = "github.com/touchvas/bonus-service/app/grpc/bonus";
+
 // The Bonus service provides functionality for managing bonus bets.
 service Bonus {
 
@@ -85,6 +85,7 @@ message UserBet {
   int64 StakeType = 14; // The type of stake used.
   int64 deviceId = 15; // The device ID.
   string CountryCode = 16; // The country code of the user.
+  string GameID = 17; //id in casino games table
 }
 message BonusBalanceResponse {
   float Balance = 1;
