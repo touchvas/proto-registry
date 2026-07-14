@@ -27,6 +27,8 @@ service Casino {
   rpc TrackingSummary(CasinoSummaryRequest) returns (CasinoSummaryResponse) {}
   rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
 
+  rpc AwardFreeSpins (AwardFreeSpinsRequest) returns (AwardFreeSpinsResponse){}
+
 }
 
 message CasinoSummaryRequest {
@@ -115,4 +117,24 @@ message CashBackSummaryResponse {
   float Stake = 2;
   float Winning = 3;
   string Lang = 4;
+}
+
+message Profiles{
+  int64 ProfileID = 1; // The unique identifier for the user's profile.
+}
+message AwardFreeSpinsRequest {
+  repeated Profiles profiles = 1; // The unique identifier for the user's profile.
+  string GamesID = 2; // The ID of the game for which the free spins are awarded.
+  int64 ProviderId = 3; // The ID of the provider for the game.
+  int64 Amount= 4;    // The amount of free spins awarded.
+  int64 ExpiryDate = 5; // The expiry date of the free spins 
+  int64 Quantity = 6; //freespins quantity
+  int64 RewardType = 7; // The type of reward (e.g., free spins, bonus, etc.).
+  float MinCashout = 8; // The minimum cashout amount for the free spins
+  int64 ValidityInDays = 9; // The validity period of the free spins in days.
+}
+
+message AwardFreeSpinsResponse {
+  int64 Status = 1; // The status for the award operation (e.g., success or failure).
+  string Description = 2; // A description of the award result.
 }
