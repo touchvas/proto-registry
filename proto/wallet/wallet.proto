@@ -1,10 +1,10 @@
 syntax = "proto3";
-option go_package = "github.com/touchvas/proto-registry/gen/go/wallet";
+option go_package = "github.com/touchvas/wallet-service/app/grpc/wallet";
 package protobuf;
-import "common/common.proto";
 
-//  service definition.
+// The Odds service definition.
 service Wallet {
+  // Sends GetOdds status request
   rpc DebitAccount (DebitRequest) returns (DebitResponse) {}
   rpc CreditAccount (DebitRequest) returns (DebitResponse) {}
   rpc GetBalance (BalanceRequest) returns (BalanceResponse) {}
@@ -24,16 +24,15 @@ service Wallet {
   rpc GetBalanceWithoutDecimals (BalanceRequest) returns (BalanceResponseWithoutDecimals) {}
   rpc CreditWinningAccountWithoutDecimals (DebitRequestWithoutDecimals) returns (DebitResponseWithoutDecimals) {}
   rpc RollbackTransactionWithoutDecimals (RollbackRequest) returns (RollbackResponseWithoutDecimals) {}
+  rpc GetTransactionWithoutDecimals (DebitRequestWithoutDecimals) returns (DebitResponseWithoutDecimals) {}
   rpc GetAlertContacts (EmptyWalletRequest) returns (AlertContactsResponse) {}
   rpc GetWalletSettings (EmptyWalletRequest) returns (WalletSettingsResponse) {}
   rpc GetUserDeposits (GetUserDepositRequest) returns (GetUserDepositResponse){}
-  rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
-
 }
 message GetUserDepositRequest{
-  int64 ProfileId=1;
-  string startDate=2;
-  string endDate=3;
+   int64 ProfileId=1;
+   string startDate=2;
+   string endDate=3;
 }
 message GetUserDepositResponse {
   float totalDeposits =1;
@@ -51,7 +50,7 @@ message DebitRequest {
   string ip_address = 8;
   int64 ReferenceID = 9;
   string lang = 10; // Add lang field
-
+ 
 }
 
 message DebitRequestWithoutDecimals {
@@ -137,7 +136,6 @@ message WithdrawRequest {
   string lang = 5; // Add lang field
   string Reference =6;
   bool USSDRequest = 7;
-  int64 DeviceID = 8;
 }
 
 message STKRequest {
@@ -147,8 +145,6 @@ message STKRequest {
   string Account = 3;
   string Channel = 4;
   string lang = 5; // Add lang field
-  int64 DeviceID = 6;
-  string ip_address = 7;
 }
 
 message WithdrawResponse {
@@ -157,7 +153,6 @@ message WithdrawResponse {
   string Description = 2;
   string lang = 3; // Add lang field
   int64 TransactionID = 4;
-  int64 StatusCode =5;
 
 }
 
@@ -261,7 +256,6 @@ message DepositRequest {
   int64 status = 13;
   string Description =14;
   int64 TransactionCharge =15;
-  int64 DeviceID = 16;
 
 }
 
