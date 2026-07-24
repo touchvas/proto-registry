@@ -1,6 +1,9 @@
 syntax = "proto3";
-option go_package = "github.com/touchvas/proto-registry/gen/go/payment-provider";
-package protobuf;
+
+// Defines the Go package path for generated code.
+option go_package = "github.com/touchvas/payment-gateway/app/grpc/payment-provider";
+// Defines the package name for the protobuf file.
+package paymentProvider;
 
 // --------------------------------------------------------------------------
 // SERVICE DEFINITION
@@ -92,7 +95,7 @@ message DepositRequestPayload {
   // A field for providers that require custom, non-standard data.
   string Others = 6;
   //used by banks
-  int64 Code =7;
+  string Code =7;
 }
 
 message DepositRequestResponse {
@@ -142,9 +145,29 @@ message SendMoneyPayload {
 
   // A field for providers that require custom data.
   string Others = 6;
-  //used by banks
-  int64 Code =7;
+  
+  // Used by banks
+  string Code = 7;
+  
+  string AccountName = 8;
+  
+  
+  // The profile ID initiating the withdrawal
+  int64 ProfileID = 9;
+  
+  // The source account/profile ID (for cross-validation)
+  int64 SourceProfileID = 10;
+  
+  // Request ID for tracking across services
+  string RequestID = 11;
+  
+  // Timestamp when request was initiated
+  int64 Timestamp = 12;
+  
+  // IP address of the requester
+  string IPAddress = 13;
 }
+
 
 message SendMoneyResponse {
   // A status code indicating whether the request was successfully processed.

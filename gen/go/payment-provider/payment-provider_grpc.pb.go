@@ -50,7 +50,7 @@ func NewPaymentProviderClient(cc grpc.ClientConnInterface) PaymentProviderClient
 
 func (c *paymentProviderClient) PaymentProviderPing(ctx context.Context, in *PaymentProviderPingPayload, opts ...grpc.CallOption) (*PaymentProviderPingResponse, error) {
 	out := new(PaymentProviderPingResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.PaymentProvider/PaymentProviderPing", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/paymentProvider.PaymentProvider/PaymentProviderPing", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (c *paymentProviderClient) PaymentProviderPing(ctx context.Context, in *Pay
 
 func (c *paymentProviderClient) DepositRequest(ctx context.Context, in *DepositRequestPayload, opts ...grpc.CallOption) (*DepositRequestResponse, error) {
 	out := new(DepositRequestResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.PaymentProvider/DepositRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/paymentProvider.PaymentProvider/DepositRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (c *paymentProviderClient) DepositRequest(ctx context.Context, in *DepositR
 
 func (c *paymentProviderClient) DepositStatusCheck(ctx context.Context, in *DepositStatusCheckPayload, opts ...grpc.CallOption) (*DepositStatusCheckResponse, error) {
 	out := new(DepositStatusCheckResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.PaymentProvider/DepositStatusCheck", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/paymentProvider.PaymentProvider/DepositStatusCheck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *paymentProviderClient) DepositStatusCheck(ctx context.Context, in *Depo
 
 func (c *paymentProviderClient) SendMoney(ctx context.Context, in *SendMoneyPayload, opts ...grpc.CallOption) (*SendMoneyResponse, error) {
 	out := new(SendMoneyResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.PaymentProvider/SendMoney", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/paymentProvider.PaymentProvider/SendMoney", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func _PaymentProvider_PaymentProviderPing_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.PaymentProvider/PaymentProviderPing",
+		FullMethod: "/paymentProvider.PaymentProvider/PaymentProviderPing",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PaymentProviderServer).PaymentProviderPing(ctx, req.(*PaymentProviderPingPayload))
@@ -164,7 +164,7 @@ func _PaymentProvider_DepositRequest_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.PaymentProvider/DepositRequest",
+		FullMethod: "/paymentProvider.PaymentProvider/DepositRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PaymentProviderServer).DepositRequest(ctx, req.(*DepositRequestPayload))
@@ -182,7 +182,7 @@ func _PaymentProvider_DepositStatusCheck_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.PaymentProvider/DepositStatusCheck",
+		FullMethod: "/paymentProvider.PaymentProvider/DepositStatusCheck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PaymentProviderServer).DepositStatusCheck(ctx, req.(*DepositStatusCheckPayload))
@@ -200,7 +200,7 @@ func _PaymentProvider_SendMoney_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.PaymentProvider/SendMoney",
+		FullMethod: "/paymentProvider.PaymentProvider/SendMoney",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PaymentProviderServer).SendMoney(ctx, req.(*SendMoneyPayload))
@@ -212,7 +212,7 @@ func _PaymentProvider_SendMoney_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PaymentProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protobuf.PaymentProvider",
+	ServiceName: "paymentProvider.PaymentProvider",
 	HandlerType: (*PaymentProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -4,11 +4,10 @@
 // - protoc             (unknown)
 // source: payment-gateway/payment-gateway.proto
 
-package payment_gateway
+package payment
 
 import (
 	context "context"
-	common "github.com/touchvas/proto-registry/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -49,13 +48,6 @@ type PaymentGatewayClient interface {
 	CreateDefaultPaymentChannel(ctx context.Context, in *CreatePaymentChanelRequest, opts ...grpc.CallOption) (*CreatePaymentChanelResponse, error)
 	// Initiate Deposit via grpc, only suitable for mobile money
 	STKPUSH(ctx context.Context, in *STKRequest, opts ...grpc.CallOption) (*STKResponse, error)
-	// ------------------------------------------------------------------------
-	// COMMENTED OUT METHODS
-	// ------------------------------------------------------------------------
-	// NOTE: This method is currently commented out. Uncomment it if needed.
-	// Method used by payment provider services to update the status of a withdrawal request
-	// rpc WithdrawRequestCallback (WithdrawRequestCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
-	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
 }
 
 type paymentGatewayClient struct {
@@ -138,15 +130,6 @@ func (c *paymentGatewayClient) STKPUSH(ctx context.Context, in *STKRequest, opts
 	return out, nil
 }
 
-func (c *paymentGatewayClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
-	out := new(common.GeneralAck)
-	err := c.cc.Invoke(ctx, "/paymentGateway.PaymentGateway/ServiceRequest", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PaymentGatewayServer is the server API for PaymentGateway service.
 // All implementations must embed UnimplementedPaymentGatewayServer
 // for forward compatibility
@@ -177,13 +160,6 @@ type PaymentGatewayServer interface {
 	CreateDefaultPaymentChannel(context.Context, *CreatePaymentChanelRequest) (*CreatePaymentChanelResponse, error)
 	// Initiate Deposit via grpc, only suitable for mobile money
 	STKPUSH(context.Context, *STKRequest) (*STKResponse, error)
-	// ------------------------------------------------------------------------
-	// COMMENTED OUT METHODS
-	// ------------------------------------------------------------------------
-	// NOTE: This method is currently commented out. Uncomment it if needed.
-	// Method used by payment provider services to update the status of a withdrawal request
-	// rpc WithdrawRequestCallback (WithdrawRequestCallbackPayload) returns (PaymentGatewayGeneralResponsePayload) {}
-	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
 	mustEmbedUnimplementedPaymentGatewayServer()
 }
 
@@ -214,9 +190,6 @@ func (UnimplementedPaymentGatewayServer) CreateDefaultPaymentChannel(context.Con
 }
 func (UnimplementedPaymentGatewayServer) STKPUSH(context.Context, *STKRequest) (*STKResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method STKPUSH not implemented")
-}
-func (UnimplementedPaymentGatewayServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
 }
 func (UnimplementedPaymentGatewayServer) mustEmbedUnimplementedPaymentGatewayServer() {}
 
@@ -375,24 +348,6 @@ func _PaymentGateway_STKPUSH_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentGateway_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.ServiceActionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentGatewayServer).ServiceRequest(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/paymentGateway.PaymentGateway/ServiceRequest",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentGatewayServer).ServiceRequest(ctx, req.(*common.ServiceActionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // PaymentGateway_ServiceDesc is the grpc.ServiceDesc for PaymentGateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -431,10 +386,6 @@ var PaymentGateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "STKPUSH",
 			Handler:    _PaymentGateway_STKPUSH_Handler,
-		},
-		{
-			MethodName: "ServiceRequest",
-			Handler:    _PaymentGateway_ServiceRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
