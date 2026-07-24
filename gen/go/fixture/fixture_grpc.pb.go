@@ -26,10 +26,6 @@ type FixtureClient interface {
 	GetFixture(ctx context.Context, in *GetFixtureRequest, opts ...grpc.CallOption) (*GetFixtureReply, error)
 	GetSMSGames(ctx context.Context, in *RequestSMSGame, opts ...grpc.CallOption) (*SMSGamesResponse, error)
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PongRequest, error)
-	GetOutcome(ctx context.Context, in *GetOutcomeRequest, opts ...grpc.CallOption) (*GetOutcomeReply, error)
-	GetMarket(ctx context.Context, in *GetMarketRequest, opts ...grpc.CallOption) (*Market, error)
-	GetOdds(ctx context.Context, in *OddGetOddsRequest, opts ...grpc.CallOption) (*OddsGetOddsReply, error)
-	GetOddsByGameID(ctx context.Context, in *OddsByGameIdRequest, opts ...grpc.CallOption) (*OddsGetOddsReply, error)
 	GetTournamentID(ctx context.Context, in *TournamentIDRequest, opts ...grpc.CallOption) (*TournamentIDReply, error)
 }
 
@@ -68,42 +64,6 @@ func (c *fixtureClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *fixtureClient) GetOutcome(ctx context.Context, in *GetOutcomeRequest, opts ...grpc.CallOption) (*GetOutcomeReply, error) {
-	out := new(GetOutcomeReply)
-	err := c.cc.Invoke(ctx, "/protobuf.Fixture/GetOutcome", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fixtureClient) GetMarket(ctx context.Context, in *GetMarketRequest, opts ...grpc.CallOption) (*Market, error) {
-	out := new(Market)
-	err := c.cc.Invoke(ctx, "/protobuf.Fixture/GetMarket", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fixtureClient) GetOdds(ctx context.Context, in *OddGetOddsRequest, opts ...grpc.CallOption) (*OddsGetOddsReply, error) {
-	out := new(OddsGetOddsReply)
-	err := c.cc.Invoke(ctx, "/protobuf.Fixture/GetOdds", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fixtureClient) GetOddsByGameID(ctx context.Context, in *OddsByGameIdRequest, opts ...grpc.CallOption) (*OddsGetOddsReply, error) {
-	out := new(OddsGetOddsReply)
-	err := c.cc.Invoke(ctx, "/protobuf.Fixture/GetOddsByGameID", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *fixtureClient) GetTournamentID(ctx context.Context, in *TournamentIDRequest, opts ...grpc.CallOption) (*TournamentIDReply, error) {
 	out := new(TournamentIDReply)
 	err := c.cc.Invoke(ctx, "/protobuf.Fixture/GetTournamentID", in, out, opts...)
@@ -121,10 +81,6 @@ type FixtureServer interface {
 	GetFixture(context.Context, *GetFixtureRequest) (*GetFixtureReply, error)
 	GetSMSGames(context.Context, *RequestSMSGame) (*SMSGamesResponse, error)
 	Ping(context.Context, *PingRequest) (*PongRequest, error)
-	GetOutcome(context.Context, *GetOutcomeRequest) (*GetOutcomeReply, error)
-	GetMarket(context.Context, *GetMarketRequest) (*Market, error)
-	GetOdds(context.Context, *OddGetOddsRequest) (*OddsGetOddsReply, error)
-	GetOddsByGameID(context.Context, *OddsByGameIdRequest) (*OddsGetOddsReply, error)
 	GetTournamentID(context.Context, *TournamentIDRequest) (*TournamentIDReply, error)
 	mustEmbedUnimplementedFixtureServer()
 }
@@ -141,18 +97,6 @@ func (UnimplementedFixtureServer) GetSMSGames(context.Context, *RequestSMSGame) 
 }
 func (UnimplementedFixtureServer) Ping(context.Context, *PingRequest) (*PongRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
-}
-func (UnimplementedFixtureServer) GetOutcome(context.Context, *GetOutcomeRequest) (*GetOutcomeReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOutcome not implemented")
-}
-func (UnimplementedFixtureServer) GetMarket(context.Context, *GetMarketRequest) (*Market, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMarket not implemented")
-}
-func (UnimplementedFixtureServer) GetOdds(context.Context, *OddGetOddsRequest) (*OddsGetOddsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOdds not implemented")
-}
-func (UnimplementedFixtureServer) GetOddsByGameID(context.Context, *OddsByGameIdRequest) (*OddsGetOddsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOddsByGameID not implemented")
 }
 func (UnimplementedFixtureServer) GetTournamentID(context.Context, *TournamentIDRequest) (*TournamentIDReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTournamentID not implemented")
@@ -224,78 +168,6 @@ func _Fixture_Ping_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Fixture_GetOutcome_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOutcomeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FixtureServer).GetOutcome(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Fixture/GetOutcome",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FixtureServer).GetOutcome(ctx, req.(*GetOutcomeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Fixture_GetMarket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMarketRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FixtureServer).GetMarket(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Fixture/GetMarket",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FixtureServer).GetMarket(ctx, req.(*GetMarketRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Fixture_GetOdds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OddGetOddsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FixtureServer).GetOdds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Fixture/GetOdds",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FixtureServer).GetOdds(ctx, req.(*OddGetOddsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Fixture_GetOddsByGameID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OddsByGameIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FixtureServer).GetOddsByGameID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Fixture/GetOddsByGameID",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FixtureServer).GetOddsByGameID(ctx, req.(*OddsByGameIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Fixture_GetTournamentID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TournamentIDRequest)
 	if err := dec(in); err != nil {
@@ -332,22 +204,6 @@ var Fixture_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _Fixture_Ping_Handler,
-		},
-		{
-			MethodName: "GetOutcome",
-			Handler:    _Fixture_GetOutcome_Handler,
-		},
-		{
-			MethodName: "GetMarket",
-			Handler:    _Fixture_GetMarket_Handler,
-		},
-		{
-			MethodName: "GetOdds",
-			Handler:    _Fixture_GetOdds_Handler,
-		},
-		{
-			MethodName: "GetOddsByGameID",
-			Handler:    _Fixture_GetOddsByGameID_Handler,
 		},
 		{
 			MethodName: "GetTournamentID",
