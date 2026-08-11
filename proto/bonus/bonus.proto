@@ -37,6 +37,18 @@ service Bonus {
 rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
   //get all user balances
   rpc GetUserBalances (BonusBalanceRequest) returns (BonusBalanceResponse){}
+  //delete bonus balance
+  rpc DeleteUserBonusBalance(DeleteBonusRequest) returns (DeleteBonusResponse){}
+}
+message DeleteBonusRequest{
+  int64 BonusID=1;
+  int64 BonusTransactionID =2;
+  int64 ProfileID =3;
+  string Description =4;
+}
+message DeleteBonusResponse{
+  int64 status =1;
+  string Description =2;
 }
 message DebitBonusRequest {
   int64 ProfileID = 1;
@@ -97,6 +109,7 @@ message BonusBalanceResponse {
 message ReverseBonusDebitRequest {
   int64 BonusTransactionID = 1;
   string Reasons = 2;
+  string TransactionType =3;
 }
 // FreebetRequest represents a request to get a free bet bonus.
 message FreebetRequest {

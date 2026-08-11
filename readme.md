@@ -1,10 +1,10 @@
 # How to generate buf files
 
 1. Every micro service should have its own folder and proto file inside the folder
-2. Every miccro service should have the auto generated files in its own folder under `gen/go`
+2. Every micro service should have the auto generated files in its own folder under `gen/go`
 3. Whenever you change a .proto file: Run `buf generate proto`
 4. Commit the changes and the newly generated .pb.go files. 
-5. Checck ccurrent tag number `git describe --tags`
+5. Check current tag number `git describe --tags`
 5. Tag the release: `git tag $new_tag_number && git push origin $new_tag_number`
 
 ## Standardize Your Package Options
