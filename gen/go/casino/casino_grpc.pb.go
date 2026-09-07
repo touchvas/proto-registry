@@ -8,7 +8,6 @@ package casino
 
 import (
 	context "context"
-	common "github.com/touchvas/proto-registry/gen/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -29,8 +28,6 @@ type CasinoClient interface {
 	SupportsFreeBet(ctx context.Context, in *SupportsFreeBetRequest, opts ...grpc.CallOption) (*SupportsFreeBetResponse, error)
 	Ping(ctx context.Context, in *EmptyBody, opts ...grpc.CallOption) (*CasinoPong, error)
 	TrackingSummary(ctx context.Context, in *CasinoSummaryRequest, opts ...grpc.CallOption) (*CasinoSummaryResponse, error)
-	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
-	AwardFreeSpins(ctx context.Context, in *AwardFreeSpinsRequest, opts ...grpc.CallOption) (*AwardFreeSpinsResponse, error)
 }
 
 type casinoClient struct {
@@ -95,24 +92,6 @@ func (c *casinoClient) TrackingSummary(ctx context.Context, in *CasinoSummaryReq
 	return out, nil
 }
 
-func (c *casinoClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
-	out := new(common.GeneralAck)
-	err := c.cc.Invoke(ctx, "/protobuf.Casino/ServiceRequest", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *casinoClient) AwardFreeSpins(ctx context.Context, in *AwardFreeSpinsRequest, opts ...grpc.CallOption) (*AwardFreeSpinsResponse, error) {
-	out := new(AwardFreeSpinsResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Casino/AwardFreeSpins", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // CasinoServer is the server API for Casino service.
 // All implementations must embed UnimplementedCasinoServer
 // for forward compatibility
@@ -123,8 +102,6 @@ type CasinoServer interface {
 	SupportsFreeBet(context.Context, *SupportsFreeBetRequest) (*SupportsFreeBetResponse, error)
 	Ping(context.Context, *EmptyBody) (*CasinoPong, error)
 	TrackingSummary(context.Context, *CasinoSummaryRequest) (*CasinoSummaryResponse, error)
-	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
-	AwardFreeSpins(context.Context, *AwardFreeSpinsRequest) (*AwardFreeSpinsResponse, error)
 	mustEmbedUnimplementedCasinoServer()
 }
 
@@ -149,12 +126,6 @@ func (UnimplementedCasinoServer) Ping(context.Context, *EmptyBody) (*CasinoPong,
 }
 func (UnimplementedCasinoServer) TrackingSummary(context.Context, *CasinoSummaryRequest) (*CasinoSummaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TrackingSummary not implemented")
-}
-func (UnimplementedCasinoServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
-}
-func (UnimplementedCasinoServer) AwardFreeSpins(context.Context, *AwardFreeSpinsRequest) (*AwardFreeSpinsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AwardFreeSpins not implemented")
 }
 func (UnimplementedCasinoServer) mustEmbedUnimplementedCasinoServer() {}
 
@@ -277,42 +248,6 @@ func _Casino_TrackingSummary_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Casino_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common.ServiceActionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoServer).ServiceRequest(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Casino/ServiceRequest",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoServer).ServiceRequest(ctx, req.(*common.ServiceActionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Casino_AwardFreeSpins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AwardFreeSpinsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoServer).AwardFreeSpins(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Casino/AwardFreeSpins",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoServer).AwardFreeSpins(ctx, req.(*AwardFreeSpinsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Casino_ServiceDesc is the grpc.ServiceDesc for Casino service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -343,14 +278,6 @@ var Casino_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TrackingSummary",
 			Handler:    _Casino_TrackingSummary_Handler,
-		},
-		{
-			MethodName: "ServiceRequest",
-			Handler:    _Casino_ServiceRequest_Handler,
-		},
-		{
-			MethodName: "AwardFreeSpins",
-			Handler:    _Casino_AwardFreeSpins_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

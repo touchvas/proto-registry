@@ -30,6 +30,10 @@ type CasinoProviderClient interface {
 	GetLaunchUrl(ctx context.Context, in *LaunchUrlRequest, opts ...grpc.CallOption) (*LaunchUrlResponse, error)
 	Ping(ctx context.Context, in *CasinoProviderPing, opts ...grpc.CallOption) (*CasinoProviderPong, error)
 	GetGames(ctx context.Context, in *GetGamesRequest, opts ...grpc.CallOption) (*Games, error)
+	CancelFreeSpins(ctx context.Context, in *CancelFreeSpinsRequest, opts ...grpc.CallOption) (*CancelFreeSpinsResponse, error)
+	CancelUserFreeSpins(ctx context.Context, in *CancelUserFreeSpinsRequest, opts ...grpc.CallOption) (*CancelFreeSpinsResponse, error)
+	IssueFreeSpin(ctx context.Context, in *FreespinRequest, opts ...grpc.CallOption) (*FreespinResponse, error)
+	IssueFreeSpinsForMany(ctx context.Context, in *FreespinsRewardForMany, opts ...grpc.CallOption) (*FreespinResponse, error)
 }
 
 type casinoProviderClient struct {
@@ -103,6 +107,42 @@ func (c *casinoProviderClient) GetGames(ctx context.Context, in *GetGamesRequest
 	return out, nil
 }
 
+func (c *casinoProviderClient) CancelFreeSpins(ctx context.Context, in *CancelFreeSpinsRequest, opts ...grpc.CallOption) (*CancelFreeSpinsResponse, error) {
+	out := new(CancelFreeSpinsResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.CasinoProvider/CancelFreeSpins", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casinoProviderClient) CancelUserFreeSpins(ctx context.Context, in *CancelUserFreeSpinsRequest, opts ...grpc.CallOption) (*CancelFreeSpinsResponse, error) {
+	out := new(CancelFreeSpinsResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.CasinoProvider/CancelUserFreeSpins", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casinoProviderClient) IssueFreeSpin(ctx context.Context, in *FreespinRequest, opts ...grpc.CallOption) (*FreespinResponse, error) {
+	out := new(FreespinResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.CasinoProvider/IssueFreeSpin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casinoProviderClient) IssueFreeSpinsForMany(ctx context.Context, in *FreespinsRewardForMany, opts ...grpc.CallOption) (*FreespinResponse, error) {
+	out := new(FreespinResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.CasinoProvider/IssueFreeSpinsForMany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CasinoProviderServer is the server API for CasinoProvider service.
 // All implementations must embed UnimplementedCasinoProviderServer
 // for forward compatibility
@@ -115,6 +155,10 @@ type CasinoProviderServer interface {
 	GetLaunchUrl(context.Context, *LaunchUrlRequest) (*LaunchUrlResponse, error)
 	Ping(context.Context, *CasinoProviderPing) (*CasinoProviderPong, error)
 	GetGames(context.Context, *GetGamesRequest) (*Games, error)
+	CancelFreeSpins(context.Context, *CancelFreeSpinsRequest) (*CancelFreeSpinsResponse, error)
+	CancelUserFreeSpins(context.Context, *CancelUserFreeSpinsRequest) (*CancelFreeSpinsResponse, error)
+	IssueFreeSpin(context.Context, *FreespinRequest) (*FreespinResponse, error)
+	IssueFreeSpinsForMany(context.Context, *FreespinsRewardForMany) (*FreespinResponse, error)
 	mustEmbedUnimplementedCasinoProviderServer()
 }
 
@@ -142,6 +186,18 @@ func (UnimplementedCasinoProviderServer) Ping(context.Context, *CasinoProviderPi
 }
 func (UnimplementedCasinoProviderServer) GetGames(context.Context, *GetGamesRequest) (*Games, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGames not implemented")
+}
+func (UnimplementedCasinoProviderServer) CancelFreeSpins(context.Context, *CancelFreeSpinsRequest) (*CancelFreeSpinsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelFreeSpins not implemented")
+}
+func (UnimplementedCasinoProviderServer) CancelUserFreeSpins(context.Context, *CancelUserFreeSpinsRequest) (*CancelFreeSpinsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelUserFreeSpins not implemented")
+}
+func (UnimplementedCasinoProviderServer) IssueFreeSpin(context.Context, *FreespinRequest) (*FreespinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IssueFreeSpin not implemented")
+}
+func (UnimplementedCasinoProviderServer) IssueFreeSpinsForMany(context.Context, *FreespinsRewardForMany) (*FreespinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IssueFreeSpinsForMany not implemented")
 }
 func (UnimplementedCasinoProviderServer) mustEmbedUnimplementedCasinoProviderServer() {}
 
@@ -282,6 +338,78 @@ func _CasinoProvider_GetGames_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CasinoProvider_CancelFreeSpins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelFreeSpinsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CasinoProviderServer).CancelFreeSpins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.CasinoProvider/CancelFreeSpins",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CasinoProviderServer).CancelFreeSpins(ctx, req.(*CancelFreeSpinsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CasinoProvider_CancelUserFreeSpins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelUserFreeSpinsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CasinoProviderServer).CancelUserFreeSpins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.CasinoProvider/CancelUserFreeSpins",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CasinoProviderServer).CancelUserFreeSpins(ctx, req.(*CancelUserFreeSpinsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CasinoProvider_IssueFreeSpin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FreespinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CasinoProviderServer).IssueFreeSpin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.CasinoProvider/IssueFreeSpin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CasinoProviderServer).IssueFreeSpin(ctx, req.(*FreespinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CasinoProvider_IssueFreeSpinsForMany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FreespinsRewardForMany)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CasinoProviderServer).IssueFreeSpinsForMany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.CasinoProvider/IssueFreeSpinsForMany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CasinoProviderServer).IssueFreeSpinsForMany(ctx, req.(*FreespinsRewardForMany))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CasinoProvider_ServiceDesc is the grpc.ServiceDesc for CasinoProvider service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -316,6 +444,22 @@ var CasinoProvider_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetGames",
 			Handler:    _CasinoProvider_GetGames_Handler,
+		},
+		{
+			MethodName: "CancelFreeSpins",
+			Handler:    _CasinoProvider_CancelFreeSpins_Handler,
+		},
+		{
+			MethodName: "CancelUserFreeSpins",
+			Handler:    _CasinoProvider_CancelUserFreeSpins_Handler,
+		},
+		{
+			MethodName: "IssueFreeSpin",
+			Handler:    _CasinoProvider_IssueFreeSpin_Handler,
+		},
+		{
+			MethodName: "IssueFreeSpinsForMany",
+			Handler:    _CasinoProvider_IssueFreeSpinsForMany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 syntax = "proto3";
-option go_package = "github.com/touchvas/casino-manager/app/grpc/casino-provider";
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino-provider";
 package protobuf;
 
 // The CasinoProvider service definition.
@@ -27,6 +27,11 @@ service CasinoProvider {
   rpc GetLaunchUrl (LaunchUrlRequest) returns (LaunchUrlResponse){}
   rpc Ping (CasinoProviderPing) returns (CasinoProviderPong) {}
   rpc GetGames (GetGamesRequest) returns (Games) {}
+
+  rpc CancelFreeSpins (CancelFreeSpinsRequest) returns (CancelFreeSpinsResponse) {}
+  rpc CancelUserFreeSpins (CancelUserFreeSpinsRequest) returns (CancelFreeSpinsResponse) {}
+  rpc IssueFreeSpin (FreespinRequest) returns (FreespinResponse) {}
+  rpc IssueFreeSpinsForMany (FreespinsRewardForMany) returns (FreespinResponse) {}
 
 }
 
@@ -101,6 +106,7 @@ message LaunchUrlRequest {
 
 }
 
+
 message ExtraParam {
   string Key = 1;
   string Value = 2;
@@ -132,4 +138,79 @@ message UpdateGamesResponse {
 
   int64 Status = 1;
 
+}
+
+message FreespinRequest {
+  string bonus_id = 1;
+  int64 quantity = 2;
+  int64 profile_id = 3;
+  int64 account_id = 4;
+  int64 amount = 5;
+  int64 validity_in_days = 6;
+  string start_time = 7;
+  double min_cashout = 8;
+  string game_id = 9;
+  int64 provider_id = 10;
+  string ip_address = 11;
+  string reward_type = 12;
+  string currency = 13;
+  string language = 14;
+  repeated ExtraParam extra_params = 15;
+}
+
+
+message Profiles {
+  int64 account_id = 1;
+  int64 profile_id = 2;
+}
+
+message FreespinsRewardForMany {
+  repeated Profiles profiles = 1;
+  int64 bonus_id = 2;
+  int64 amount = 3;
+  string game_id = 4;
+  int64 quantity = 5;
+  int64 validity_in_days = 6;
+  string currency = 7;
+  string provider_id = 8;
+  int64 account_id = 9;
+  string start_time = 10;
+  double min_cashout = 11;
+  string ip_address = 12;
+  string reward_type = 13;
+  string language = 14;
+  repeated ExtraParam extra_params = 15;
+}
+
+
+
+message FreespinResponse {
+  string description = 1;
+  int32 status = 2;
+  string Data = 3;
+}
+
+message CancelFreeSpinsRequest {
+  string bonus_id = 1;
+  int64 provider_id = 2;
+  int64 account_id = 3;
+  repeated Profiles profiles = 4;
+  string game_id = 5;
+  string Currency = 6;
+  repeated ExtraParam extra_params = 7;
+
+}
+message CancelUserFreeSpinsRequest {
+  string bonus_id = 1;
+  int64 provider_id = 2;
+  int64 account_id = 3;
+  int64 profile_id = 4;
+  string game_id = 5;
+  string Currency = 6;
+  repeated ExtraParam extra_params = 7;
+
+}
+message CancelFreeSpinsResponse {
+  string description = 1;
+  int32 status = 2;
 }
