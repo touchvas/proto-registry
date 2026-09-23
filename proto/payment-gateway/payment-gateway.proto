@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 // Defines the Go package path for generated code.
-option go_package = "github.com/touchvas/proto-registry/gen/go/payment-gateway;payment";
+option go_package = "github.com/touchvas/payment-gateway/app/grpc/payment";
 // Defines the package name for the protobuf file.
 package paymentGateway;
 
@@ -175,7 +175,6 @@ message SendMoneyCallbackPayload {
   float TransactionCharge = 7;
   int64 Amount =8;
   int64 Msisdn=9;
-
 }
 
 // Withdrawal Messages
@@ -207,9 +206,6 @@ message WithdrawRequestResponse {
   //important for determining insufficient funds
   int64 statusCode =3;
   int64 TransactionID =4;
-  // Approved payout principal in whole currency units, Use this amount for payout, never the original requested amount.
-  int64 approved_amount = 5;
-
 }
 message RequestPaymentUpdateRequest {
   int64 TransactionID = 1;
