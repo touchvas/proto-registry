@@ -17,7 +17,7 @@ install:
 .PHONY: generate
 generate: clean
 	@echo "Generating Go code..."
-	buf generate
+	buf generate proto
 	@echo "Generation complete. Files are in $(GEN_DIR)"
 
 ## lint: Run buf linting to check for formatting/best practices
@@ -30,7 +30,7 @@ lint:
 .PHONY: breaking
 breaking:
 	@echo "Checking for breaking changes..."
-	buf breaking --against '.git#branch=main'
+	buf breaking proto --against '.git#branch=master'
 
 ## clean: Remove all generated files
 .PHONY: clean
