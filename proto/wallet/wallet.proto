@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/touchvas/wallet-service/app/grpc/wallet";
+option go_package = "github.com/touchvas/proto-registry/gen/go/wallet";
 package protobuf;
 
 // The Odds service definition.
@@ -153,6 +153,7 @@ message WithdrawResponse {
   string Description = 2;
   string lang = 3; // Add lang field
   int64 TransactionID = 4;
+  int64 approved_amount = 5;
 
 }
 
@@ -179,6 +180,7 @@ message CallbackRequest {
   string IPAddress = 11;
   string Description = 12;
   string lang = 13; // Add lang field
+
 }
 
 message RequestPaymentCallbackRequest {
