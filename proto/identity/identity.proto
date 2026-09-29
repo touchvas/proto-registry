@@ -30,6 +30,7 @@ message SummaryRequest {
   string startDate = 1;
   string endDate = 2;
   bool btag =3;
+  optional int64 status = 4;
 }
 
 message SummaryItem {
@@ -38,6 +39,7 @@ message SummaryItem {
   string countryCode = 3;
   string Btag = 4;
   string Currency = 5;
+  int64 status = 6;
 }
 
 message SummaryResponse {
