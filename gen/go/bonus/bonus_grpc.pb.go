@@ -35,6 +35,8 @@ const (
 	Bonus_DebitBonus_FullMethodName              = "/protobuf.Bonus/DebitBonus"
 	Bonus_GetUserBalances_FullMethodName         = "/protobuf.Bonus/GetUserBalances"
 	Bonus_DeleteUserBonusBalance_FullMethodName  = "/protobuf.Bonus/DeleteUserBonusBalance"
+	Bonus_AwardBonus_FullMethodName              = "/protobuf.Bonus/AwardBonus"
+	Bonus_GetActiveBonuses_FullMethodName        = "/protobuf.Bonus/GetActiveBonuses"
 )
 
 // BonusClient is the client API for Bonus service.
@@ -73,6 +75,10 @@ type BonusClient interface {
 	GetUserBalances(ctx context.Context, in *BonusBalanceRequest, opts ...grpc.CallOption) (*BonusBalanceResponse, error)
 	// delete bonus balance
 	DeleteUserBonusBalance(ctx context.Context, in *DeleteBonusRequest, opts ...grpc.CallOption) (*DeleteBonusResponse, error)
+	// AwardBonus RPC
+	AwardBonus(ctx context.Context, in *AwardBonusRequest, opts ...grpc.CallOption) (*GeneralResponse, error)
+	// GetActiveBonuses retrieves all active (status 1) bonuses
+	GetActiveBonuses(ctx context.Context, in *GetActiveBonusesRequest, opts ...grpc.CallOption) (*GetActiveBonusesResponse, error)
 }
 
 type bonusClient struct {
@@ -243,6 +249,26 @@ func (c *bonusClient) DeleteUserBonusBalance(ctx context.Context, in *DeleteBonu
 	return out, nil
 }
 
+func (c *bonusClient) AwardBonus(ctx context.Context, in *AwardBonusRequest, opts ...grpc.CallOption) (*GeneralResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GeneralResponse)
+	err := c.cc.Invoke(ctx, Bonus_AwardBonus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bonusClient) GetActiveBonuses(ctx context.Context, in *GetActiveBonusesRequest, opts ...grpc.CallOption) (*GetActiveBonusesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetActiveBonusesResponse)
+	err := c.cc.Invoke(ctx, Bonus_GetActiveBonuses_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BonusServer is the server API for Bonus service.
 // All implementations must embed UnimplementedBonusServer
 // for forward compatibility.
@@ -279,6 +305,10 @@ type BonusServer interface {
 	GetUserBalances(context.Context, *BonusBalanceRequest) (*BonusBalanceResponse, error)
 	// delete bonus balance
 	DeleteUserBonusBalance(context.Context, *DeleteBonusRequest) (*DeleteBonusResponse, error)
+	// AwardBonus RPC
+	AwardBonus(context.Context, *AwardBonusRequest) (*GeneralResponse, error)
+	// GetActiveBonuses retrieves all active (status 1) bonuses
+	GetActiveBonuses(context.Context, *GetActiveBonusesRequest) (*GetActiveBonusesResponse, error)
 	mustEmbedUnimplementedBonusServer()
 }
 
@@ -336,6 +366,12 @@ func (UnimplementedBonusServer) GetUserBalances(context.Context, *BonusBalanceRe
 }
 func (UnimplementedBonusServer) DeleteUserBonusBalance(context.Context, *DeleteBonusRequest) (*DeleteBonusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserBonusBalance not implemented")
+}
+func (UnimplementedBonusServer) AwardBonus(context.Context, *AwardBonusRequest) (*GeneralResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AwardBonus not implemented")
+}
+func (UnimplementedBonusServer) GetActiveBonuses(context.Context, *GetActiveBonusesRequest) (*GetActiveBonusesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActiveBonuses not implemented")
 }
 func (UnimplementedBonusServer) mustEmbedUnimplementedBonusServer() {}
 func (UnimplementedBonusServer) testEmbeddedByValue()               {}
@@ -646,6 +682,42 @@ func _Bonus_DeleteUserBonusBalance_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bonus_AwardBonus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AwardBonusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).AwardBonus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_AwardBonus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).AwardBonus(ctx, req.(*AwardBonusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bonus_GetActiveBonuses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetActiveBonusesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BonusServer).GetActiveBonuses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bonus_GetActiveBonuses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BonusServer).GetActiveBonuses(ctx, req.(*GetActiveBonusesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bonus_ServiceDesc is the grpc.ServiceDesc for Bonus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -716,6 +788,14 @@ var Bonus_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserBonusBalance",
 			Handler:    _Bonus_DeleteUserBonusBalance_Handler,
+		},
+		{
+			MethodName: "AwardBonus",
+			Handler:    _Bonus_AwardBonus_Handler,
+		},
+		{
+			MethodName: "GetActiveBonuses",
+			Handler:    _Bonus_GetActiveBonuses_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

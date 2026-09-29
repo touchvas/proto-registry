@@ -39,7 +39,39 @@ rpc DebitBonus(DebitBonusRequest) returns (GeneralResponse){}
   rpc GetUserBalances (BonusBalanceRequest) returns (BonusBalanceResponse){}
   //delete bonus balance
   rpc DeleteUserBonusBalance(DeleteBonusRequest) returns (DeleteBonusResponse){}
+  // AwardBonus RPC
+  rpc AwardBonus(AwardBonusRequest) returns (GeneralResponse){}
+  // GetActiveBonuses retrieves all active (status 1) bonuses
+  rpc GetActiveBonuses(GetActiveBonusesRequest) returns (GetActiveBonusesResponse){}
 }
+
+// AwardBonusRequest message
+message AwardBonusRequest {
+  int64 ProfileID = 1;
+  int64 BonusId = 2;
+  double Amount = 3;
+  string BonusType = 4;
+  int64 TransactionID = 5;
+  string Description = 6;
+  string IpAddress = 7;
+  string Lang = 8;
+}
+
+// GetActiveBonusesRequest message
+message GetActiveBonusesRequest {}
+
+// BonusInfo message
+message BonusInfo {
+  int64 BonusID = 1;
+  string BonusType = 2;
+  string Name = 3;
+}
+
+// GetActiveBonusesResponse message
+message GetActiveBonusesResponse {
+  repeated BonusInfo Bonuses = 1;
+}
+
 message DeleteBonusRequest{
   int64 BonusID=1;
   int64 BonusTransactionID =2;
