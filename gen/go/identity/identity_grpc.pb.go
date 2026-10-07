@@ -30,6 +30,7 @@ const (
 	Identity_Ping_FullMethodName               = "/grpc.Identity/Ping"
 	Identity_GetUserBtag_FullMethodName        = "/grpc.Identity/GetUserBtag"
 	Identity_Summary_FullMethodName            = "/grpc.Identity/Summary"
+	Identity_StreamProfileIDs_FullMethodName   = "/grpc.Identity/StreamProfileIDs"
 	Identity_ServiceRequest_FullMethodName     = "/grpc.Identity/ServiceRequest"
 )
 
@@ -49,6 +50,8 @@ type IdentityClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PongRequest, error)
 	GetUserBtag(ctx context.Context, in *BtagRequest, opts ...grpc.CallOption) (*BtagResponse, error)
 	Summary(ctx context.Context, in *SummaryRequest, opts ...grpc.CallOption) (*SummaryResponse, error)
+	// Streams the distinct IDs of every profile matching the request, in batches.
+	StreamProfileIDs(ctx context.Context, in *ProfileIDsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ProfileIDsBatch], error)
 	ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error)
 }
 
@@ -160,6 +163,25 @@ func (c *identityClient) Summary(ctx context.Context, in *SummaryRequest, opts .
 	return out, nil
 }
 
+func (c *identityClient) StreamProfileIDs(ctx context.Context, in *ProfileIDsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ProfileIDsBatch], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Identity_ServiceDesc.Streams[0], Identity_StreamProfileIDs_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ProfileIDsRequest, ProfileIDsBatch]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Identity_StreamProfileIDsClient = grpc.ServerStreamingClient[ProfileIDsBatch]
+
 func (c *identityClient) ServiceRequest(ctx context.Context, in *common.ServiceActionRequest, opts ...grpc.CallOption) (*common.GeneralAck, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.GeneralAck)
@@ -186,6 +208,8 @@ type IdentityServer interface {
 	Ping(context.Context, *PingRequest) (*PongRequest, error)
 	GetUserBtag(context.Context, *BtagRequest) (*BtagResponse, error)
 	Summary(context.Context, *SummaryRequest) (*SummaryResponse, error)
+	// Streams the distinct IDs of every profile matching the request, in batches.
+	StreamProfileIDs(*ProfileIDsRequest, grpc.ServerStreamingServer[ProfileIDsBatch]) error
 	ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error)
 	mustEmbedUnimplementedIdentityServer()
 }
@@ -226,6 +250,9 @@ func (UnimplementedIdentityServer) GetUserBtag(context.Context, *BtagRequest) (*
 }
 func (UnimplementedIdentityServer) Summary(context.Context, *SummaryRequest) (*SummaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Summary not implemented")
+}
+func (UnimplementedIdentityServer) StreamProfileIDs(*ProfileIDsRequest, grpc.ServerStreamingServer[ProfileIDsBatch]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamProfileIDs not implemented")
 }
 func (UnimplementedIdentityServer) ServiceRequest(context.Context, *common.ServiceActionRequest) (*common.GeneralAck, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ServiceRequest not implemented")
@@ -431,6 +458,17 @@ func _Identity_Summary_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Identity_StreamProfileIDs_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ProfileIDsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(IdentityServer).StreamProfileIDs(m, &grpc.GenericServerStream[ProfileIDsRequest, ProfileIDsBatch]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Identity_StreamProfileIDsServer = grpc.ServerStreamingServer[ProfileIDsBatch]
+
 func _Identity_ServiceRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(common.ServiceActionRequest)
 	if err := dec(in); err != nil {
@@ -501,6 +539,12 @@ var Identity_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Identity_ServiceRequest_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamProfileIDs",
+			Handler:       _Identity_StreamProfileIDs_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "identity/identity.proto",
 }

@@ -17,6 +17,8 @@ service Identity {
   rpc Ping (PingRequest) returns (PongRequest) {}
   rpc GetUserBtag(BtagRequest) returns (BtagResponse) {}
   rpc Summary(SummaryRequest) returns (SummaryResponse) {}
+  // Streams the distinct IDs of every profile matching the request, in batches.
+  rpc StreamProfileIDs(ProfileIDsRequest) returns (stream ProfileIDsBatch) {}
   rpc ServiceRequest(common.ServiceActionRequest) returns (common.GeneralAck) {}
 
 }
@@ -44,6 +46,18 @@ message SummaryItem {
 
 message SummaryResponse {
   repeated SummaryItem summaries = 1;
+}
+
+message ProfileIDsRequest {
+  // Only profiles in this status; unset streams every profile.
+  optional int64 status = 1;
+  // Maximum IDs per batch; the server picks a default when 0.
+  int32 batchSize = 2;
+}
+
+message ProfileIDsBatch {
+  // Distinct profile IDs, ascending across the whole stream.
+  repeated int64 profileIds = 1;
 }
 message PingRequest {
   string lang = 1; // Add lang field
