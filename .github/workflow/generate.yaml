@@ -31,6 +31,8 @@ jobs:
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.29.0
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.29.0
 
       - name: Buf Lint
         run: buf lint proto
@@ -43,5 +45,5 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add gen/go
+          git add gen/go gen/openapiv2
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: regenerate go code" && git push)

@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+// identity.v1 is the internal API other domains (wallet, wagering, gaming) call.
+// Every call carries the brand (the tenant: one operator's business in one country) in the
+// "x-tenant-id" metadata key. Responses also name the brand's operator.
+//
+// This file moves to touchvasgaming/proto-registry alongside payments/core.
+package identity.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";
+
+service IdentityService {
+  // ValidateSession checks a player token: signature, expiry, that it belongs to the
+  // brand in x-tenant-id, and that the session hasn't been revoked. Replaces TokenValidation.
+  rpc ValidateSession(ValidateSessionRequest) returns (ValidateSessionResponse);
+
+  // GetPlayer reads one player of the brand by ID or phone number. Wallet, wagering and
+  // gaming call it before a bet or deposit and refuse the request unless is_active is true.
+  // Replaces GetProfileByID and GetProfileByMsisdn.
+  rpc GetPlayer(GetPlayerRequest) returns (Player);
+
+
+  // ChangePlayerStatus suspends, reactivates or closes a player (back office, fraud).
+  // Suspending or closing ends the player's sessions. Replaces ChangeStatus.
+  rpc ChangePlayerStatus(ChangePlayerStatusRequest) returns (Player);
+
+  // GetBrand reads the calling brand (x-tenant-id) and the settings other domains need,
+  // such as the currency wallets are opened in. An unknown brand is NOT_FOUND and an
+  // inactive one PERMISSION_DENIED, as on every call. Callers cache it and refresh on
+  // identity.events.brand.status_changed and brand.settings_changed.
+  rpc GetBrand(GetBrandRequest) returns (Brand);
+
+  // RegisterUnverifiedPlayer registers a player of the brand from a phone number alone, as
+  // wallet does for a paybill payment no player holds. The player has no password and stays
+  // PENDING_VERIFICATION whatever the brand's verification mode, until they sign up with that
+  // number (which sets the password) or reset the password with a code. It returns the
+  // existing player when the number is taken, so a retry is safe. An invalid number is
+  // INVALID_ARGUMENT.
+  rpc RegisterUnverifiedPlayer(RegisterUnverifiedPlayerRequest) returns (Player);
+
+  // SendSecondFactorCode prepares a back-office user of the brand to confirm a sensitive
+  // action in another service, such as wallet's withdrawal and adjustment approvals. A user
+  // with an authenticator app needs nothing sent; one with SMS codes gets a 6-digit code
+  // (identity's usual limits: a 2-minute cooldown, 5 an hour). FAILED_PRECONDITION when the
+  // user has neither turned on.
+  rpc SendSecondFactorCode(SendSecondFactorCodeRequest) returns (SendSecondFactorCodeResponse);
+
+  // VerifySecondFactor checks that code. Each code works once; wrong codes are
+  // INVALID_ARGUMENT and count towards the user's lockout, which is RESOURCE_EXHAUSTED.
+  rpc VerifySecondFactor(VerifySecondFactorRequest) returns (VerifySecondFactorResponse);
+}
+
+message SendSecondFactorCodeRequest {
+  string admin_user_id = 1;
+}
+
+message SendSecondFactorCodeResponse {
+  // TOTP or SMS: what the user answers with.
+  string factor = 1;
+}
+
+message VerifySecondFactorRequest {
+  string admin_user_id = 1;
+  string code = 2;
+}
+
+message VerifySecondFactorResponse {}
+
+message RegisterUnverifiedPlayerRequest {
+  // Any local or international form; normalised with the brand's country.
+  string msisdn = 1;
+  // The payer's name as the provider reports it, when there is one.
+  string first_name = 2;
+  string last_name = 3;
+}
+
+message GetBrandRequest {}
+
+message Brand {
+  string id = 1;
+  string operator_id = 2;
+  string code = 3;
+  string name = 4;
+  // ISO 3166-1 alpha-2, fixed at onboarding.
+  string country_code = 5;
+  // Always ACTIVE: other statuses are refused before the call is served.
+  string status = 6;
+  // ISO 4217.
+  string currency = 7;
+  string language = 8;
+  // IANA zone, e.g. Africa/Nairobi: the brand's "today" for daily limits.
+  string timezone = 9;
+  // Goes up on every settings change.
+  int32 settings_version = 10;
+}
+
+message ValidateSessionRequest {
+  string token = 1;
+}
+
+message ValidateSessionResponse {
+  string player_id = 1;
+  string session_id = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  // The brand (tenant) and the operator that owns it.
+  string brand_id = 4;
+  string operator_id = 5;
+}
+
+message GetPlayerRequest {
+  oneof lookup {
+    string player_id = 1;
+    // Any local or international form; normalised with the brand's country.
+    string msisdn = 2;
+  }
+}
+
+message Player {
+  string id = 1;
+  string msisdn = 2;
+  string email = 3;
+  string username = 4;
+  string first_name = 5;
+  string last_name = 6;
+  // PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.
+  string status = 7;
+  string country_code = 8;
+  string currency = 9;
+  string language = 10;
+  string referral_code = 11;
+  string registration_channel = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp verified_at = 14;
+  // True only for ACTIVE players. Suspended, self-excluded, closed and unverified players
+  // may not log in, bet, deposit or play. Use this instead of interpreting status.
+  bool is_active = 15;
+  // The brand (tenant) the player belongs to, and the operator that owns it.
+  string brand_id = 16;
+  string operator_id = 17;
+}
+
+message ChangePlayerStatusRequest {
+  string player_id = 1;
+  // SUSPEND, REACTIVATE or CLOSE.
+  string action = 2;
+  // Required for every action; kept for the audit trail.
+  string reason = 3;
+}

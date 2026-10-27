@@ -1,6 +1,10 @@
 # Variables
 BUF_VERSION := latest
+# The gateway plugins are pinned: generated *.pb.gw.go must match the grpc-gateway runtime
+# version that ui-gateway-service imports.
+GRPC_GATEWAY_VERSION := v2.29.0
 GEN_DIR := gen/go
+OPENAPI_DIR := gen/openapiv2
 
 .PHONY: all
 all: generate
@@ -12,6 +16,8 @@ install:
 	go install github.com/bufbuild/buf/cmd/buf@$(BUF_VERSION)
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION)
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION)
 
 ## generate: Clean and regenerate all proto files
 .PHONY: generate
@@ -36,7 +42,7 @@ breaking:
 .PHONY: clean
 clean:
 	@echo "Cleaning generated files..."
-	rm -rf $(GEN_DIR)
+	rm -rf $(GEN_DIR) $(OPENAPI_DIR)
 
 ## help: Show this help message
 .PHONY: help

@@ -1,0 +1,97 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "common/common.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Aegis"
+    },
+    {
+      "name": "Betting"
+    },
+    {
+      "name": "Bonus"
+    },
+    {
+      "name": "CasinoProvider"
+    },
+    {
+      "name": "Casino"
+    },
+    {
+      "name": "Fixture"
+    },
+    {
+      "name": "Identity"
+    },
+    {
+      "name": "IdentityService"
+    },
+    {
+      "name": "Jackpot"
+    },
+    {
+      "name": "Mts"
+    },
+    {
+      "name": "Notification"
+    },
+    {
+      "name": "PaymentGateway"
+    },
+    {
+      "name": "PaymentProvider"
+    },
+    {
+      "name": "Reports"
+    },
+    {
+      "name": "Shortcode"
+    },
+    {
+      "name": "Tax"
+    },
+    {
+      "name": "Wallet"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    }
+  }
+}
