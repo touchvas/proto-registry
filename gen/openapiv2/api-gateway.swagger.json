@@ -24,7 +24,7 @@
       "name": "Fixture"
     },
     {
-      "name": "Identity"
+      "name": "AccountService"
     },
     {
       "name": "PlayerService"
@@ -33,13 +33,28 @@
       "name": "AuthService"
     },
     {
+      "name": "ResponsibleGamingService"
+    },
+    {
+      "name": "AuditService"
+    },
+    {
+      "name": "SecurityService"
+    },
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "RoleService"
+    },
+    {
+      "name": "Identity"
+    },
+    {
       "name": "BrandService"
     },
     {
       "name": "IdentityService"
-    },
-    {
-      "name": "ResponsibleGamingService"
     },
     {
       "name": "Jackpot"
@@ -76,9 +91,1108 @@
     "application/json"
   ],
   "paths": {
+    "/v1/admin/audit": {
+      "get": {
+        "summary": "ListAuditEntries lists entries, newest first. Needs audit:read.",
+        "operationId": "AuditService_ListAuditEntries",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.AuditEntry"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "AuditService"
+        ]
+      }
+    },
+    "/v1/admin/login": {
+      "post": {
+        "summary": "Login checks an admin's password. An admin without a second factor gets a session; one\nwith a second factor gets a challenge that VerifyLogin completes.",
+        "operationId": "AuthService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/admin/login/verify": {
+      "post": {
+        "summary": "VerifyLogin completes a login challenge with a TOTP or SMS code.",
+        "operationId": "AuthService_VerifyLogin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.VerifyLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.VerifyLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/admin/logout": {
+      "post": {
+        "summary": "Logout ends the calling admin's session. 204.",
+        "operationId": "AuthService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/admin/me": {
+      "get": {
+        "summary": "GetMe returns the calling admin with their role and permissions.",
+        "operationId": "AccountService_GetMe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.GetMeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/password": {
+      "patch": {
+        "summary": "ChangePassword changes the calling admin's password and ends their other sessions. 204.",
+        "operationId": "AccountService_ChangePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ChangePasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ChangePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/sms-codes": {
+      "patch": {
+        "summary": "SetSmsCodes turns SMS codes as a second factor on or off. 204.",
+        "operationId": "AccountService_SetSmsCodes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.SetSmsCodesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.SetSmsCodesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp": {
+      "post": {
+        "summary": "StartTotp begins adding an authenticator app: scan the QR code, then ConfirmTotp.",
+        "operationId": "AccountService_StartTotp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StartTotpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp/confirm": {
+      "post": {
+        "summary": "ConfirmTotp turns the authenticator app on with a first code. 204.",
+        "operationId": "AccountService_ConfirmTotp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ConfirmTotpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ConfirmTotpRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp/disable": {
+      "post": {
+        "summary": "DisableTotp turns the authenticator app off with a current code. 204.",
+        "operationId": "AccountService_DisableTotp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DisableTotpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DisableTotpRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AccountService"
+        ]
+      }
+    },
+    "/v1/admin/password/forgot": {
+      "post": {
+        "summary": "ForgotPassword texts a 6-digit code to the admin's phone number. It answers the same for\nunknown, disabled or phone-less accounts. 202, no body.",
+        "operationId": "AuthService_ForgotPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ForgotPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ForgotPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/admin/password/reset": {
+      "post": {
+        "summary": "ResetPassword sets a new password with the texted code and ends every session. 204.",
+        "operationId": "AuthService_ResetPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/admin/permissions": {
+      "get": {
+        "summary": "ListPermissions lists the permission catalogue. Needs role:read.",
+        "operationId": "RoleService_ListPermissions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.Permission"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "RoleService"
+        ]
+      }
+    },
+    "/v1/admin/players": {
+      "get": {
+        "summary": "ListPlayers lists the brand's players, filtered. Needs player:read.",
+        "operationId": "PlayerService_ListPlayers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListPlayersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "description": "PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "msisdn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}": {
+      "get": {
+        "summary": "GetPlayer reads one player. Needs player:read.",
+        "operationId": "PlayerService_GetPlayer",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}/exclusions": {
+      "get": {
+        "summary": "ListPlayerExclusions lists a player's exclusions, newest first. Needs player:read.",
+        "operationId": "PlayerService_ListPlayerExclusions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.v1.SelfExclusion"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      },
+      "post": {
+        "summary": "ExcludePlayer excludes a player on their behalf, under the self-exclusion rules. Needs\nplayer:exclude. 201.",
+        "operationId": "PlayerService_ExcludePlayer",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExclusion"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlayerService.ExcludePlayerBody"
+            }
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}/status": {
+      "patch": {
+        "summary": "ChangePlayerStatus suspends, reactivates or closes a player. Needs player:status.",
+        "operationId": "PlayerService_ChangePlayerStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlayerService.ChangePlayerStatusBody"
+            }
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/roles": {
+      "get": {
+        "summary": "ListRoles lists the system roles and the operator's custom roles. Needs role:read.",
+        "operationId": "RoleService_ListRoles",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.Role"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "RoleService"
+        ]
+      },
+      "post": {
+        "summary": "CreateRole creates a custom role. Needs role:write. 201.",
+        "operationId": "RoleService_CreateRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RoleService"
+        ]
+      }
+    },
+    "/v1/admin/roles/{id}": {
+      "get": {
+        "summary": "GetRole reads a role. Needs role:read.",
+        "operationId": "RoleService_GetRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RoleService"
+        ]
+      },
+      "delete": {
+        "summary": "DeleteRole deletes a custom role no user holds. Needs role:write. 204.",
+        "operationId": "RoleService_DeleteRole",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DeleteRoleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RoleService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateRole replaces a custom role's name, description and permissions. Needs role:write.",
+        "operationId": "RoleService_UpdateRole",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.RoleService.UpdateRoleBody"
+            }
+          }
+        ],
+        "tags": [
+          "RoleService"
+        ]
+      }
+    },
+    "/v1/admin/security/attack-mode": {
+      "get": {
+        "summary": "ListAttackModes lists the endpoints in attack mode. Needs security:read.",
+        "operationId": "SecurityService_ListAttackModes",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.AttackMode"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "SecurityService"
+        ]
+      },
+      "put": {
+        "summary": "StartAttackMode puts an endpoint in attack mode for 1 minute to 24 hours. Needs\nsecurity:write.",
+        "operationId": "SecurityService_StartAttackMode",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.AttackMode"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StartAttackModeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SecurityService"
+        ]
+      }
+    },
+    "/v1/admin/security/attack-mode/{endpoint}": {
+      "delete": {
+        "summary": "StopAttackMode ends attack mode on an endpoint. Needs security:write. 204.",
+        "operationId": "SecurityService_StopAttackMode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StopAttackModeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "endpoint",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SecurityService"
+        ]
+      }
+    },
+    "/v1/admin/users": {
+      "get": {
+        "summary": "ListUsers lists back-office users. Needs admin_user:read.",
+        "operationId": "UserService_ListUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "brand_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "summary": "CreateUser creates a back-office user. Needs admin_user:write. 201.",
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}": {
+      "get": {
+        "summary": "GetUser reads a back-office user. Needs admin_user:read.",
+        "operationId": "UserService_GetUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "patch": {
+        "summary": "UpdateUser changes the fields sent. Needs admin_user:write.",
+        "operationId": "UserService_UpdateUser",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.UpdateUserBody"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}/password": {
+      "put": {
+        "summary": "ResetUserPassword sets another user's password and ends their sessions. Needs\nadmin_user:write. 204.",
+        "operationId": "UserService_ResetUserPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetUserPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.ResetUserPasswordBody"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}/status": {
+      "patch": {
+        "summary": "SetUserEnabled enables or disables a user; disabling ends their sessions. Needs\nadmin_user:write.",
+        "operationId": "UserService_SetUserEnabled",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.SetUserEnabledBody"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/v1/challenge": {
       "post": {
-        "summary": "CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when\nthe caller must solve one: find a nonce such that sha256(challenge + \":\" + nonce) in hex\nstarts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.\nA puzzle works once, for the same user agent, until it expires.",
+        "summary": "CreateChallenge returns a proof-of-work puzzle, as identity.v1.AuthService.CreateChallenge\ndoes for the apps: the back office needs one when admin login answers 428 (suspicious\ntraffic, or attack mode on admin_login).",
         "operationId": "AuthService_CreateChallenge",
         "responses": {
           "200": {
@@ -461,6 +1575,14 @@
       },
       "additionalProperties": {}
     },
+    "google.protobuf.NullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "Represents a JSON `null`.\n\n`NullValue` is a sentinel, using an enum with only one value to represent\nthe null value for the `Value` type union.\n\nA field of type `NullValue` with any value other than `0` is considered\ninvalid. Most ProtoJSON serializers will emit a Value with a `null_value` set\nas a JSON `null` regardless of the integer value, and so will round trip to\na `0` value.\n\n - NULL_VALUE: Null value."
+    },
     "google.rpc.Status": {
       "type": "object",
       "properties": {
@@ -477,6 +1599,727 @@
             "type": "object",
             "$ref": "#/definitions/google.protobuf.Any"
           }
+        }
+      }
+    },
+    "identity.admin.v1.Admin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "all_brands": {
+          "type": "boolean",
+          "description": "Works on every brand of the operator, including brands added later."
+        },
+        "brand_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The brands worked on when all_brands is false."
+        },
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "ACTIVE or DISABLED."
+        },
+        "otp_enabled": {
+          "type": "boolean",
+          "description": "SMS codes as a second factor."
+        },
+        "totp_enabled": {
+          "type": "boolean",
+          "description": "An authenticator app as a second factor."
+        },
+        "last_login_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Admin is a back-office user."
+    },
+    "identity.admin.v1.AttackMode": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "all_brands": {
+          "type": "boolean",
+          "description": "Set when the platform turned it on for every brand."
+        }
+      }
+    },
+    "identity.admin.v1.AuditEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "brand_id": {
+          "type": "string"
+        },
+        "actor_kind": {
+          "type": "string",
+          "description": "ADMIN or PLAYER."
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "description": "e.g. player.status_changed."
+        },
+        "target_type": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "identity.admin.v1.ChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.ChangePasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ChangePlayerStatusResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        }
+      }
+    },
+    "identity.admin.v1.ConfirmTotpRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.ConfirmTotpResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.CreateRoleRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.CreateRoleResponse": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/identity.admin.v1.Role"
+        }
+      }
+    },
+    "identity.admin.v1.CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "all_brands": {
+          "type": "boolean"
+        },
+        "brand_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        }
+      }
+    },
+    "identity.admin.v1.DeleteRoleResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.DisableTotpRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.DisableTotpResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ExcludePlayerResponse": {
+      "type": "object",
+      "properties": {
+        "exclusion": {
+          "$ref": "#/definitions/identity.v1.SelfExclusion"
+        }
+      }
+    },
+    "identity.admin.v1.ForgotPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.ForgotPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.GetMeResponse": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "role": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.GetPlayerResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        }
+      }
+    },
+    "identity.admin.v1.GetRoleResponse": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/identity.admin.v1.Role"
+        }
+      }
+    },
+    "identity.admin.v1.GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        }
+      }
+    },
+    "identity.admin.v1.ListAttackModesResponse": {
+      "type": "object",
+      "properties": {
+        "attack_modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.AttackMode"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListAuditEntriesResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.AuditEntry"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListPermissionsResponse": {
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.Permission"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListPlayerExclusionsResponse": {
+      "type": "object",
+      "properties": {
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.v1.SelfExclusion"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListPlayersResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.v1.PlayerProfile"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "identity.admin.v1.ListRolesResponse": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.Role"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListUsersResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.Admin"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "identity.admin.v1.LoginChallenge": {
+      "type": "object",
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "description": "TOTP or SMS."
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "LoginChallenge asks for a second factor within five minutes, five tries at most."
+    },
+    "identity.admin.v1.LoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "One of email or msisdn."
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.LoginResponse": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        },
+        "challenge": {
+          "$ref": "#/definitions/identity.admin.v1.LoginChallenge"
+        }
+      }
+    },
+    "identity.admin.v1.LogoutResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.Permission": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "e.g. player:status."
+        },
+        "module": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "operator_grantable": {
+          "type": "boolean",
+          "description": "False for platform-only permissions such as operator:write."
+        }
+      }
+    },
+    "identity.admin.v1.PlayerService.ChangePlayerStatusBody": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "description": "SUSPEND, REACTIVATE or CLOSE."
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.PlayerService.ExcludePlayerBody": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "description": "YYYY-MM-DD, whole days in the brand's timezone."
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.ResetPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ResetUserPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.Role": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string",
+          "description": "Set on system roles (ADMIN)."
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "is_system": {
+          "type": "boolean"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "identity.admin.v1.RoleService.UpdateRoleBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.SetSmsCodesRequest": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "identity.admin.v1.SetSmsCodesResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.SetUserEnabledResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        }
+      }
+    },
+    "identity.admin.v1.StartAttackModeRequest": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "signup, login, verify, resend, forgot, reset, admin_login, admin_forgot or admin_reset."
+        },
+        "minutes": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.StartAttackModeResponse": {
+      "type": "object",
+      "properties": {
+        "attack_mode": {
+          "$ref": "#/definitions/identity.admin.v1.AttackMode"
+        }
+      }
+    },
+    "identity.admin.v1.StartTotpResponse": {
+      "type": "object",
+      "properties": {
+        "secret": {
+          "type": "string"
+        },
+        "otpauth_url": {
+          "type": "string"
+        },
+        "qr_code_png": {
+          "type": "string",
+          "description": "A base64 PNG of the otpauth URL."
+        }
+      }
+    },
+    "identity.admin.v1.StopAttackModeResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.UpdateRoleResponse": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/identity.admin.v1.Role"
+        }
+      }
+    },
+    "identity.admin.v1.UpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        }
+      }
+    },
+    "identity.admin.v1.UserService.ResetUserPasswordBody": {
+      "type": "object",
+      "properties": {
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.UserService.SetUserEnabledBody": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "identity.admin.v1.UserService.UpdateUserBody": {
+      "type": "object",
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "all_brands": {
+          "type": "boolean",
+          "description": "Sent to change the user's brands; absent keeps them."
+        },
+        "brand_ids": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "A JSON array of brand ids. Sent (even empty) to change the user's brands; absent keeps\nthem. A ListValue, because a repeated field can't tell empty from absent."
+        }
+      }
+    },
+    "identity.admin.v1.VerifyLoginRequest": {
+      "type": "object",
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.VerifyLoginResponse": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        },
+        "challenge": {
+          "$ref": "#/definitions/identity.admin.v1.LoginChallenge"
         }
       }
     },

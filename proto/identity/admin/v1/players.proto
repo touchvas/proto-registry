@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+// Back-office identity API (see admin.proto): the brand's players.
+package identity.admin.v1;
+
+import "google/api/annotations.proto";
+import "identity/v1/player.proto";
+import "identity/v1/responsible_gaming.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/admin/v1;identityadminv1";
+
+// PlayerService lets staff look up players, change their status and exclude them.
+service PlayerService {
+  // ListPlayers lists the brand's players, filtered. Needs player:read.
+  rpc ListPlayers(ListPlayersRequest) returns (ListPlayersResponse) {
+    option (google.api.http) = {get: "/v1/admin/players"};
+  }
+
+  // GetPlayer reads one player. Needs player:read.
+  rpc GetPlayer(GetPlayerRequest) returns (GetPlayerResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{id}"
+      response_body: "player"
+    };
+  }
+
+  // ChangePlayerStatus suspends, reactivates or closes a player. Needs player:status.
+  rpc ChangePlayerStatus(ChangePlayerStatusRequest) returns (ChangePlayerStatusResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/players/{id}/status"
+      body: "*"
+      response_body: "player"
+    };
+  }
+
+  // ExcludePlayer excludes a player on their behalf, under the self-exclusion rules. Needs
+  // player:exclude. 201.
+  rpc ExcludePlayer(ExcludePlayerRequest) returns (ExcludePlayerResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/players/{id}/exclusions"
+      body: "*"
+      response_body: "exclusion"
+    };
+  }
+
+  // ListPlayerExclusions lists a player's exclusions, newest first. Needs player:read.
+  rpc ListPlayerExclusions(ListPlayerExclusionsRequest) returns (ListPlayerExclusionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{id}/exclusions"
+      response_body: "exclusions"
+    };
+  }
+}
+
+message ListPlayersRequest {
+  // PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.
+  string status = 1;
+  string msisdn = 2;
+  string email = 3;
+  string username = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListPlayersResponse {
+  repeated identity.v1.PlayerProfile data = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetPlayerRequest {
+  string id = 1;
+}
+
+message GetPlayerResponse {
+  identity.v1.PlayerProfile player = 1;
+}
+
+message ChangePlayerStatusRequest {
+  string id = 1;
+  // SUSPEND, REACTIVATE or CLOSE.
+  string action = 2;
+  string reason = 3;
+}
+
+message ChangePlayerStatusResponse {
+  identity.v1.PlayerProfile player = 1;
+}
+
+message ExcludePlayerRequest {
+  string id = 1;
+  // YYYY-MM-DD, whole days in the brand's timezone.
+  string start_date = 2;
+  string end_date = 3;
+  string reason = 4;
+}
+
+message ExcludePlayerResponse {
+  identity.v1.SelfExclusion exclusion = 1;
+}
+
+message ListPlayerExclusionsRequest {
+  string id = 1;
+}
+
+message ListPlayerExclusionsResponse {
+  repeated identity.v1.SelfExclusion exclusions = 1;
+}

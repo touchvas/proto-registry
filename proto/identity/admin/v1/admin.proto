@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+// Back-office identity API: what the back office calls through api-gateway-service's admin
+// profile. Like identity.v1's public API, every RPC is served at the path identity's REST
+// API has today, with the same JSON. It runs on identity's admin port, which only the admin
+// gateway can reach.
+//
+// Admins work on the brand of the site they log in on, or switch with X-Act-As-Brand.
+// Empty lists are always [] (REST sends null or leaves some out).
+package identity.admin.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/admin/v1;identityadminv1";
+
+// Admin is a back-office user.
+message Admin {
+  string id = 1;
+  string operator_id = 2;
+  // Works on every brand of the operator, including brands added later.
+  bool all_brands = 3;
+  // The brands worked on when all_brands is false.
+  repeated string brand_ids = 4;
+  string email = 5;
+  optional string msisdn = 6;
+  string first_name = 7;
+  string last_name = 8;
+  string role_id = 9;
+  // ACTIVE or DISABLED.
+  string status = 10;
+  // SMS codes as a second factor.
+  bool otp_enabled = 11;
+  // An authenticator app as a second factor.
+  bool totp_enabled = 12;
+  optional google.protobuf.Timestamp last_login_at = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp updated_at = 15;
+}

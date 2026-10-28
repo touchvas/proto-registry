@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+// Back-office identity API (see admin.proto): the calling admin's own account and second
+// factors. Every RPC needs an admin session.
+package identity.admin.v1;
+
+import "google/api/annotations.proto";
+import "identity/admin/v1/admin.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/admin/v1;identityadminv1";
+
+// AccountService manages the calling admin's own account.
+service AccountService {
+  // GetMe returns the calling admin with their role and permissions.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse) {
+    option (google.api.http) = {get: "/v1/admin/me"};
+  }
+
+  // ChangePassword changes the calling admin's password and ends their other sessions. 204.
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/me/password"
+      body: "*"
+    };
+  }
+
+  // StartTotp begins adding an authenticator app: scan the QR code, then ConfirmTotp.
+  rpc StartTotp(StartTotpRequest) returns (StartTotpResponse) {
+    option (google.api.http) = {post: "/v1/admin/me/totp"};
+  }
+
+  // ConfirmTotp turns the authenticator app on with a first code. 204.
+  rpc ConfirmTotp(ConfirmTotpRequest) returns (ConfirmTotpResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/me/totp/confirm"
+      body: "*"
+    };
+  }
+
+  // DisableTotp turns the authenticator app off with a current code. 204.
+  rpc DisableTotp(DisableTotpRequest) returns (DisableTotpResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/me/totp/disable"
+      body: "*"
+    };
+  }
+
+  // SetSmsCodes turns SMS codes as a second factor on or off. 204.
+  rpc SetSmsCodes(SetSmsCodesRequest) returns (SetSmsCodesResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/me/sms-codes"
+      body: "*"
+    };
+  }
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  Admin admin = 1;
+  string role = 2;
+  repeated string permissions = 3;
+}
+
+message ChangePasswordRequest {
+  string current_password = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordResponse {}
+
+message StartTotpRequest {}
+
+message StartTotpResponse {
+  string secret = 1;
+  string otpauth_url = 2;
+  // A base64 PNG of the otpauth URL.
+  string qr_code_png = 3;
+}
+
+message ConfirmTotpRequest {
+  string code = 1;
+}
+
+message ConfirmTotpResponse {}
+
+message DisableTotpRequest {
+  string code = 1;
+}
+
+message DisableTotpResponse {}
+
+message SetSmsCodesRequest {
+  bool enabled = 1;
+}
+
+message SetSmsCodesResponse {}

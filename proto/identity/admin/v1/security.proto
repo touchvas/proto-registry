@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+// Back-office identity API (see admin.proto): the audit log and attack mode.
+package identity.admin.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/admin/v1;identityadminv1";
+
+// AuditService reads the audit log of back-office actions on the caller's brands.
+service AuditService {
+  // ListAuditEntries lists entries, newest first. Needs audit:read.
+  rpc ListAuditEntries(ListAuditEntriesRequest) returns (ListAuditEntriesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/audit"
+      response_body: "entries"
+    };
+  }
+}
+
+// SecurityService turns attack mode on and off: while on, every request to an endpoint of
+// the brand must solve a proof-of-work puzzle. Set on the platform brand, it covers every
+// brand.
+service SecurityService {
+  // ListAttackModes lists the endpoints in attack mode. Needs security:read.
+  rpc ListAttackModes(ListAttackModesRequest) returns (ListAttackModesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/security/attack-mode"
+      response_body: "attack_modes"
+    };
+  }
+
+  // StartAttackMode puts an endpoint in attack mode for 1 minute to 24 hours. Needs
+  // security:write.
+  rpc StartAttackMode(StartAttackModeRequest) returns (StartAttackModeResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/security/attack-mode"
+      body: "*"
+      response_body: "attack_mode"
+    };
+  }
+
+  // StopAttackMode ends attack mode on an endpoint. Needs security:write. 204.
+  rpc StopAttackMode(StopAttackModeRequest) returns (StopAttackModeResponse) {
+    option (google.api.http) = {delete: "/v1/admin/security/attack-mode/{endpoint}"};
+  }
+}
+
+message ListAuditEntriesRequest {
+  string brand_id = 1;
+  string target_id = 2;
+  string actor_id = 3;
+  string action = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListAuditEntriesResponse {
+  repeated AuditEntry entries = 1;
+}
+
+message AuditEntry {
+  string id = 1;
+  string brand_id = 2;
+  // ADMIN or PLAYER.
+  string actor_kind = 3;
+  string actor_id = 4;
+  // e.g. player.status_changed.
+  string action = 5;
+  string target_type = 6;
+  string target_id = 7;
+  optional string reason = 8;
+  optional google.protobuf.Struct details = 9;
+  optional string ip = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message ListAttackModesRequest {}
+
+message ListAttackModesResponse {
+  repeated AttackMode attack_modes = 1;
+}
+
+message AttackMode {
+  string endpoint = 1;
+  google.protobuf.Timestamp until = 2;
+  // Set when the platform turned it on for every brand.
+  bool all_brands = 3;
+}
+
+message StartAttackModeRequest {
+  // signup, login, verify, resend, forgot, reset, admin_login, admin_forgot or admin_reset.
+  string endpoint = 1;
+  int32 minutes = 2;
+  string reason = 3;
+}
+
+message StartAttackModeResponse {
+  AttackMode attack_mode = 1;
+}
+
+message StopAttackModeRequest {
+  string endpoint = 1;
+}
+
+message StopAttackModeResponse {}
