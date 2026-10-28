@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-// Public identity API: what the player apps call through api-gateway-service. The gateway
-// serves these RPCs at the REST paths in their google.api.http options, which are the paths
-// identity's REST API has today. The brand is resolved by identity from the token or the
-// request's host; callers never send a tenant.
+// Public identity API: what the player apps call through api-gateway-service's player profile,
+// at the paths identity's REST API has today (their google.api.http options), with the same
+// JSON. The brand is resolved by identity from the token or the request's host; callers never
+// send a tenant.
 //
 // JSON keeps proto field names. Fields marked optional are left out when empty, as the REST
 // API leaves them out today.
@@ -13,6 +13,8 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";
+
+// ------------------------------------------------------------------------ Signup, verification, profile
 
 // PlayerService is the player's own account: signup, phone verification and profile.
 service PlayerService {
@@ -150,4 +152,205 @@ message PlayerProfile {
 message IssuedSession {
   string token = 1;
   google.protobuf.Timestamp expires_at = 2;
+}
+
+// ------------------------------------------------------------------------ Login, logout, passwords, puzzles
+
+// AuthService starts and ends player sessions and manages player passwords.
+service AuthService {
+  // Login checks a player's password and starts a session. The player is identified by
+  // exactly one of msisdn, email or username.
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/login"
+      body: "*"
+    };
+  }
+
+  // Logout ends the calling player's session. Needs a player session. 204.
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {post: "/v1/logout"};
+  }
+
+  // ForgotPassword texts a password-reset code. It answers the same whether or not the
+  // number has an account. 202.
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {
+    option (google.api.http) = {
+      patch: "/v1/password/forgot"
+      body: "*"
+    };
+  }
+
+  // ResetPassword sets a new password with the texted code and ends every session.
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {
+    option (google.api.http) = {
+      patch: "/v1/password/reset"
+      body: "*"
+    };
+  }
+
+  // ChangePassword changes the calling player's password and ends their other sessions.
+  // Needs a player session. 204.
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {
+    option (google.api.http) = {
+      patch: "/v1/profile/password"
+      body: "*"
+    };
+  }
+
+  // CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when
+  // the caller must solve one: find a nonce such that sha256(challenge + ":" + nonce) in hex
+  // starts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.
+  // A puzzle works once, for the same user agent, until it expires.
+  rpc CreateChallenge(CreateChallengeRequest) returns (CreateChallengeResponse) {
+    option (google.api.http) = {
+      post: "/v1/challenge"
+      body: "body"
+      response_body: "challenge"
+    };
+  }
+}
+
+message LoginRequest {
+  string msisdn = 1;
+  string email = 2;
+  string username = 3;
+  string password = 4;
+  // WEB, ANDROID, IOS, USSD, RETAIL or API.
+  string channel = 5;
+}
+
+message LoginResponse {
+  PlayerProfile player = 1;
+  IssuedSession session = 2;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+message ForgotPasswordRequest {
+  string msisdn = 1;
+}
+
+message ForgotPasswordResponse {
+  string message = 1;
+}
+
+message ResetPasswordRequest {
+  string msisdn = 1;
+  string code = 2;
+  string new_password = 3;
+}
+
+message ResetPasswordResponse {
+  string message = 1;
+}
+
+message ChangePasswordRequest {
+  string current_password = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordResponse {}
+
+message CreateChallengeRequest {
+  // The endpoint the puzzle is for, from the query string (?endpoint=login): signup, login,
+  // verify, resend, forgot, reset, admin_login, admin_forgot or admin_reset. When empty, the
+  // body's endpoint is used, and then signup.
+  string endpoint = 1;
+  // The JSON body, which may name the endpoint instead.
+  CreateChallengeBody body = 2;
+}
+
+message CreateChallengeBody {
+  string endpoint = 1;
+}
+
+message CreateChallengeResponse {
+  Challenge challenge = 1;
+}
+
+message Challenge {
+  string endpoint = 1;
+  string challenge_id = 2;
+  string challenge = 3;
+  // Leading zero hex digits a solution needs.
+  int32 difficulty = 4;
+  // Seconds until the puzzle expires.
+  int32 expires_in = 5;
+}
+
+// ------------------------------------------------------------------------ Brand config
+
+// BrandService serves brand settings to the apps.
+service BrandService {
+  // GetPublicConfig returns the settings of the brand resolved for the request (from the
+  // session, or the site's domain) that a player app needs before signup.
+  rpc GetPublicConfig(GetPublicConfigRequest) returns (GetPublicConfigResponse) {
+    option (google.api.http) = {
+      get: "/v1/config"
+      response_body: "config"
+    };
+  }
+}
+
+message GetPublicConfigRequest {}
+
+message GetPublicConfigResponse {
+  PublicConfig config = 1;
+}
+
+message PublicConfig {
+  string brand_code = 1;
+  string country_code = 2;
+  string currency = 3;
+  string language = 4;
+  string timezone = 5;
+  // OTP or DIRECT.
+  string verification_mode = 6;
+  int32 otp_length = 7;
+  int32 password_min_length = 8;
+  int32 min_age_years = 9;
+}
+
+// ------------------------------------------------------------------------ Self-exclusion
+
+// ResponsibleGamingService lets players exclude themselves.
+service ResponsibleGamingService {
+  // SelfExclude creates the calling player's exclusion, or extends the open one to a later
+  // end date. A start date of today applies at once and ends every session; a later one is
+  // SCHEDULED. Needs a player session. 201.
+  rpc SelfExclude(SelfExcludeRequest) returns (SelfExcludeResponse) {
+    option (google.api.http) = {
+      post: "/v1/profile/exclusion"
+      body: "*"
+    };
+  }
+}
+
+message SelfExcludeRequest {
+  // YYYY-MM-DD, whole days in the brand's timezone.
+  string start_date = 1;
+  string end_date = 2;
+  string reason = 3;
+}
+
+message SelfExcludeResponse {
+  SelfExclusion exclusion = 1;
+  string message = 2;
+}
+
+message SelfExclusion {
+  string id = 1;
+  string player_id = 2;
+  string reason = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp ends_at = 5;
+  // SCHEDULED, ACTIVE or ENDED.
+  string status = 6;
+  // PLAYER or ADMIN.
+  string requested_by = 7;
+  optional google.protobuf.Timestamp ended_at = 8;
+  google.protobuf.Timestamp created_at = 9;
 }

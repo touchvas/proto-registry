@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+// Player wallet API: what the player apps call through api-gateway-service's player profile,
+// at the paths and with the JSON wallet's REST API has today. Every RPC needs a player
+// session; the brand is the session's.
+//
+// Amounts are in the currency's units (940.5 is KES 940.50) and exact: held as decimal
+// strings, written and read as JSON numbers (touchvas.api.v1.json_number), at most 4
+// decimals. Errors are {code, number, message} with wallet.v1's result code.
+package wallet.player.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "touchvas/api/v1/json.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/wallet/player/v1;walletplayerv1";
+
+// WalletService is the calling player's wallet.
+service WalletService {
+  // GetBalance returns the player's balance.
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {
+    option (google.api.http) = {
+      get: "/v1/balance"
+      response_body: "balance"
+    };
+  }
+
+  // ListTransactions returns the history, newest first; pass next as after for the next page.
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse) {
+    option (google.api.http) = {get: "/v1/transactions"};
+  }
+
+  // GetWithdrawalSettings returns the brand's withdrawal limits, charges and tax, for the
+  // withdraw form.
+  rpc GetWithdrawalSettings(GetWithdrawalSettingsRequest) returns (GetWithdrawalSettingsResponse) {
+    option (google.api.http) = {
+      get: "/v1/withdrawal-settings"
+      response_body: "settings"
+    };
+  }
+
+  // GetLimits returns the daily spend limit, any raise still waiting, today's spend, what's
+  // left and when the day resets.
+  rpc GetLimits(GetLimitsRequest) returns (GetLimitsResponse) {
+    option (google.api.http) = {
+      get: "/v1/limits"
+      response_body: "limits"
+    };
+  }
+
+  // SetLimits sets the daily spend limit (0 removes it). Lowering applies at once; raising or
+  // removing applies after the brand's cooling-off hours.
+  rpc SetLimits(SetLimitsRequest) returns (SetLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/limits"
+      body: "*"
+      response_body: "limits"
+    };
+  }
+}
+
+message GetBalanceRequest {}
+
+message GetBalanceResponse {
+  Balance balance = 1;
+}
+
+message Balance {
+  string currency = 1;
+  string cash_balance = 2 [(touchvas.api.v1.json_number) = true];
+  string winnings_balance = 3 [(touchvas.api.v1.json_number) = true];
+  string total_balance = 4 [(touchvas.api.v1.json_number) = true];
+  string withdrawable_balance = 5 [(touchvas.api.v1.json_number) = true];
+  // ACTIVE, FROZEN or CLOSED.
+  string status = 6;
+  int64 version = 7 [(touchvas.api.v1.json_number) = true];
+}
+
+message ListTransactionsRequest {
+  // 1 to 100; 20 otherwise.
+  int32 limit = 1;
+  // The previous page's next.
+  string after = 2;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  // Set when there may be more.
+  optional string next = 2;
+}
+
+message Transaction {
+  string id = 1;
+  // DEBIT or CREDIT.
+  string direction = 2;
+  // e.g. CASINO_BET, DEPOSIT.
+  string reason = 3;
+  string source = 4;
+  optional string round_id = 5;
+  string amount = 6 [(touchvas.api.v1.json_number) = true];
+  string cash_delta = 7 [(touchvas.api.v1.json_number) = true];
+  string winnings_delta = 8 [(touchvas.api.v1.json_number) = true];
+  string balance_after = 9 [(touchvas.api.v1.json_number) = true];
+  string currency = 10;
+  optional string description = 11;
+  google.protobuf.Timestamp created_at = 12;
+}
+
+message GetWithdrawalSettingsRequest {}
+
+message GetWithdrawalSettingsResponse {
+  WithdrawalSettings settings = 1;
+}
+
+// A 0 maximum or daily limit means none.
+message WithdrawalSettings {
+  bool enabled = 1;
+  string min_amount = 2 [(touchvas.api.v1.json_number) = true];
+  string max_amount = 3 [(touchvas.api.v1.json_number) = true];
+  string daily_amount_limit = 4 [(touchvas.api.v1.json_number) = true];
+  int32 daily_count_limit = 5;
+  int32 interval_seconds = 6;
+  int32 tax_rate_bp = 7;
+  repeated ChargeBand charge_bands = 8;
+}
+
+// A withdrawal of from to to, inclusive, costs charge.
+message ChargeBand {
+  string from = 1 [(touchvas.api.v1.json_number) = true];
+  string to = 2 [(touchvas.api.v1.json_number) = true];
+  string charge = 3 [(touchvas.api.v1.json_number) = true];
+}
+
+message GetLimitsRequest {}
+
+message GetLimitsResponse {
+  Limits limits = 1;
+}
+
+// 0 means no limit; a raised or removed limit shows as pending until pending_from.
+message Limits {
+  string currency = 1;
+  string daily_limit = 2 [(touchvas.api.v1.json_number) = true];
+  optional string pending_daily_limit = 3 [(touchvas.api.v1.json_number) = true];
+  optional google.protobuf.Timestamp pending_from = 4;
+  string spent_today = 5 [(touchvas.api.v1.json_number) = true];
+  optional string remaining = 6 [(touchvas.api.v1.json_number) = true];
+  // The brand's calendar day, YYYY-MM-DD.
+  string day = 7;
+  google.protobuf.Timestamp resets_at = 8;
+}
+
+message SetLimitsRequest {
+  // Required; 0 removes the limit.
+  optional string daily_limit = 1 [(touchvas.api.v1.json_number) = true];
+}
+
+message SetLimitsResponse {
+  Limits limits = 1;
+}

@@ -4,10 +4,10 @@
 // - protoc             (unknown)
 // source: identity/v1/player.proto
 
-// Public identity API: what the player apps call through api-gateway-service. The gateway
-// serves these RPCs at the REST paths in their google.api.http options, which are the paths
-// identity's REST API has today. The brand is resolved by identity from the token or the
-// request's host; callers never send a tenant.
+// Public identity API: what the player apps call through api-gateway-service's player profile,
+// at the paths identity's REST API has today (their google.api.http options), with the same
+// JSON. The brand is resolved by identity from the token or the request's host; callers never
+// send a tenant.
 //
 // JSON keeps proto field names. Fields marked optional are left out when empty, as the REST
 // API leaves them out today.
@@ -252,6 +252,549 @@ var PlayerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfile",
 			Handler:    _PlayerService_GetProfile_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "identity/v1/player.proto",
+}
+
+const (
+	AuthService_Login_FullMethodName           = "/identity.v1.AuthService/Login"
+	AuthService_Logout_FullMethodName          = "/identity.v1.AuthService/Logout"
+	AuthService_ForgotPassword_FullMethodName  = "/identity.v1.AuthService/ForgotPassword"
+	AuthService_ResetPassword_FullMethodName   = "/identity.v1.AuthService/ResetPassword"
+	AuthService_ChangePassword_FullMethodName  = "/identity.v1.AuthService/ChangePassword"
+	AuthService_CreateChallenge_FullMethodName = "/identity.v1.AuthService/CreateChallenge"
+)
+
+// AuthServiceClient is the client API for AuthService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// AuthService starts and ends player sessions and manages player passwords.
+type AuthServiceClient interface {
+	// Login checks a player's password and starts a session. The player is identified by
+	// exactly one of msisdn, email or username.
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	// Logout ends the calling player's session. Needs a player session. 204.
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	// ForgotPassword texts a password-reset code. It answers the same whether or not the
+	// number has an account. 202.
+	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error)
+	// ResetPassword sets a new password with the texted code and ends every session.
+	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
+	// ChangePassword changes the calling player's password and ends their other sessions.
+	// Needs a player session. 204.
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
+	// CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when
+	// the caller must solve one: find a nonce such that sha256(challenge + ":" + nonce) in hex
+	// starts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.
+	// A puzzle works once, for the same user agent, until it expires.
+	CreateChallenge(ctx context.Context, in *CreateChallengeRequest, opts ...grpc.CallOption) (*CreateChallengeResponse, error)
+}
+
+type authServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
+	return &authServiceClient{cc}
+}
+
+func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LogoutResponse)
+	err := c.cc.Invoke(ctx, AuthService_Logout_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ForgotPasswordResponse)
+	err := c.cc.Invoke(ctx, AuthService_ForgotPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResetPasswordResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChangePasswordResponse)
+	err := c.cc.Invoke(ctx, AuthService_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) CreateChallenge(ctx context.Context, in *CreateChallengeRequest, opts ...grpc.CallOption) (*CreateChallengeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateChallengeResponse)
+	err := c.cc.Invoke(ctx, AuthService_CreateChallenge_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServiceServer is the server API for AuthService service.
+// All implementations must embed UnimplementedAuthServiceServer
+// for forward compatibility.
+//
+// AuthService starts and ends player sessions and manages player passwords.
+type AuthServiceServer interface {
+	// Login checks a player's password and starts a session. The player is identified by
+	// exactly one of msisdn, email or username.
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	// Logout ends the calling player's session. Needs a player session. 204.
+	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	// ForgotPassword texts a password-reset code. It answers the same whether or not the
+	// number has an account. 202.
+	ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error)
+	// ResetPassword sets a new password with the texted code and ends every session.
+	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
+	// ChangePassword changes the calling player's password and ends their other sessions.
+	// Needs a player session. 204.
+	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
+	// CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when
+	// the caller must solve one: find a nonce such that sha256(challenge + ":" + nonce) in hex
+	// starts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.
+	// A puzzle works once, for the same user agent, until it expires.
+	CreateChallenge(context.Context, *CreateChallengeRequest) (*CreateChallengeResponse, error)
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+// UnimplementedAuthServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedAuthServiceServer struct{}
+
+func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAuthServiceServer) ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForgotPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedAuthServiceServer) CreateChallenge(context.Context, *CreateChallengeRequest) (*CreateChallengeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateChallenge not implemented")
+}
+func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
+
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// result in compilation errors.
+type UnsafeAuthServiceServer interface {
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
+	// If the following call pancis, it indicates UnimplementedAuthServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&AuthService_ServiceDesc, srv)
+}
+
+func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ForgotPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForgotPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ForgotPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ForgotPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ForgotPassword(ctx, req.(*ForgotPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ResetPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResetPassword(ctx, req.(*ResetPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_CreateChallenge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateChallengeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CreateChallenge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CreateChallenge_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CreateChallenge(ctx, req.(*CreateChallengeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "identity.v1.AuthService",
+	HandlerType: (*AuthServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Login",
+			Handler:    _AuthService_Login_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _AuthService_Logout_Handler,
+		},
+		{
+			MethodName: "ForgotPassword",
+			Handler:    _AuthService_ForgotPassword_Handler,
+		},
+		{
+			MethodName: "ResetPassword",
+			Handler:    _AuthService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _AuthService_ChangePassword_Handler,
+		},
+		{
+			MethodName: "CreateChallenge",
+			Handler:    _AuthService_CreateChallenge_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "identity/v1/player.proto",
+}
+
+const (
+	BrandService_GetPublicConfig_FullMethodName = "/identity.v1.BrandService/GetPublicConfig"
+)
+
+// BrandServiceClient is the client API for BrandService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// BrandService serves brand settings to the apps.
+type BrandServiceClient interface {
+	// GetPublicConfig returns the settings of the brand resolved for the request (from the
+	// session, or the site's domain) that a player app needs before signup.
+	GetPublicConfig(ctx context.Context, in *GetPublicConfigRequest, opts ...grpc.CallOption) (*GetPublicConfigResponse, error)
+}
+
+type brandServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewBrandServiceClient(cc grpc.ClientConnInterface) BrandServiceClient {
+	return &brandServiceClient{cc}
+}
+
+func (c *brandServiceClient) GetPublicConfig(ctx context.Context, in *GetPublicConfigRequest, opts ...grpc.CallOption) (*GetPublicConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPublicConfigResponse)
+	err := c.cc.Invoke(ctx, BrandService_GetPublicConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// BrandServiceServer is the server API for BrandService service.
+// All implementations must embed UnimplementedBrandServiceServer
+// for forward compatibility.
+//
+// BrandService serves brand settings to the apps.
+type BrandServiceServer interface {
+	// GetPublicConfig returns the settings of the brand resolved for the request (from the
+	// session, or the site's domain) that a player app needs before signup.
+	GetPublicConfig(context.Context, *GetPublicConfigRequest) (*GetPublicConfigResponse, error)
+	mustEmbedUnimplementedBrandServiceServer()
+}
+
+// UnimplementedBrandServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedBrandServiceServer struct{}
+
+func (UnimplementedBrandServiceServer) GetPublicConfig(context.Context, *GetPublicConfigRequest) (*GetPublicConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicConfig not implemented")
+}
+func (UnimplementedBrandServiceServer) mustEmbedUnimplementedBrandServiceServer() {}
+func (UnimplementedBrandServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafeBrandServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to BrandServiceServer will
+// result in compilation errors.
+type UnsafeBrandServiceServer interface {
+	mustEmbedUnimplementedBrandServiceServer()
+}
+
+func RegisterBrandServiceServer(s grpc.ServiceRegistrar, srv BrandServiceServer) {
+	// If the following call pancis, it indicates UnimplementedBrandServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&BrandService_ServiceDesc, srv)
+}
+
+func _BrandService_GetPublicConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BrandServiceServer).GetPublicConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BrandService_GetPublicConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BrandServiceServer).GetPublicConfig(ctx, req.(*GetPublicConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// BrandService_ServiceDesc is the grpc.ServiceDesc for BrandService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var BrandService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "identity.v1.BrandService",
+	HandlerType: (*BrandServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetPublicConfig",
+			Handler:    _BrandService_GetPublicConfig_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "identity/v1/player.proto",
+}
+
+const (
+	ResponsibleGamingService_SelfExclude_FullMethodName = "/identity.v1.ResponsibleGamingService/SelfExclude"
+)
+
+// ResponsibleGamingServiceClient is the client API for ResponsibleGamingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ResponsibleGamingService lets players exclude themselves.
+type ResponsibleGamingServiceClient interface {
+	// SelfExclude creates the calling player's exclusion, or extends the open one to a later
+	// end date. A start date of today applies at once and ends every session; a later one is
+	// SCHEDULED. Needs a player session. 201.
+	SelfExclude(ctx context.Context, in *SelfExcludeRequest, opts ...grpc.CallOption) (*SelfExcludeResponse, error)
+}
+
+type responsibleGamingServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewResponsibleGamingServiceClient(cc grpc.ClientConnInterface) ResponsibleGamingServiceClient {
+	return &responsibleGamingServiceClient{cc}
+}
+
+func (c *responsibleGamingServiceClient) SelfExclude(ctx context.Context, in *SelfExcludeRequest, opts ...grpc.CallOption) (*SelfExcludeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SelfExcludeResponse)
+	err := c.cc.Invoke(ctx, ResponsibleGamingService_SelfExclude_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ResponsibleGamingServiceServer is the server API for ResponsibleGamingService service.
+// All implementations must embed UnimplementedResponsibleGamingServiceServer
+// for forward compatibility.
+//
+// ResponsibleGamingService lets players exclude themselves.
+type ResponsibleGamingServiceServer interface {
+	// SelfExclude creates the calling player's exclusion, or extends the open one to a later
+	// end date. A start date of today applies at once and ends every session; a later one is
+	// SCHEDULED. Needs a player session. 201.
+	SelfExclude(context.Context, *SelfExcludeRequest) (*SelfExcludeResponse, error)
+	mustEmbedUnimplementedResponsibleGamingServiceServer()
+}
+
+// UnimplementedResponsibleGamingServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedResponsibleGamingServiceServer struct{}
+
+func (UnimplementedResponsibleGamingServiceServer) SelfExclude(context.Context, *SelfExcludeRequest) (*SelfExcludeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SelfExclude not implemented")
+}
+func (UnimplementedResponsibleGamingServiceServer) mustEmbedUnimplementedResponsibleGamingServiceServer() {
+}
+func (UnimplementedResponsibleGamingServiceServer) testEmbeddedByValue() {}
+
+// UnsafeResponsibleGamingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ResponsibleGamingServiceServer will
+// result in compilation errors.
+type UnsafeResponsibleGamingServiceServer interface {
+	mustEmbedUnimplementedResponsibleGamingServiceServer()
+}
+
+func RegisterResponsibleGamingServiceServer(s grpc.ServiceRegistrar, srv ResponsibleGamingServiceServer) {
+	// If the following call pancis, it indicates UnimplementedResponsibleGamingServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ResponsibleGamingService_ServiceDesc, srv)
+}
+
+func _ResponsibleGamingService_SelfExclude_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SelfExcludeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResponsibleGamingServiceServer).SelfExclude(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResponsibleGamingService_SelfExclude_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResponsibleGamingServiceServer).SelfExclude(ctx, req.(*SelfExcludeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ResponsibleGamingService_ServiceDesc is the grpc.ServiceDesc for ResponsibleGamingService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ResponsibleGamingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "identity.v1.ResponsibleGamingService",
+	HandlerType: (*ResponsibleGamingServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SelfExclude",
+			Handler:    _ResponsibleGamingService_SelfExclude_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

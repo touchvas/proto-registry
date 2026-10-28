@@ -9,6 +9,11 @@ deps:
 lint:
   use:
     - DEFAULT
+  ignore_only:
+    # The back office's /v1/challenge shares the player API's puzzle messages on purpose.
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - identity/v1/player.proto
+      - identity/admin/v1/admin.proto
 breaking:
   use:
     - FILE

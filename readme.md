@@ -34,7 +34,10 @@ service AuthService {
   `option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";`.
 - Never annotate service-to-service RPCs (e.g. `identity.v1.IdentityService`): an annotated method
   is reachable from the internet through the gateway. Keep public and internal RPCs in separate services.
-- Public messages avoid `int64` (JSON renders it as a string) and `oneof` in responses; the gateway
+- Amounts are `string` fields holding the exact decimal, marked `[(touchvas.api.v1.json_number) = true]`
+  (`proto/touchvas/api/v1/json.proto`): the gateway writes and reads them as JSON numbers. Mark an
+  `int64` the same way to keep it a JSON number.
+- Public messages avoid unmarked `int64` (JSON renders it as a string) and `oneof` in responses; the gateway
   keeps proto field names (`snake_case`) in JSON.
 - Run `make install` once: the gateway plugins are pinned to the grpc-gateway runtime version the
   gateway uses.

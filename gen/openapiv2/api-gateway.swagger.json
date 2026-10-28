@@ -24,25 +24,19 @@
       "name": "Fixture"
     },
     {
-      "name": "AccountService"
-    },
-    {
       "name": "PlayerService"
     },
     {
       "name": "AuthService"
     },
     {
-      "name": "PlatformService"
+      "name": "BrandService"
     },
     {
       "name": "ResponsibleGamingService"
     },
     {
-      "name": "AuditService"
-    },
-    {
-      "name": "SecurityService"
+      "name": "AccountService"
     },
     {
       "name": "UserService"
@@ -51,10 +45,16 @@
       "name": "RoleService"
     },
     {
-      "name": "Identity"
+      "name": "AuditService"
     },
     {
-      "name": "BrandService"
+      "name": "SecurityService"
+    },
+    {
+      "name": "PlatformService"
+    },
+    {
+      "name": "Identity"
     },
     {
       "name": "GatewayService"
@@ -85,6 +85,9 @@
     },
     {
       "name": "Tax"
+    },
+    {
+      "name": "WalletService"
     },
     {
       "name": "Wallet"
@@ -1196,9 +1199,32 @@
         ]
       }
     },
+    "/v1/balance": {
+      "get": {
+        "summary": "GetBalance returns the player's balance.",
+        "operationId": "WalletService_GetBalance",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Balance"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
     "/v1/challenge": {
       "post": {
-        "summary": "CreateChallenge returns a proof-of-work puzzle, as identity.v1.AuthService.CreateChallenge\ndoes for the apps: the back office needs one when admin login answers 428 (suspicious\ntraffic, or attack mode on admin_login).",
+        "summary": "CreateChallenge returns a proof-of-work puzzle, as identity.v1.AuthService.CreateChallenge\ndoes for the apps: the back office needs one when admin login answers 428 (suspicious\ntraffic, or attack mode on admin_login). It shares identity.v1's messages on purpose.",
         "operationId": "AuthService_CreateChallenge",
         "responses": {
           "200": {
@@ -1257,6 +1283,60 @@
         },
         "tags": [
           "BrandService"
+        ]
+      }
+    },
+    "/v1/limits": {
+      "get": {
+        "summary": "GetLimits returns the daily spend limit, any raise still waiting, today's spend, what's\nleft and when the day resets.",
+        "operationId": "WalletService_GetLimits",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "WalletService"
+        ]
+      },
+      "put": {
+        "summary": "SetLimits sets the daily spend limit (0 removes it). Lowering applies at once; raising or\nremoving applies after the brand's cooling-off hours.",
+        "operationId": "WalletService_SetLimits",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.SetLimitsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WalletService"
         ]
       }
     },
@@ -1948,6 +2028,46 @@
         ]
       }
     },
+    "/v1/transactions": {
+      "get": {
+        "summary": "ListTransactions returns the history, newest first; pass next as after for the next page.",
+        "operationId": "WalletService_ListTransactions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.ListTransactionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "1 to 100; 20 otherwise.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "description": "The previous page's next.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
     "/v1/verify": {
       "post": {
         "summary": "VerifyPhone confirms the signup code, activates the player and starts a session.",
@@ -2011,6 +2131,29 @@
         ],
         "tags": [
           "PlayerService"
+        ]
+      }
+    },
+    "/v1/withdrawal-settings": {
+      "get": {
+        "summary": "GetWithdrawalSettings returns the brand's withdrawal limits, charges and tax, for the\nwithdraw form.",
+        "operationId": "WalletService_GetWithdrawalSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.WithdrawalSettings"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "WalletService"
         ]
       }
     }
@@ -3588,6 +3731,220 @@
           "$ref": "#/definitions/identity.v1.IssuedSession"
         }
       }
+    },
+    "wallet.player.v1.Balance": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "cash_balance": {
+          "type": "string"
+        },
+        "winnings_balance": {
+          "type": "string"
+        },
+        "total_balance": {
+          "type": "string"
+        },
+        "withdrawable_balance": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "ACTIVE, FROZEN or CLOSED."
+        },
+        "version": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "wallet.player.v1.ChargeBand": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "charge": {
+          "type": "string"
+        }
+      },
+      "description": "A withdrawal of from to to, inclusive, costs charge."
+    },
+    "wallet.player.v1.GetBalanceResponse": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "$ref": "#/definitions/wallet.player.v1.Balance"
+        }
+      }
+    },
+    "wallet.player.v1.GetLimitsResponse": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/wallet.player.v1.Limits"
+        }
+      }
+    },
+    "wallet.player.v1.GetWithdrawalSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/wallet.player.v1.WithdrawalSettings"
+        }
+      }
+    },
+    "wallet.player.v1.Limits": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "daily_limit": {
+          "type": "string"
+        },
+        "pending_daily_limit": {
+          "type": "string"
+        },
+        "pending_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "spent_today": {
+          "type": "string"
+        },
+        "remaining": {
+          "type": "string"
+        },
+        "day": {
+          "type": "string",
+          "description": "The brand's calendar day, YYYY-MM-DD."
+        },
+        "resets_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "0 means no limit; a raised or removed limit shows as pending until pending_from."
+    },
+    "wallet.player.v1.ListTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.player.v1.Transaction"
+          }
+        },
+        "next": {
+          "type": "string",
+          "description": "Set when there may be more."
+        }
+      }
+    },
+    "wallet.player.v1.SetLimitsRequest": {
+      "type": "object",
+      "properties": {
+        "daily_limit": {
+          "type": "string",
+          "description": "Required; 0 removes the limit."
+        }
+      }
+    },
+    "wallet.player.v1.SetLimitsResponse": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/wallet.player.v1.Limits"
+        }
+      }
+    },
+    "wallet.player.v1.Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "description": "DEBIT or CREDIT."
+        },
+        "reason": {
+          "type": "string",
+          "description": "e.g. CASINO_BET, DEPOSIT."
+        },
+        "source": {
+          "type": "string"
+        },
+        "round_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "cash_delta": {
+          "type": "string"
+        },
+        "winnings_delta": {
+          "type": "string"
+        },
+        "balance_after": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.player.v1.WithdrawalSettings": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "min_amount": {
+          "type": "string"
+        },
+        "max_amount": {
+          "type": "string"
+        },
+        "daily_amount_limit": {
+          "type": "string"
+        },
+        "daily_count_limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "interval_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tax_rate_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "charge_bands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand"
+          }
+        }
+      },
+      "description": "A 0 maximum or daily limit means none."
     }
   }
 }

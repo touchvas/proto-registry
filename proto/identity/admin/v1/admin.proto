@@ -1,17 +1,22 @@
 syntax = "proto3";
 
 // Back-office identity API: what the back office calls through api-gateway-service's admin
-// profile. Like identity.v1's public API, every RPC is served at the path identity's REST
-// API has today, with the same JSON. It runs on identity's admin port, which only the admin
-// gateway can reach.
+// profile, at the paths identity's REST API has today (/v1/admin, /v1/platform), with the same
+// JSON. It runs on identity's admin port, which only the admin gateway can reach.
 //
-// Admins work on the brand of the site they log in on, or switch with X-Act-As-Brand.
-// Empty lists are always [] (REST sends null or leaves some out).
+// Admins work on the brand of the site they log in on, or switch with X-Act-As-Brand; the
+// platform routes take SUPER_ADMIN sessions only. Empty lists are always [] (REST sends null
+// or leaves some out).
 package identity.admin.v1;
 
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "identity/v1/player.proto";
 
 option go_package = "github.com/touchvas/proto-registry/gen/go/identity/admin/v1;identityadminv1";
+
+// ------------------------------------------------------------------------ Back-office users
 
 // Admin is a back-office user.
 message Admin {
@@ -36,3 +41,930 @@ message Admin {
   google.protobuf.Timestamp created_at = 14;
   google.protobuf.Timestamp updated_at = 15;
 }
+
+// ------------------------------------------------------------------------ Login, logout, passwords, puzzles
+
+// AuthService starts and ends back-office sessions.
+service AuthService {
+  // Login checks an admin's password. An admin without a second factor gets a session; one
+  // with a second factor gets a challenge that VerifyLogin completes.
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/login"
+      body: "*"
+    };
+  }
+
+  // VerifyLogin completes a login challenge with a TOTP or SMS code.
+  rpc VerifyLogin(VerifyLoginRequest) returns (VerifyLoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/login/verify"
+      body: "*"
+    };
+  }
+
+  // ForgotPassword texts a 6-digit code to the admin's phone number. It answers the same for
+  // unknown, disabled or phone-less accounts. 202, no body.
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/password/forgot"
+      body: "*"
+    };
+  }
+
+  // ResetPassword sets a new password with the texted code and ends every session. 204.
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/password/reset"
+      body: "*"
+    };
+  }
+
+  // Logout ends the calling admin's session. 204.
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {post: "/v1/admin/logout"};
+  }
+
+  // CreateChallenge returns a proof-of-work puzzle, as identity.v1.AuthService.CreateChallenge
+  // does for the apps: the back office needs one when admin login answers 428 (suspicious
+  // traffic, or attack mode on admin_login). It shares identity.v1's messages on purpose.
+  rpc CreateChallenge(identity.v1.CreateChallengeRequest) returns (identity.v1.CreateChallengeResponse) {
+    option (google.api.http) = {
+      post: "/v1/challenge"
+      body: "body"
+      response_body: "challenge"
+    };
+  }
+}
+
+message LoginRequest {
+  // One of email or msisdn.
+  string email = 1;
+  string msisdn = 2;
+  string password = 3;
+}
+
+message LoginResponse {
+  optional Admin admin = 1;
+  optional identity.v1.IssuedSession session = 2;
+  optional LoginChallenge challenge = 3;
+}
+
+// LoginChallenge asks for a second factor within five minutes, five tries at most.
+message LoginChallenge {
+  string challenge_id = 1;
+  // TOTP or SMS.
+  string method = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+message VerifyLoginRequest {
+  string challenge_id = 1;
+  string code = 2;
+}
+
+message VerifyLoginResponse {
+  optional Admin admin = 1;
+  optional identity.v1.IssuedSession session = 2;
+  optional LoginChallenge challenge = 3;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+  string msisdn = 2;
+}
+
+message ForgotPasswordResponse {}
+
+message ResetPasswordRequest {
+  string email = 1;
+  string msisdn = 2;
+  string code = 3;
+  string new_password = 4;
+}
+
+message ResetPasswordResponse {}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+// ------------------------------------------------------------------------ Own account and second factors
+
+// AccountService manages the calling admin's own account.
+service AccountService {
+  // GetMe returns the calling admin with their role and permissions.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse) {
+    option (google.api.http) = {get: "/v1/admin/me"};
+  }
+
+  // ChangePassword changes the calling admin's password and ends their other sessions. 204.
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/me/password"
+      body: "*"
+    };
+  }
+
+  // StartTotp begins adding an authenticator app: scan the QR code, then ConfirmTotp.
+  rpc StartTotp(StartTotpRequest) returns (StartTotpResponse) {
+    option (google.api.http) = {post: "/v1/admin/me/totp"};
+  }
+
+  // ConfirmTotp turns the authenticator app on with a first code. 204.
+  rpc ConfirmTotp(ConfirmTotpRequest) returns (ConfirmTotpResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/me/totp/confirm"
+      body: "*"
+    };
+  }
+
+  // DisableTotp turns the authenticator app off with a current code. 204.
+  rpc DisableTotp(DisableTotpRequest) returns (DisableTotpResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/me/totp/disable"
+      body: "*"
+    };
+  }
+
+  // SetSmsCodes turns SMS codes as a second factor on or off. 204.
+  rpc SetSmsCodes(SetSmsCodesRequest) returns (SetSmsCodesResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/me/sms-codes"
+      body: "*"
+    };
+  }
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  Admin admin = 1;
+  string role = 2;
+  repeated string permissions = 3;
+}
+
+message ChangePasswordRequest {
+  string current_password = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordResponse {}
+
+message StartTotpRequest {}
+
+message StartTotpResponse {
+  string secret = 1;
+  string otpauth_url = 2;
+  // A base64 PNG of the otpauth URL.
+  string qr_code_png = 3;
+}
+
+message ConfirmTotpRequest {
+  string code = 1;
+}
+
+message ConfirmTotpResponse {}
+
+message DisableTotpRequest {
+  string code = 1;
+}
+
+message DisableTotpResponse {}
+
+message SetSmsCodesRequest {
+  bool enabled = 1;
+}
+
+message SetSmsCodesResponse {}
+
+// ------------------------------------------------------------------------ Players
+
+// PlayerService lets staff look up players, change their status and exclude them.
+service PlayerService {
+  // ListPlayers lists the brand's players, filtered. Needs player:read.
+  rpc ListPlayers(ListPlayersRequest) returns (ListPlayersResponse) {
+    option (google.api.http) = {get: "/v1/admin/players"};
+  }
+
+  // GetPlayer reads one player. Needs player:read.
+  rpc GetPlayer(GetPlayerRequest) returns (GetPlayerResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{id}"
+      response_body: "player"
+    };
+  }
+
+  // ChangePlayerStatus suspends, reactivates or closes a player. Needs player:status.
+  rpc ChangePlayerStatus(ChangePlayerStatusRequest) returns (ChangePlayerStatusResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/players/{id}/status"
+      body: "*"
+      response_body: "player"
+    };
+  }
+
+  // ExcludePlayer excludes a player on their behalf, under the self-exclusion rules. Needs
+  // player:exclude. 201.
+  rpc ExcludePlayer(ExcludePlayerRequest) returns (ExcludePlayerResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/players/{id}/exclusions"
+      body: "*"
+      response_body: "exclusion"
+    };
+  }
+
+  // ListPlayerExclusions lists a player's exclusions, newest first. Needs player:read.
+  rpc ListPlayerExclusions(ListPlayerExclusionsRequest) returns (ListPlayerExclusionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{id}/exclusions"
+      response_body: "exclusions"
+    };
+  }
+}
+
+message ListPlayersRequest {
+  // PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.
+  string status = 1;
+  string msisdn = 2;
+  string email = 3;
+  string username = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListPlayersResponse {
+  repeated identity.v1.PlayerProfile data = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetPlayerRequest {
+  string id = 1;
+}
+
+message GetPlayerResponse {
+  identity.v1.PlayerProfile player = 1;
+}
+
+message ChangePlayerStatusRequest {
+  string id = 1;
+  // SUSPEND, REACTIVATE or CLOSE.
+  string action = 2;
+  string reason = 3;
+}
+
+message ChangePlayerStatusResponse {
+  identity.v1.PlayerProfile player = 1;
+}
+
+message ExcludePlayerRequest {
+  string id = 1;
+  // YYYY-MM-DD, whole days in the brand's timezone.
+  string start_date = 2;
+  string end_date = 3;
+  string reason = 4;
+}
+
+message ExcludePlayerResponse {
+  identity.v1.SelfExclusion exclusion = 1;
+}
+
+message ListPlayerExclusionsRequest {
+  string id = 1;
+}
+
+message ListPlayerExclusionsResponse {
+  repeated identity.v1.SelfExclusion exclusions = 1;
+}
+
+// ------------------------------------------------------------------------ Staff accounts, roles and permissions
+
+// UserService manages back-office users. Staff only see and manage users whose brands all
+// lie within theirs, and can't grant more than they hold.
+service UserService {
+  // ListUsers lists back-office users. Needs admin_user:read.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {get: "/v1/admin/users"};
+  }
+
+  // CreateUser creates a back-office user. Needs admin_user:write. 201.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/users"
+      body: "*"
+      response_body: "user"
+    };
+  }
+
+  // GetUser reads a back-office user. Needs admin_user:read.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/users/{id}"
+      response_body: "user"
+    };
+  }
+
+  // UpdateUser changes the fields sent. Needs admin_user:write.
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/users/{id}"
+      body: "*"
+      response_body: "user"
+    };
+  }
+
+  // SetUserEnabled enables or disables a user; disabling ends their sessions. Needs
+  // admin_user:write.
+  rpc SetUserEnabled(SetUserEnabledRequest) returns (SetUserEnabledResponse) {
+    option (google.api.http) = {
+      patch: "/v1/admin/users/{id}/status"
+      body: "*"
+      response_body: "user"
+    };
+  }
+
+  // ResetUserPassword sets another user's password and ends their sessions. Needs
+  // admin_user:write. 204.
+  rpc ResetUserPassword(ResetUserPasswordRequest) returns (ResetUserPasswordResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/users/{id}/password"
+      body: "*"
+    };
+  }
+}
+
+// RoleService manages the operator's roles, built from the permission catalogue.
+service RoleService {
+  // ListPermissions lists the permission catalogue. Needs role:read.
+  rpc ListPermissions(ListPermissionsRequest) returns (ListPermissionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/permissions"
+      response_body: "permissions"
+    };
+  }
+
+  // ListRoles lists the system roles and the operator's custom roles. Needs role:read.
+  rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/roles"
+      response_body: "roles"
+    };
+  }
+
+  // CreateRole creates a custom role. Needs role:write. 201.
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/roles"
+      body: "*"
+      response_body: "role"
+    };
+  }
+
+  // GetRole reads a role. Needs role:read.
+  rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/roles/{id}"
+      response_body: "role"
+    };
+  }
+
+  // UpdateRole replaces a custom role's name, description and permissions. Needs role:write.
+  rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/roles/{id}"
+      body: "*"
+      response_body: "role"
+    };
+  }
+
+  // DeleteRole deletes a custom role no user holds. Needs role:write. 204.
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+    option (google.api.http) = {delete: "/v1/admin/roles/{id}"};
+  }
+}
+
+message ListUsersRequest {
+  string brand_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListUsersResponse {
+  repeated Admin data = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string msisdn = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string password = 5;
+  string role_id = 6;
+  bool all_brands = 7;
+  repeated string brand_ids = 8;
+}
+
+message CreateUserResponse {
+  Admin user = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  Admin user = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string msisdn = 4;
+  string role_id = 5;
+  // Sent to change the user's brands; absent keeps them.
+  optional bool all_brands = 6;
+  // A JSON array of brand ids. Sent (even empty) to change the user's brands; absent keeps
+  // them. A ListValue, because a repeated field can't tell empty from absent.
+  google.protobuf.ListValue brand_ids = 7;
+}
+
+message UpdateUserResponse {
+  Admin user = 1;
+}
+
+message SetUserEnabledRequest {
+  string id = 1;
+  bool enabled = 2;
+}
+
+message SetUserEnabledResponse {
+  Admin user = 1;
+}
+
+message ResetUserPasswordRequest {
+  string id = 1;
+  string new_password = 2;
+}
+
+message ResetUserPasswordResponse {}
+
+message Permission {
+  // e.g. player:status.
+  string code = 1;
+  string module = 2;
+  string action = 3;
+  string description = 4;
+  // False for platform-only permissions such as operator:write.
+  bool operator_grantable = 5;
+}
+
+message Role {
+  string id = 1;
+  // Set on system roles (ADMIN).
+  optional string code = 2;
+  string name = 3;
+  string description = 4;
+  bool is_system = 5;
+  repeated string permissions = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ListPermissionsRequest {}
+
+message ListPermissionsResponse {
+  repeated Permission permissions = 1;
+}
+
+message ListRolesRequest {}
+
+message ListRolesResponse {
+  repeated Role roles = 1;
+}
+
+message CreateRoleRequest {
+  string name = 1;
+  string description = 2;
+  repeated string permissions = 3;
+}
+
+message CreateRoleResponse {
+  Role role = 1;
+}
+
+message GetRoleRequest {
+  string id = 1;
+}
+
+message GetRoleResponse {
+  Role role = 1;
+}
+
+message UpdateRoleRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string permissions = 4;
+}
+
+message UpdateRoleResponse {
+  Role role = 1;
+}
+
+message DeleteRoleRequest {
+  string id = 1;
+}
+
+message DeleteRoleResponse {}
+
+// ------------------------------------------------------------------------ Audit log and attack mode
+
+// AuditService reads the audit log of back-office actions on the caller's brands.
+service AuditService {
+  // ListAuditEntries lists entries, newest first. Needs audit:read.
+  rpc ListAuditEntries(ListAuditEntriesRequest) returns (ListAuditEntriesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/audit"
+      response_body: "entries"
+    };
+  }
+}
+
+// SecurityService turns attack mode on and off: while on, every request to an endpoint of
+// the brand must solve a proof-of-work puzzle. Set on the platform brand, it covers every
+// brand.
+service SecurityService {
+  // ListAttackModes lists the endpoints in attack mode. Needs security:read.
+  rpc ListAttackModes(ListAttackModesRequest) returns (ListAttackModesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/security/attack-mode"
+      response_body: "attack_modes"
+    };
+  }
+
+  // StartAttackMode puts an endpoint in attack mode for 1 minute to 24 hours. Needs
+  // security:write.
+  rpc StartAttackMode(StartAttackModeRequest) returns (StartAttackModeResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/security/attack-mode"
+      body: "*"
+      response_body: "attack_mode"
+    };
+  }
+
+  // StopAttackMode ends attack mode on an endpoint. Needs security:write. 204.
+  rpc StopAttackMode(StopAttackModeRequest) returns (StopAttackModeResponse) {
+    option (google.api.http) = {delete: "/v1/admin/security/attack-mode/{endpoint}"};
+  }
+}
+
+message ListAuditEntriesRequest {
+  string brand_id = 1;
+  string target_id = 2;
+  string actor_id = 3;
+  string action = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListAuditEntriesResponse {
+  repeated AuditEntry entries = 1;
+}
+
+message AuditEntry {
+  string id = 1;
+  string brand_id = 2;
+  // ADMIN or PLAYER.
+  string actor_kind = 3;
+  string actor_id = 4;
+  // e.g. player.status_changed.
+  string action = 5;
+  string target_type = 6;
+  string target_id = 7;
+  optional string reason = 8;
+  optional google.protobuf.Struct details = 9;
+  optional string ip = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message ListAttackModesRequest {}
+
+message ListAttackModesResponse {
+  repeated AttackMode attack_modes = 1;
+}
+
+message AttackMode {
+  string endpoint = 1;
+  google.protobuf.Timestamp until = 2;
+  // Set when the platform turned it on for every brand.
+  bool all_brands = 3;
+}
+
+message StartAttackModeRequest {
+  // signup, login, verify, resend, forgot, reset, admin_login, admin_forgot or admin_reset.
+  string endpoint = 1;
+  int32 minutes = 2;
+  string reason = 3;
+}
+
+message StartAttackModeResponse {
+  AttackMode attack_mode = 1;
+}
+
+message StopAttackModeRequest {
+  string endpoint = 1;
+}
+
+message StopAttackModeResponse {}
+
+// ------------------------------------------------------------------------ Platform: operators and brands
+
+// PlatformService manages operators, brands, brand settings and brand domains.
+service PlatformService {
+  // CreateOperator creates an operator, the company that owns brands. 201.
+  rpc CreateOperator(CreateOperatorRequest) returns (CreateOperatorResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/operators"
+      body: "*"
+      response_body: "operator"
+    };
+  }
+
+  // ListOperators lists every operator.
+  rpc ListOperators(ListOperatorsRequest) returns (ListOperatorsResponse) {
+    option (google.api.http) = {
+      get: "/v1/platform/operators"
+      response_body: "operators"
+    };
+  }
+
+  // GetOperator reads one operator.
+  rpc GetOperator(GetOperatorRequest) returns (GetOperatorResponse) {
+    option (google.api.http) = {
+      get: "/v1/platform/operators/{id}"
+      response_body: "operator"
+    };
+  }
+
+  // OnboardBrand creates a brand (PENDING) with its settings. 201.
+  rpc OnboardBrand(OnboardBrandRequest) returns (OnboardBrandResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/brands"
+      body: "*"
+      response_body: "brand"
+    };
+  }
+
+  // ListBrands lists brands, optionally of one operator.
+  rpc ListBrands(ListBrandsRequest) returns (ListBrandsResponse) {
+    option (google.api.http) = {get: "/v1/platform/brands"};
+  }
+
+  // GetBrand reads one brand.
+  rpc GetBrand(GetBrandRequest) returns (GetBrandResponse) {
+    option (google.api.http) = {
+      get: "/v1/platform/brands/{id}"
+      response_body: "brand"
+    };
+  }
+
+  // ActivateBrand makes a brand ACTIVE.
+  rpc ActivateBrand(ActivateBrandRequest) returns (ActivateBrandResponse) {
+    option (google.api.http) = {
+      patch: "/v1/platform/brands/{id}/activate"
+      response_body: "brand"
+    };
+  }
+
+  // SuspendBrand makes a brand SUSPENDED.
+  rpc SuspendBrand(SuspendBrandRequest) returns (SuspendBrandResponse) {
+    option (google.api.http) = {
+      patch: "/v1/platform/brands/{id}/suspend"
+      body: "*"
+      response_body: "brand"
+    };
+  }
+
+  // GetBrandSettings reads a brand's settings.
+  rpc GetBrandSettings(GetBrandSettingsRequest) returns (GetBrandSettingsResponse) {
+    option (google.api.http) = {
+      get: "/v1/platform/brands/{id}/settings"
+      response_body: "settings"
+    };
+  }
+
+  // UpdateBrandSettings replaces a brand's settings. The body is the whole settings object
+  // with the version it was read at; a stale version is a conflict.
+  rpc UpdateBrandSettings(UpdateBrandSettingsRequest) returns (UpdateBrandSettingsResponse) {
+    option (google.api.http) = {
+      put: "/v1/platform/brands/{id}/settings"
+      body: "settings"
+      response_body: "settings"
+    };
+  }
+
+  // ListBrandDomains lists a brand's domains.
+  rpc ListBrandDomains(ListBrandDomainsRequest) returns (ListBrandDomainsResponse) {
+    option (google.api.http) = {
+      get: "/v1/platform/brands/{id}/domains"
+      response_body: "domains"
+    };
+  }
+
+  // AddBrandDomain registers a domain the brand's sites or back office run on. 201.
+  rpc AddBrandDomain(AddBrandDomainRequest) returns (AddBrandDomainResponse) {
+    option (google.api.http) = {
+      post: "/v1/platform/brands/{id}/domains"
+      body: "*"
+      response_body: "domain"
+    };
+  }
+
+  // RemoveBrandDomain removes a domain. 204.
+  rpc RemoveBrandDomain(RemoveBrandDomainRequest) returns (RemoveBrandDomainResponse) {
+    option (google.api.http) = {delete: "/v1/platform/brands/{id}/domains/{domain_id}"};
+  }
+}
+
+message Operator {
+  string id = 1;
+  string code = 2;
+  string name = 3;
+  string created_by = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+// Brand is one operator's business in one country: the tenant.
+message Brand {
+  string id = 1;
+  string operator_id = 2;
+  string code = 3;
+  string name = 4;
+  string country_code = 5;
+  string business_email = 6;
+  string phone = 7;
+  // PENDING, ACTIVE or SUSPENDED.
+  string status = 8;
+  string created_by = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message BrandSettings {
+  string tenant_id = 1;
+  string currency = 2;
+  string language = 3;
+  string timezone = 4;
+  // OTP or DIRECT.
+  string verification_mode = 5;
+  int32 otp_length = 6;
+  int32 otp_ttl_seconds = 7;
+  int32 otp_max_attempts = 8;
+  string referral_prefix = 9;
+  int32 password_min_length = 10;
+  int32 min_age_years = 11;
+  bool kyc_required_to_play = 12;
+  // A new login ends the player's other sessions.
+  bool single_session = 13;
+  // The version read; send it back on update.
+  int32 version = 14;
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+message BrandDomain {
+  string id = 1;
+  string tenant_id = 2;
+  string host = 3;
+  // PLAYER_SITE or BACK_OFFICE.
+  string purpose = 4;
+  bool is_active = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message CreateOperatorRequest {
+  string code = 1;
+  string name = 2;
+}
+
+message CreateOperatorResponse {
+  Operator operator = 1;
+}
+
+message ListOperatorsRequest {}
+
+message ListOperatorsResponse {
+  repeated Operator operators = 1;
+}
+
+message GetOperatorRequest {
+  string id = 1;
+}
+
+message GetOperatorResponse {
+  Operator operator = 1;
+}
+
+message OnboardBrandRequest {
+  string operator_id = 1;
+  string code = 2;
+  string name = 3;
+  string business_email = 4;
+  string phone = 5;
+  string country_code = 6;
+  string currency = 7;
+  string language = 8;
+  string timezone = 9;
+}
+
+message OnboardBrandResponse {
+  Brand brand = 1;
+}
+
+message ListBrandsRequest {
+  string operator_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListBrandsResponse {
+  repeated Brand data = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetBrandRequest {
+  string id = 1;
+}
+
+message GetBrandResponse {
+  Brand brand = 1;
+}
+
+message ActivateBrandRequest {
+  string id = 1;
+}
+
+message ActivateBrandResponse {
+  Brand brand = 1;
+}
+
+message SuspendBrandRequest {
+  string id = 1;
+  string reason = 2;
+}
+
+message SuspendBrandResponse {
+  Brand brand = 1;
+}
+
+message GetBrandSettingsRequest {
+  string id = 1;
+}
+
+message GetBrandSettingsResponse {
+  BrandSettings settings = 1;
+}
+
+message UpdateBrandSettingsRequest {
+  string id = 1;
+  // The JSON body.
+  BrandSettings settings = 2;
+}
+
+message UpdateBrandSettingsResponse {
+  BrandSettings settings = 1;
+}
+
+message ListBrandDomainsRequest {
+  string id = 1;
+}
+
+message ListBrandDomainsResponse {
+  repeated BrandDomain domains = 1;
+}
+
+message AddBrandDomainRequest {
+  string id = 1;
+  string host = 2;
+  // PLAYER_SITE or BACK_OFFICE.
+  string purpose = 3;
+}
+
+message AddBrandDomainResponse {
+  BrandDomain domain = 1;
+}
+
+message RemoveBrandDomainRequest {
+  string id = 1;
+  string domain_id = 2;
+}
+
+message RemoveBrandDomainResponse {}

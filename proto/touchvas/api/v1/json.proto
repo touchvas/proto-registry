@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Options that shape the JSON api-gateway-service reads and writes for the UIs.
+package touchvas.api.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/touchvas/api/v1;apiv1";
+
+extend google.protobuf.FieldOptions {
+  // json_number writes the field as a JSON number, exactly as it is held, and accepts a JSON
+  // number for it in requests: a string field holding a decimal (an amount such as "940.5") or
+  // an int64 field. Proto JSON would otherwise quote both, and a double would not be exact.
+  bool json_number = 51001;
+}
