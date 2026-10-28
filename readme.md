@@ -14,7 +14,7 @@
   - **Payment:** `option go_package = "github.com/your-org/proto-registry/gen/go/payment";`
   - **Wallet:** `option go_package = "github.com/your-org/proto-registry/gen/go/wallet";`
 
-## APIs served through ui-gateway-service
+## APIs served through api-gateway-service
 The UI calls one gateway, which translates REST/JSON to gRPC. Endpoints the UI uses are annotated
 with `google.api.http` (from the `buf.build/googleapis/googleapis` dependency in `proto/buf.yaml`):
 
@@ -29,7 +29,7 @@ service AuthService {
 ```
 
 - `buf generate proto` then also writes `*.pb.gw.go` next to the Go code, and every annotated
-  endpoint is merged into `gen/openapiv2/ui-gateway.swagger.json`.
+  endpoint is merged into `gen/openapiv2/api-gateway.swagger.json`.
 - Versioned packages live in versioned folders: `identity.v1` in `proto/identity/v1/`, with
   `option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";`.
 - Never annotate service-to-service RPCs (e.g. `identity.v1.IdentityService`): an annotated method

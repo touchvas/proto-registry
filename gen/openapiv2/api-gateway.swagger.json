@@ -1,0 +1,962 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "common/common.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Aegis"
+    },
+    {
+      "name": "Betting"
+    },
+    {
+      "name": "Bonus"
+    },
+    {
+      "name": "CasinoProvider"
+    },
+    {
+      "name": "Casino"
+    },
+    {
+      "name": "Fixture"
+    },
+    {
+      "name": "Identity"
+    },
+    {
+      "name": "PlayerService"
+    },
+    {
+      "name": "AuthService"
+    },
+    {
+      "name": "BrandService"
+    },
+    {
+      "name": "IdentityService"
+    },
+    {
+      "name": "ResponsibleGamingService"
+    },
+    {
+      "name": "Jackpot"
+    },
+    {
+      "name": "Mts"
+    },
+    {
+      "name": "Notification"
+    },
+    {
+      "name": "PaymentGateway"
+    },
+    {
+      "name": "PaymentProvider"
+    },
+    {
+      "name": "Reports"
+    },
+    {
+      "name": "Shortcode"
+    },
+    {
+      "name": "Tax"
+    },
+    {
+      "name": "Wallet"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/challenge": {
+      "post": {
+        "summary": "CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when\nthe caller must solve one: find a nonce such that sha256(challenge + \":\" + nonce) in hex\nstarts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.\nA puzzle works once, for the same user agent, until it expires.",
+        "operationId": "AuthService_CreateChallenge",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.Challenge"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "The JSON body, which may name the endpoint instead.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.CreateChallengeBody"
+            }
+          },
+          {
+            "name": "endpoint",
+            "description": "The endpoint the puzzle is for, from the query string (?endpoint=login): signup, login,\nverify, resend, forgot, reset, admin_login, admin_forgot or admin_reset. When empty, the\nbody's endpoint is used, and then signup.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/config": {
+      "get": {
+        "summary": "GetPublicConfig returns the settings of the brand resolved for the request (from the\nsession, or the site's domain) that a player app needs before signup.",
+        "operationId": "BrandService_GetPublicConfig",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PublicConfig"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "BrandService"
+        ]
+      }
+    },
+    "/v1/login": {
+      "post": {
+        "summary": "Login checks a player's password and starts a session. The player is identified by\nexactly one of msisdn, email or username.",
+        "operationId": "AuthService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/logout": {
+      "post": {
+        "summary": "Logout ends the calling player's session. Needs a player session. 204.",
+        "operationId": "AuthService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/password/forgot": {
+      "patch": {
+        "summary": "ForgotPassword texts a password-reset code. It answers the same whether or not the\nnumber has an account. 202.",
+        "operationId": "AuthService_ForgotPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ForgotPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ForgotPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/password/reset": {
+      "patch": {
+        "summary": "ResetPassword sets a new password with the texted code and ends every session.",
+        "operationId": "AuthService_ResetPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResetPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResetPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/profile": {
+      "get": {
+        "summary": "GetProfile returns the calling player. Needs a player session.",
+        "operationId": "PlayerService_GetProfile",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/profile/exclusion": {
+      "post": {
+        "summary": "SelfExclude creates the calling player's exclusion, or extends the open one to a later\nend date. A start date of today applies at once and ends every session; a later one is\nSCHEDULED. Needs a player session. 201.",
+        "operationId": "ResponsibleGamingService_SelfExclude",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExcludeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExcludeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ResponsibleGamingService"
+        ]
+      }
+    },
+    "/v1/profile/password": {
+      "patch": {
+        "summary": "ChangePassword changes the calling player's password and ends their other sessions.\nNeeds a player session. 204.",
+        "operationId": "AuthService_ChangePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ChangePasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ChangePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/v1/signup": {
+      "post": {
+        "summary": "Signup creates a player of the brand. With OTP verification a code is sent by SMS and\nverification_required is true; with DIRECT verification a session is returned. 201.",
+        "operationId": "PlayerService_Signup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SignupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SignupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "summary": "VerifyPhone confirms the signup code, activates the player and starts a session.",
+        "operationId": "PlayerService_VerifyPhone",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.VerifyPhoneResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.VerifyPhoneRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    },
+    "/v1/verify/resend": {
+      "post": {
+        "summary": "ResendCode sends a new signup code to an unverified player. It answers the same whether\nor not the number has an account. 202.",
+        "operationId": "PlayerService_ResendCode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResendCodeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResendCodeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PlayerService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "identity.v1.Attribution": {
+      "type": "object",
+      "properties": {
+        "btag": {
+          "type": "string"
+        },
+        "click_id": {
+          "type": "string"
+        },
+        "affiliate_code": {
+          "type": "string"
+        },
+        "utm_source": {
+          "type": "string"
+        },
+        "utm_medium": {
+          "type": "string"
+        },
+        "utm_campaign": {
+          "type": "string"
+        },
+        "utm_content": {
+          "type": "string"
+        },
+        "utm_term": {
+          "type": "string"
+        },
+        "gclid": {
+          "type": "string"
+        },
+        "fbclid": {
+          "type": "string"
+        },
+        "referrer": {
+          "type": "string"
+        },
+        "traffic_source": {
+          "type": "string"
+        },
+        "device_info": {
+          "type": "string"
+        },
+        "browser": {
+          "type": "string"
+        },
+        "browser_version": {
+          "type": "string"
+        },
+        "engine": {
+          "type": "string"
+        }
+      },
+      "description": "Attribution records where a signup came from. The client's IP and user agent are taken\nfrom the request, not from here."
+    },
+    "identity.v1.Challenge": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "challenge_id": {
+          "type": "string"
+        },
+        "challenge": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Leading zero hex digits a solution needs."
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Seconds until the puzzle expires."
+        }
+      }
+    },
+    "identity.v1.ChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.ChangePasswordResponse": {
+      "type": "object"
+    },
+    "identity.v1.CreateChallengeBody": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.CreateChallengeResponse": {
+      "type": "object",
+      "properties": {
+        "challenge": {
+          "$ref": "#/definitions/identity.v1.Challenge"
+        }
+      }
+    },
+    "identity.v1.ForgotPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.ForgotPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.GetProfileResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        }
+      }
+    },
+    "identity.v1.GetPublicConfigResponse": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "$ref": "#/definitions/identity.v1.PublicConfig"
+        }
+      }
+    },
+    "identity.v1.IssuedSession": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\"."
+    },
+    "identity.v1.LoginRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string",
+          "description": "WEB, ANDROID, IOS, USSD, RETAIL or API."
+        }
+      }
+    },
+    "identity.v1.LoginResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      }
+    },
+    "identity.v1.LogoutResponse": {
+      "type": "object"
+    },
+    "identity.v1.PlayerProfile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "date_of_birth": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "national_id": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED."
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "registration_channel": {
+          "type": "string"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_login_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "PlayerProfile is a player as the player sees themselves."
+    },
+    "identity.v1.PublicConfig": {
+      "type": "object",
+      "properties": {
+        "brand_code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "verification_mode": {
+          "type": "string",
+          "description": "OTP or DIRECT."
+        },
+        "otp_length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "password_min_length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "min_age_years": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "identity.v1.ResendCodeRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.ResendCodeResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.ResetPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.SelfExcludeRequest": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "description": "YYYY-MM-DD, whole days in the brand's timezone."
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.SelfExcludeResponse": {
+      "type": "object",
+      "properties": {
+        "exclusion": {
+          "$ref": "#/definitions/identity.v1.SelfExclusion"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.SelfExclusion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "starts_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ends_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "SCHEDULED, ACTIVE or ENDED."
+        },
+        "requested_by": {
+          "type": "string",
+          "description": "PLAYER or ADMIN."
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "identity.v1.SignupRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string",
+          "description": "Any local or international form; normalised with the brand's country."
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "date_of_birth": {
+          "type": "string",
+          "description": "YYYY-MM-DD."
+        },
+        "national_id": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string",
+          "description": "WEB, ANDROID, IOS, USSD, RETAIL or API."
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "attribution": {
+          "$ref": "#/definitions/identity.v1.Attribution"
+        }
+      }
+    },
+    "identity.v1.SignupResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "verification_required": {
+          "type": "boolean"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession",
+          "description": "Set when the brand verifies directly (no code)."
+        }
+      }
+    },
+    "identity.v1.VerifyPhoneRequest": {
+      "type": "object",
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.v1.VerifyPhoneResponse": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      }
+    }
+  }
+}

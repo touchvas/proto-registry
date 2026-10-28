@@ -14,6 +14,6 @@ plugins:
     strategy: all
     opt:
       - allow_merge=true
-      - merge_file_name=ui-gateway
+      - merge_file_name=api-gateway
       - json_names_for_fields=false
       - openapi_naming_strategy=fqn

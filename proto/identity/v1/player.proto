@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+// Public identity API: what the player apps call through api-gateway-service. The gateway
+// serves these RPCs at the REST paths in their google.api.http options, which are the paths
+// identity's REST API has today. The brand is resolved by identity from the token or the
+// request's host; callers never send a tenant.
+//
+// JSON keeps proto field names. Fields marked optional are left out when empty, as the REST
+// API leaves them out today.
+package identity.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";
+
+// PlayerService is the player's own account: signup, phone verification and profile.
+service PlayerService {
+  // Signup creates a player of the brand. With OTP verification a code is sent by SMS and
+  // verification_required is true; with DIRECT verification a session is returned. 201.
+  rpc Signup(SignupRequest) returns (SignupResponse) {
+    option (google.api.http) = {
+      post: "/v1/signup"
+      body: "*"
+    };
+  }
+
+  // VerifyPhone confirms the signup code, activates the player and starts a session.
+  rpc VerifyPhone(VerifyPhoneRequest) returns (VerifyPhoneResponse) {
+    option (google.api.http) = {
+      post: "/v1/verify"
+      body: "*"
+    };
+  }
+
+  // ResendCode sends a new signup code to an unverified player. It answers the same whether
+  // or not the number has an account. 202.
+  rpc ResendCode(ResendCodeRequest) returns (ResendCodeResponse) {
+    option (google.api.http) = {
+      post: "/v1/verify/resend"
+      body: "*"
+    };
+  }
+
+  // GetProfile returns the calling player. Needs a player session.
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {
+    option (google.api.http) = {
+      get: "/v1/profile"
+      response_body: "player"
+    };
+  }
+}
+
+message SignupRequest {
+  // Any local or international form; normalised with the brand's country.
+  string msisdn = 1;
+  string password = 2;
+  string email = 3;
+  string username = 4;
+  string first_name = 5;
+  string last_name = 6;
+  // YYYY-MM-DD.
+  string date_of_birth = 7;
+  string national_id = 8;
+  string nationality = 9;
+  string address = 10;
+  // WEB, ANDROID, IOS, USSD, RETAIL or API.
+  string channel = 11;
+  string referral_code = 12;
+  Attribution attribution = 13;
+}
+
+// Attribution records where a signup came from. The client's IP and user agent are taken
+// from the request, not from here.
+message Attribution {
+  string btag = 1;
+  string click_id = 2;
+  string affiliate_code = 3;
+  string utm_source = 4;
+  string utm_medium = 5;
+  string utm_campaign = 6;
+  string utm_content = 7;
+  string utm_term = 8;
+  string gclid = 9;
+  string fbclid = 10;
+  string referrer = 11;
+  string traffic_source = 12;
+  string device_info = 13;
+  string browser = 14;
+  string browser_version = 15;
+  string engine = 16;
+}
+
+message SignupResponse {
+  PlayerProfile player = 1;
+  bool verification_required = 2;
+  // Set when the brand verifies directly (no code).
+  optional IssuedSession session = 3;
+}
+
+message VerifyPhoneRequest {
+  string msisdn = 1;
+  string code = 2;
+}
+
+message VerifyPhoneResponse {
+  PlayerProfile player = 1;
+  IssuedSession session = 2;
+}
+
+message ResendCodeRequest {
+  string msisdn = 1;
+}
+
+message ResendCodeResponse {
+  string message = 1;
+}
+
+message GetProfileRequest {}
+
+message GetProfileResponse {
+  PlayerProfile player = 1;
+}
+
+// PlayerProfile is a player as the player sees themselves.
+message PlayerProfile {
+  string id = 1;
+  string msisdn = 2;
+  optional string email = 3;
+  optional string username = 4;
+  optional string first_name = 5;
+  optional string last_name = 6;
+  optional google.protobuf.Timestamp date_of_birth = 7;
+  optional string national_id = 8;
+  optional string nationality = 9;
+  optional string address = 10;
+  string country_code = 11;
+  string language = 12;
+  string currency = 13;
+  // PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.
+  string status = 14;
+  string referral_code = 15;
+  string registration_channel = 16;
+  optional google.protobuf.Timestamp verified_at = 17;
+  optional google.protobuf.Timestamp last_login_at = 18;
+  google.protobuf.Timestamp created_at = 19;
+}
+
+// IssuedSession is a player session: send the token as "Authorization: Bearer <token>".
+message IssuedSession {
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}

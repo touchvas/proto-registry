@@ -1,7 +1,7 @@
 # Variables
 BUF_VERSION := latest
 # The gateway plugins are pinned: generated *.pb.gw.go must match the grpc-gateway runtime
-# version that ui-gateway-service imports.
+# version that api-gateway-service imports.
 GRPC_GATEWAY_VERSION := v2.29.0
 GEN_DIR := gen/go
 OPENAPI_DIR := gen/openapiv2

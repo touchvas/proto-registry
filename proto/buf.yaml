@@ -3,7 +3,7 @@ version: v1
 # you don't need 'build'.
 # If it's one level up, we use the directory as the module.
 # googleapis provides google/api/annotations.proto, which maps RPCs to the REST paths
-# ui-gateway-service serves.
+# api-gateway-service serves.
 deps:
   - buf.build/googleapis/googleapis
 lint:
