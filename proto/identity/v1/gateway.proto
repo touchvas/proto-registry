@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+// What api-gateway-service itself asks identity. Served on identity's gateway-facing ports
+// (player and back office) and never transcoded: these RPCs have no HTTP mapping, so no
+// client can reach them through the gateway.
+package identity.v1;
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";
+
+// GatewayService answers the gateway's own questions.
+service GatewayService {
+  // ResolveDomain finds the brand an active registered domain belongs to; the gateway uses it
+  // to allow browser calls (CORS) from brand sites only. NOT_FOUND for any other host.
+  rpc ResolveDomain(ResolveDomainRequest) returns (ResolveDomainResponse);
+}
+
+message ResolveDomainRequest {
+  // A bare host, e.g. ke.bandabets.com.
+  string host = 1;
+}
+
+message ResolveDomainResponse {
+  string brand_id = 1;
+  string brand_code = 2;
+  // PENDING, ACTIVE or SUSPENDED.
+  string brand_status = 3;
+}

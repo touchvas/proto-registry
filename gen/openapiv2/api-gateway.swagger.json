@@ -33,6 +33,9 @@
       "name": "AuthService"
     },
     {
+      "name": "PlatformService"
+    },
+    {
       "name": "ResponsibleGamingService"
     },
     {
@@ -52,6 +55,9 @@
     },
     {
       "name": "BrandService"
+    },
+    {
+      "name": "GatewayService"
     },
     {
       "name": "IdentityService"
@@ -1376,6 +1382,450 @@
         ]
       }
     },
+    "/v1/platform/brands": {
+      "get": {
+        "summary": "ListBrands lists brands, optionally of one operator.",
+        "operationId": "PlatformService_ListBrands",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListBrandsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "operator_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      },
+      "post": {
+        "summary": "OnboardBrand creates a brand (PENDING) with its settings. 201.",
+        "operationId": "PlatformService_OnboardBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.OnboardBrandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}": {
+      "get": {
+        "summary": "GetBrand reads one brand.",
+        "operationId": "PlatformService_GetBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/activate": {
+      "patch": {
+        "summary": "ActivateBrand makes a brand ACTIVE.",
+        "operationId": "PlatformService_ActivateBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/domains": {
+      "get": {
+        "summary": "ListBrandDomains lists a brand's domains.",
+        "operationId": "PlatformService_ListBrandDomains",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      },
+      "post": {
+        "summary": "AddBrandDomain registers a domain the brand's sites or back office run on. 201.",
+        "operationId": "PlatformService_AddBrandDomain",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlatformService.AddBrandDomainBody"
+            }
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/domains/{domain_id}": {
+      "delete": {
+        "summary": "RemoveBrandDomain removes a domain. 204.",
+        "operationId": "PlatformService_RemoveBrandDomain",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.RemoveBrandDomainResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/settings": {
+      "get": {
+        "summary": "GetBrandSettings reads a brand's settings.",
+        "operationId": "PlatformService_GetBrandSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateBrandSettings replaces a brand's settings. The body is the whole settings object\nwith the version it was read at; a stale version is a conflict.",
+        "operationId": "PlatformService_UpdateBrandSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "settings",
+            "description": "The JSON body.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/suspend": {
+      "patch": {
+        "summary": "SuspendBrand makes a brand SUSPENDED.",
+        "operationId": "PlatformService_SuspendBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlatformService.SuspendBrandBody"
+            }
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/operators": {
+      "get": {
+        "summary": "ListOperators lists every operator.",
+        "operationId": "PlatformService_ListOperators",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/identity.admin.v1.Operator"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "PlatformService"
+        ]
+      },
+      "post": {
+        "summary": "CreateOperator creates an operator, the company that owns brands. 201.",
+        "operationId": "PlatformService_CreateOperator",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Operator"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateOperatorRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/operators/{id}": {
+      "get": {
+        "summary": "GetOperator reads one operator.",
+        "operationId": "PlatformService_GetOperator",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Operator"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PlatformService"
+        ]
+      }
+    },
     "/v1/profile": {
       "get": {
         "summary": "GetProfile returns the calling player. Needs a player session.",
@@ -1602,6 +2052,22 @@
         }
       }
     },
+    "identity.admin.v1.ActivateBrandResponse": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "$ref": "#/definitions/identity.admin.v1.Brand"
+        }
+      }
+    },
+    "identity.admin.v1.AddBrandDomainResponse": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+        }
+      }
+    },
     "identity.admin.v1.Admin": {
       "type": "object",
       "properties": {
@@ -1721,6 +2187,133 @@
         }
       }
     },
+    "identity.admin.v1.Brand": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "business_email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "PENDING, ACTIVE or SUSPENDED."
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Brand is one operator's business in one country: the tenant."
+    },
+    "identity.admin.v1.BrandDomain": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string",
+          "description": "PLAYER_SITE or BACK_OFFICE."
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "identity.admin.v1.BrandSettings": {
+      "type": "object",
+      "properties": {
+        "tenant_id": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "verification_mode": {
+          "type": "string",
+          "description": "OTP or DIRECT."
+        },
+        "otp_length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "otp_ttl_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "otp_max_attempts": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "referral_prefix": {
+          "type": "string"
+        },
+        "password_min_length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "min_age_years": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "kyc_required_to_play": {
+          "type": "boolean"
+        },
+        "single_session": {
+          "type": "boolean",
+          "description": "A new login ends the player's other sessions."
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The version read; send it back on update."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "identity.admin.v1.ChangePasswordRequest": {
       "type": "object",
       "properties": {
@@ -1753,6 +2346,25 @@
     },
     "identity.admin.v1.ConfirmTotpResponse": {
       "type": "object"
+    },
+    "identity.admin.v1.CreateOperatorRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.CreateOperatorResponse": {
+      "type": "object",
+      "properties": {
+        "operator": {
+          "$ref": "#/definitions/identity.admin.v1.Operator"
+        }
+      }
     },
     "identity.admin.v1.CreateRoleRequest": {
       "type": "object",
@@ -1855,6 +2467,22 @@
     "identity.admin.v1.ForgotPasswordResponse": {
       "type": "object"
     },
+    "identity.admin.v1.GetBrandResponse": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "$ref": "#/definitions/identity.admin.v1.Brand"
+        }
+      }
+    },
+    "identity.admin.v1.GetBrandSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+        }
+      }
+    },
     "identity.admin.v1.GetMeResponse": {
       "type": "object",
       "properties": {
@@ -1869,6 +2497,14 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "identity.admin.v1.GetOperatorResponse": {
+      "type": "object",
+      "properties": {
+        "operator": {
+          "$ref": "#/definitions/identity.admin.v1.Operator"
         }
       }
     },
@@ -1916,6 +2552,54 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/identity.admin.v1.AuditEntry"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListBrandDomainsResponse": {
+      "type": "object",
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+          }
+        }
+      }
+    },
+    "identity.admin.v1.ListBrandsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.Brand"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "identity.admin.v1.ListOperatorsResponse": {
+      "type": "object",
+      "properties": {
+        "operators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/identity.admin.v1.Operator"
           }
         }
       }
@@ -2053,6 +2737,71 @@
     "identity.admin.v1.LogoutResponse": {
       "type": "object"
     },
+    "identity.admin.v1.OnboardBrandRequest": {
+      "type": "object",
+      "properties": {
+        "operator_id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "business_email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        }
+      }
+    },
+    "identity.admin.v1.OnboardBrandResponse": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "$ref": "#/definitions/identity.admin.v1.Brand"
+        }
+      }
+    },
+    "identity.admin.v1.Operator": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "identity.admin.v1.Permission": {
       "type": "object",
       "properties": {
@@ -2072,6 +2821,26 @@
         "operator_grantable": {
           "type": "boolean",
           "description": "False for platform-only permissions such as operator:write."
+        }
+      }
+    },
+    "identity.admin.v1.PlatformService.AddBrandDomainBody": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string",
+          "description": "PLAYER_SITE or BACK_OFFICE."
+        }
+      }
+    },
+    "identity.admin.v1.PlatformService.SuspendBrandBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
         }
       }
     },
@@ -2101,6 +2870,9 @@
           "type": "string"
         }
       }
+    },
+    "identity.admin.v1.RemoveBrandDomainResponse": {
+      "type": "object"
     },
     "identity.admin.v1.ResetPasswordRequest": {
       "type": "object",
@@ -2237,6 +3009,22 @@
     },
     "identity.admin.v1.StopAttackModeResponse": {
       "type": "object"
+    },
+    "identity.admin.v1.SuspendBrandResponse": {
+      "type": "object",
+      "properties": {
+        "brand": {
+          "$ref": "#/definitions/identity.admin.v1.Brand"
+        }
+      }
+    },
+    "identity.admin.v1.UpdateBrandSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+        }
+      }
     },
     "identity.admin.v1.UpdateRoleResponse": {
       "type": "object",
