@@ -7,11 +7,17 @@ package identity.v1;
 
 option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";
 
-// GatewayService answers the gateway's own questions.
+// GatewayService answers the gateway's own questions. The gateway caches the answers and
+// uses them to allow browser calls (CORS) from brand sites, to work out the brand of a
+// request, and to pick the operator's deployment of modules that run once per operator.
 service GatewayService {
-  // ResolveDomain finds the brand an active registered domain belongs to; the gateway uses it
-  // to allow browser calls (CORS) from brand sites only. NOT_FOUND for any other host.
+  // ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
+  // other host.
   rpc ResolveDomain(ResolveDomainRequest) returns (ResolveDomainResponse);
+
+  // ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-ID or
+  // staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+  rpc ResolveBrand(ResolveBrandRequest) returns (ResolveBrandResponse);
 }
 
 message ResolveDomainRequest {
@@ -24,4 +30,20 @@ message ResolveDomainResponse {
   string brand_code = 2;
   // PENDING, ACTIVE or SUSPENDED.
   string brand_status = 3;
+  // The operator (the company) the brand belongs to.
+  string operator_id = 4;
+}
+
+message ResolveBrandRequest {
+  // The brand's ID (a UUID) or code, e.g. betxyz-ke.
+  string brand = 1;
+}
+
+message ResolveBrandResponse {
+  string brand_id = 1;
+  string brand_code = 2;
+  // PENDING, ACTIVE or SUSPENDED.
+  string brand_status = 3;
+  // The operator (the company) the brand belongs to.
+  string operator_id = 4;
 }

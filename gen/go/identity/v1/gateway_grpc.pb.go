@@ -24,17 +24,23 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	GatewayService_ResolveDomain_FullMethodName = "/identity.v1.GatewayService/ResolveDomain"
+	GatewayService_ResolveBrand_FullMethodName  = "/identity.v1.GatewayService/ResolveBrand"
 )
 
 // GatewayServiceClient is the client API for GatewayService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// GatewayService answers the gateway's own questions.
+// GatewayService answers the gateway's own questions. The gateway caches the answers and
+// uses them to allow browser calls (CORS) from brand sites, to work out the brand of a
+// request, and to pick the operator's deployment of modules that run once per operator.
 type GatewayServiceClient interface {
-	// ResolveDomain finds the brand an active registered domain belongs to; the gateway uses it
-	// to allow browser calls (CORS) from brand sites only. NOT_FOUND for any other host.
+	// ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
+	// other host.
 	ResolveDomain(ctx context.Context, in *ResolveDomainRequest, opts ...grpc.CallOption) (*ResolveDomainResponse, error)
+	// ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-ID or
+	// staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+	ResolveBrand(ctx context.Context, in *ResolveBrandRequest, opts ...grpc.CallOption) (*ResolveBrandResponse, error)
 }
 
 type gatewayServiceClient struct {
@@ -55,15 +61,30 @@ func (c *gatewayServiceClient) ResolveDomain(ctx context.Context, in *ResolveDom
 	return out, nil
 }
 
+func (c *gatewayServiceClient) ResolveBrand(ctx context.Context, in *ResolveBrandRequest, opts ...grpc.CallOption) (*ResolveBrandResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolveBrandResponse)
+	err := c.cc.Invoke(ctx, GatewayService_ResolveBrand_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServiceServer is the server API for GatewayService service.
 // All implementations must embed UnimplementedGatewayServiceServer
 // for forward compatibility.
 //
-// GatewayService answers the gateway's own questions.
+// GatewayService answers the gateway's own questions. The gateway caches the answers and
+// uses them to allow browser calls (CORS) from brand sites, to work out the brand of a
+// request, and to pick the operator's deployment of modules that run once per operator.
 type GatewayServiceServer interface {
-	// ResolveDomain finds the brand an active registered domain belongs to; the gateway uses it
-	// to allow browser calls (CORS) from brand sites only. NOT_FOUND for any other host.
+	// ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
+	// other host.
 	ResolveDomain(context.Context, *ResolveDomainRequest) (*ResolveDomainResponse, error)
+	// ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-ID or
+	// staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+	ResolveBrand(context.Context, *ResolveBrandRequest) (*ResolveBrandResponse, error)
 	mustEmbedUnimplementedGatewayServiceServer()
 }
 
@@ -76,6 +97,9 @@ type UnimplementedGatewayServiceServer struct{}
 
 func (UnimplementedGatewayServiceServer) ResolveDomain(context.Context, *ResolveDomainRequest) (*ResolveDomainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResolveDomain not implemented")
+}
+func (UnimplementedGatewayServiceServer) ResolveBrand(context.Context, *ResolveBrandRequest) (*ResolveBrandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolveBrand not implemented")
 }
 func (UnimplementedGatewayServiceServer) mustEmbedUnimplementedGatewayServiceServer() {}
 func (UnimplementedGatewayServiceServer) testEmbeddedByValue()                        {}
@@ -116,6 +140,24 @@ func _GatewayService_ResolveDomain_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GatewayService_ResolveBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveBrandRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServiceServer).ResolveBrand(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GatewayService_ResolveBrand_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServiceServer).ResolveBrand(ctx, req.(*ResolveBrandRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GatewayService_ServiceDesc is the grpc.ServiceDesc for GatewayService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -126,6 +168,10 @@ var GatewayService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResolveDomain",
 			Handler:    _GatewayService_ResolveDomain_Handler,
+		},
+		{
+			MethodName: "ResolveBrand",
+			Handler:    _GatewayService_ResolveBrand_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
