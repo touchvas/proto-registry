@@ -1,0 +1,802 @@
+syntax = "proto3";
+
+// Back-office wallet API: what the back office calls through api-gateway-service's admin
+// profile, at the paths and with the JSON wallet's REST API has today (/v1/admin), except the
+// audit log, at /v1/admin/wallet/audit since identity's is at /v1/admin/audit. It runs on
+// wallet's admin port, which only the admin gateway can reach.
+//
+// Every RPC needs a back-office session holding the permission it names. The brand is the
+// session's, or the one in X-Act-As-Brand (a SUPER_ADMIN must always name it).
+//
+// Amounts are in the currency's units (940.5 is KES 940.50) and exact: held as decimal
+// strings, written and read as JSON numbers (touchvas.api.v1.json_number), at most 4
+// decimals. Errors are {code, number, message} with wallet.v1's result code.
+//
+// Lists are newest first; pass next as after for the following page. limit is 1 to 100, 50
+// otherwise.
+package wallet.admin.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "touchvas/api/v1/json.proto";
+import "wallet/player/v1/wallet.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/wallet/admin/v1;walletadminv1";
+
+// ------------------------------------------------------------------------ Players' wallets
+
+// WalletService reads a player's wallet and freezes or unfreezes it.
+service WalletService {
+  // GetWallet returns the player's wallet. Needs wallet:read.
+  rpc GetWallet(GetWalletRequest) returns (GetWalletResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{player_id}/wallet"
+      response_body: "wallet"
+    };
+  }
+
+  // ListTransactions returns the player's history. Needs wallet:read.
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse) {
+    option (google.api.http) = {get: "/v1/admin/players/{player_id}/transactions"};
+  }
+
+  // GetLimits returns the player's daily spend limit. Needs wallet:read.
+  rpc GetLimits(GetLimitsRequest) returns (GetLimitsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/players/{player_id}/limits"
+      response_body: "limits"
+    };
+  }
+
+  // FreezeWallet stops the wallet taking bets, deposits and withdrawals. Needs wallet:freeze.
+  rpc FreezeWallet(FreezeWalletRequest) returns (FreezeWalletResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/players/{player_id}/wallet/freeze"
+      body: "*"
+      response_body: "wallet"
+    };
+  }
+
+  // UnfreezeWallet makes a frozen wallet active again. Needs wallet:freeze.
+  rpc UnfreezeWallet(UnfreezeWalletRequest) returns (UnfreezeWalletResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/players/{player_id}/wallet/unfreeze"
+      body: "*"
+      response_body: "wallet"
+    };
+  }
+}
+
+message Wallet {
+  string id = 1;
+  string player_id = 2;
+  string currency = 3;
+  string cash_balance = 4 [(touchvas.api.v1.json_number) = true];
+  string winnings_balance = 5 [(touchvas.api.v1.json_number) = true];
+  string total_balance = 6 [(touchvas.api.v1.json_number) = true];
+  // ACTIVE, FROZEN or CLOSED.
+  string status = 7;
+  optional string status_reason = 8;
+  int64 version = 9 [(touchvas.api.v1.json_number) = true];
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message GetWalletRequest {
+  string player_id = 1;
+}
+
+message GetWalletResponse {
+  Wallet wallet = 1;
+}
+
+message ListTransactionsRequest {
+  string player_id = 1;
+  int32 limit = 2;
+  string after = 3;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  optional string next = 2;
+}
+
+// Transaction is the player's view of a transaction (wallet.player.v1.Transaction) and what
+// only the back office sees.
+message Transaction {
+  string id = 1;
+  // DEBIT or CREDIT.
+  string direction = 2;
+  // e.g. CASINO_BET, DEPOSIT.
+  string reason = 3;
+  string source = 4;
+  optional string round_id = 5;
+  string amount = 6 [(touchvas.api.v1.json_number) = true];
+  string cash_delta = 7 [(touchvas.api.v1.json_number) = true];
+  string winnings_delta = 8 [(touchvas.api.v1.json_number) = true];
+  string balance_after = 9 [(touchvas.api.v1.json_number) = true];
+  string currency = 10;
+  optional string description = 11;
+  google.protobuf.Timestamp created_at = 12;
+  string external_txn_id = 13;
+  optional string debit_id = 14;
+  optional string reverses_id = 15;
+  string cash_after = 16 [(touchvas.api.v1.json_number) = true];
+  string winnings_after = 17 [(touchvas.api.v1.json_number) = true];
+  optional string ip_address = 18;
+  // String values only; absent when there are none.
+  optional google.protobuf.Struct metadata = 19;
+}
+
+message GetLimitsRequest {
+  string player_id = 1;
+}
+
+message GetLimitsResponse {
+  wallet.player.v1.Limits limits = 1;
+}
+
+message FreezeWalletRequest {
+  string player_id = 1;
+  string reason = 2;
+}
+
+message FreezeWalletResponse {
+  Wallet wallet = 1;
+}
+
+message UnfreezeWalletRequest {
+  string player_id = 1;
+  string reason = 2;
+}
+
+message UnfreezeWalletResponse {
+  Wallet wallet = 1;
+}
+
+// ------------------------------------------------------------------------ Withdrawals
+
+// WithdrawalService reviews withdrawals: those above the brand's approval threshold wait in
+// PENDING_APPROVAL for a checker.
+service WithdrawalService {
+  // ListWithdrawals lists withdrawals; status=PENDING_APPROVAL is the checker's queue. Needs
+  // wallet:read.
+  rpc ListWithdrawals(ListWithdrawalsRequest) returns (ListWithdrawalsResponse) {
+    option (google.api.http) = {get: "/v1/admin/withdrawals"};
+  }
+
+  // GetWithdrawal returns one withdrawal. Needs wallet:read.
+  rpc GetWithdrawal(GetWithdrawalRequest) returns (GetWithdrawalResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/withdrawals/{id}"
+      response_body: "withdrawal"
+    };
+  }
+
+  // ApproveWithdrawal pays a pending withdrawal out, with the checker's second factor. Needs
+  // withdrawal:approve.
+  rpc ApproveWithdrawal(ApproveWithdrawalRequest) returns (ApproveWithdrawalResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/withdrawals/{id}/approve"
+      body: "*"
+      response_body: "withdrawal"
+    };
+  }
+
+  // RejectWithdrawal refuses a pending withdrawal and refunds the held amount. Needs
+  // withdrawal:approve.
+  rpc RejectWithdrawal(RejectWithdrawalRequest) returns (RejectWithdrawalResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/withdrawals/{id}/reject"
+      body: "*"
+      response_body: "withdrawal"
+    };
+  }
+}
+
+message Withdrawal {
+  string id = 1;
+  string player_id = 2;
+  string idempotency_key = 3;
+  string requested_amount = 4 [(touchvas.api.v1.json_number) = true];
+  string approved_amount = 5 [(touchvas.api.v1.json_number) = true];
+  string charge = 6 [(touchvas.api.v1.json_number) = true];
+  string tax = 7 [(touchvas.api.v1.json_number) = true];
+  string held_amount = 8 [(touchvas.api.v1.json_number) = true];
+  string currency = 9;
+  string destination = 10;
+  optional string provider = 11;
+  // APP, WEB or USSD.
+  string origin = 12;
+  // PENDING_APPROVAL, APPROVED, REJECTED, COMPLETED or FAILED.
+  string status = 13;
+  string hold_txn_id = 14;
+  optional string refund_txn_id = 15;
+  optional string payment_id = 16;
+  optional string provider_tx_id = 17;
+  optional string failure_reason = 18;
+  optional string recipient_name = 19;
+  optional string reviewed_by = 20;
+  optional string review_reason = 21;
+  optional google.protobuf.Timestamp approved_at = 22;
+  optional google.protobuf.Timestamp finished_at = 23;
+  google.protobuf.Timestamp created_at = 24;
+}
+
+message ListWithdrawalsRequest {
+  string status = 1;
+  string player_id = 2;
+  int32 limit = 3;
+  string after = 4;
+}
+
+message ListWithdrawalsResponse {
+  repeated Withdrawal items = 1;
+  optional string next = 2;
+}
+
+message GetWithdrawalRequest {
+  string id = 1;
+}
+
+message GetWithdrawalResponse {
+  Withdrawal withdrawal = 1;
+}
+
+message ApproveWithdrawalRequest {
+  string id = 1;
+  // A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.
+  string code = 2;
+}
+
+message ApproveWithdrawalResponse {
+  Withdrawal withdrawal = 1;
+}
+
+message RejectWithdrawalRequest {
+  string id = 1;
+  string reason = 2;
+}
+
+message RejectWithdrawalResponse {
+  Withdrawal withdrawal = 1;
+}
+
+// ------------------------------------------------------------------------ Deposits
+
+// DepositService finds deposits and retries the ones the wallet couldn't credit.
+service DepositService {
+  // ListDeposits lists deposits; status=FAILED is the retry screen. Needs wallet:read.
+  rpc ListDeposits(ListDepositsRequest) returns (ListDepositsResponse) {
+    option (google.api.http) = {get: "/v1/admin/deposits"};
+  }
+
+  // RetryDeposit credits a FAILED deposit again; a refusal leaves it FAILED with the new code.
+  // Needs deposit:retry.
+  rpc RetryDeposit(RetryDepositRequest) returns (RetryDepositResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/deposits/{id}/retry"
+      body: "*"
+    };
+  }
+}
+
+message Deposit {
+  string id = 1;
+  optional string player_id = 2;
+  optional string msisdn = 3;
+  string payment_id = 4;
+  string amount = 5 [(touchvas.api.v1.json_number) = true];
+  string cashback = 6 [(touchvas.api.v1.json_number) = true];
+  string tax = 7 [(touchvas.api.v1.json_number) = true];
+  string transaction_charge = 8 [(touchvas.api.v1.json_number) = true];
+  string currency = 9;
+  optional string provider = 10;
+  optional string provider_tx_id = 11;
+  optional string payer_msisdn = 12;
+  optional string payer_name = 13;
+  // CREDITED or FAILED.
+  string status = 14;
+  optional string failure_code = 15;
+  optional string credit_txn_id = 16;
+  optional google.protobuf.Timestamp completed_at = 17;
+  google.protobuf.Timestamp created_at = 18;
+  google.protobuf.Timestamp updated_at = 19;
+}
+
+message ListDepositsRequest {
+  string status = 1;
+  string player_id = 2;
+  string msisdn = 3;
+  int32 limit = 4;
+  string after = 5;
+}
+
+message ListDepositsResponse {
+  repeated Deposit items = 1;
+  optional string next = 2;
+}
+
+message RetryDepositRequest {
+  string id = 1;
+  // Names the player when the deposit matched nobody.
+  string player_id = 2;
+}
+
+message RetryDepositResponse {
+  Deposit deposit = 1;
+  // The credited wallet, when the retry succeeded.
+  optional Wallet wallet = 2;
+}
+
+// ------------------------------------------------------------------------ Adjustments
+
+// AdjustmentService is maker-checker crediting and debiting: a maker creates an adjustment
+// or a batch of them, and another admin approves (with a second factor) or rejects it.
+service AdjustmentService {
+  // CreateAdjustment proposes one adjustment. Needs adjustment:create. 201.
+  rpc CreateAdjustment(CreateAdjustmentRequest) returns (CreateAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustments"
+      body: "line"
+      response_body: "adjustment"
+    };
+  }
+
+  // ListAdjustments lists adjustments; status=PENDING is the checker's queue. Needs
+  // wallet:read.
+  rpc ListAdjustments(ListAdjustmentsRequest) returns (ListAdjustmentsResponse) {
+    option (google.api.http) = {get: "/v1/admin/adjustments"};
+  }
+
+  // GetAdjustment returns one adjustment. Needs wallet:read.
+  rpc GetAdjustment(GetAdjustmentRequest) returns (GetAdjustmentResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/adjustments/{id}"
+      response_body: "adjustment"
+    };
+  }
+
+  // ApproveAdjustment posts a pending adjustment, with the checker's second factor. Needs
+  // adjustment:approve.
+  rpc ApproveAdjustment(ApproveAdjustmentRequest) returns (ApproveAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustments/{id}/approve"
+      body: "*"
+      response_body: "adjustment"
+    };
+  }
+
+  // RejectAdjustment refuses a pending adjustment. Needs adjustment:approve.
+  rpc RejectAdjustment(RejectAdjustmentRequest) returns (RejectAdjustmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustments/{id}/reject"
+      body: "*"
+      response_body: "adjustment"
+    };
+  }
+
+  // CreateBatch proposes up to 5000 adjustments at once; a refusal names the first bad line.
+  // Needs adjustment:create. 201.
+  rpc CreateBatch(CreateBatchRequest) returns (CreateBatchResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustment-batches"
+      body: "*"
+      response_body: "batch"
+    };
+  }
+
+  // ListBatches lists batches. Needs wallet:read.
+  rpc ListBatches(ListBatchesRequest) returns (ListBatchesResponse) {
+    option (google.api.http) = {get: "/v1/admin/adjustment-batches"};
+  }
+
+  // GetBatch returns one batch. Needs wallet:read.
+  rpc GetBatch(GetBatchRequest) returns (GetBatchResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/adjustment-batches/{id}"
+      response_body: "batch"
+    };
+  }
+
+  // ListBatchLines lists a batch's adjustments; status=FAILED lists the lines the wallet
+  // refused. Needs wallet:read.
+  rpc ListBatchLines(ListBatchLinesRequest) returns (ListBatchLinesResponse) {
+    option (google.api.http) = {get: "/v1/admin/adjustment-batches/{id}/lines"};
+  }
+
+  // ApproveBatch posts every line of a pending batch, with the checker's second factor. Needs
+  // adjustment:approve.
+  rpc ApproveBatch(ApproveBatchRequest) returns (ApproveBatchResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustment-batches/{id}/approve"
+      body: "*"
+      response_body: "batch"
+    };
+  }
+
+  // RejectBatch refuses a pending batch. Needs adjustment:approve.
+  rpc RejectBatch(RejectBatchRequest) returns (RejectBatchResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/adjustment-batches/{id}/reject"
+      body: "*"
+      response_body: "batch"
+    };
+  }
+}
+
+message Adjustment {
+  string id = 1;
+  optional string batch_id = 2;
+  optional string player_id = 3;
+  optional string msisdn = 4;
+  // CREDIT or DEBIT.
+  string direction = 5;
+  // CASH or WINNINGS.
+  string bucket = 6;
+  string amount = 7 [(touchvas.api.v1.json_number) = true];
+  string reason = 8;
+  // PENDING, APPROVED, POSTED, REJECTED or FAILED.
+  string status = 9;
+  optional string failure_code = 10;
+  optional string transaction_id = 11;
+  string maker_id = 12;
+  optional string checker_id = 13;
+  optional string review_reason = 14;
+  optional google.protobuf.Timestamp reviewed_at = 15;
+  optional google.protobuf.Timestamp posted_at = 16;
+  google.protobuf.Timestamp created_at = 17;
+}
+
+// AdjustmentLine is an adjustment to make. A batch line may name the player by msisdn instead
+// of player_id.
+message AdjustmentLine {
+  string player_id = 1;
+  string msisdn = 2;
+  // CREDIT or DEBIT.
+  string direction = 3;
+  // CASH or WINNINGS.
+  string bucket = 4;
+  string amount = 5 [(touchvas.api.v1.json_number) = true];
+  string reason = 6;
+}
+
+message CreateAdjustmentRequest {
+  AdjustmentLine line = 1;
+}
+
+message CreateAdjustmentResponse {
+  Adjustment adjustment = 1;
+}
+
+message ListAdjustmentsRequest {
+  string status = 1;
+  string player_id = 2;
+  string maker_id = 3;
+  int32 limit = 4;
+  string after = 5;
+}
+
+message ListAdjustmentsResponse {
+  repeated Adjustment items = 1;
+  optional string next = 2;
+}
+
+message GetAdjustmentRequest {
+  string id = 1;
+}
+
+message GetAdjustmentResponse {
+  Adjustment adjustment = 1;
+}
+
+message ApproveAdjustmentRequest {
+  string id = 1;
+  // A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.
+  string code = 2;
+}
+
+message ApproveAdjustmentResponse {
+  Adjustment adjustment = 1;
+}
+
+message RejectAdjustmentRequest {
+  string id = 1;
+  string reason = 2;
+}
+
+message RejectAdjustmentResponse {
+  Adjustment adjustment = 1;
+}
+
+message Batch {
+  string id = 1;
+  string description = 2;
+  // PENDING, APPROVED, REJECTED or DONE.
+  string status = 3;
+  int32 line_count = 4;
+  string total_credit = 5 [(touchvas.api.v1.json_number) = true];
+  string total_debit = 6 [(touchvas.api.v1.json_number) = true];
+  int32 posted = 7;
+  int32 failed = 8;
+  string maker_id = 9;
+  optional string checker_id = 10;
+  optional string review_reason = 11;
+  optional google.protobuf.Timestamp reviewed_at = 12;
+  optional google.protobuf.Timestamp finished_at = 13;
+  google.protobuf.Timestamp created_at = 14;
+}
+
+message CreateBatchRequest {
+  string description = 1;
+  repeated AdjustmentLine lines = 2;
+}
+
+message CreateBatchResponse {
+  Batch batch = 1;
+}
+
+message ListBatchesRequest {
+  string status = 1;
+  int32 limit = 2;
+  string after = 3;
+}
+
+message ListBatchesResponse {
+  repeated Batch items = 1;
+  optional string next = 2;
+}
+
+message GetBatchRequest {
+  string id = 1;
+}
+
+message GetBatchResponse {
+  Batch batch = 1;
+}
+
+message ListBatchLinesRequest {
+  string id = 1;
+  string status = 2;
+  string player_id = 3;
+  string maker_id = 4;
+  int32 limit = 5;
+  string after = 6;
+}
+
+message ListBatchLinesResponse {
+  repeated Adjustment items = 1;
+  optional string next = 2;
+}
+
+message ApproveBatchRequest {
+  string id = 1;
+  // A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.
+  string code = 2;
+}
+
+message ApproveBatchResponse {
+  Batch batch = 1;
+}
+
+message RejectBatchRequest {
+  string id = 1;
+  string reason = 2;
+}
+
+message RejectBatchResponse {
+  Batch batch = 1;
+}
+
+// ------------------------------------------------------------------------ Second factor
+
+// ApprovalService sends the SMS code an approval asks for.
+service ApprovalService {
+  // SendSecondFactor texts the caller a code, unless they use an authenticator app. Needs
+  // withdrawal:approve or adjustment:approve.
+  rpc SendSecondFactor(SendSecondFactorRequest) returns (SendSecondFactorResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/second-factor"
+      body: "*"
+    };
+  }
+}
+
+message SendSecondFactorRequest {}
+
+message SendSecondFactorResponse {
+  // TOTP (nothing was sent) or SMS.
+  string factor = 1;
+}
+
+// ------------------------------------------------------------------------ Settings
+
+// SettingsService holds the brand's wallet settings.
+service SettingsService {
+  // GetSettings returns the settings; version 0 means none are saved yet and the defaults
+  // apply. Needs wallet:read.
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/settings"
+      response_body: "settings"
+    };
+  }
+
+  // UpdateSettings replaces every setting. A version other than the stored one is
+  // SETTINGS_CONFLICT: reload and edit again. Needs wallet_settings:write.
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/settings"
+      body: "*"
+      response_body: "settings"
+    };
+  }
+}
+
+// Rates are in basis points; a 0 maximum, daily limit or approval threshold means none.
+message Settings {
+  string tenant_id = 1;
+
+  bool withdrawals_enabled = 2;
+  string withdrawal_min_amount = 3 [(touchvas.api.v1.json_number) = true];
+  string withdrawal_max_amount = 4 [(touchvas.api.v1.json_number) = true];
+  string withdrawal_daily_amount_limit = 5 [(touchvas.api.v1.json_number) = true];
+  int32 withdrawal_daily_count_limit = 6;
+  int32 withdrawal_interval_seconds = 7;
+  string withdrawal_approval_threshold = 8 [(touchvas.api.v1.json_number) = true];
+  string min_deposit_to_withdraw = 9 [(touchvas.api.v1.json_number) = true];
+  int32 withdrawal_tax_rate_bp = 10;
+  repeated wallet.player.v1.ChargeBand withdrawal_charge_bands = 11;
+
+  bool redirect_enabled = 12;
+  int32 redirect_percentage_bp = 13;
+  int32 deposit_tax_rate_bp = 14;
+  bool cashback_enabled = 15;
+  int32 cashback_daily_limit = 16;
+  string deposit_alert_amount = 17 [(touchvas.api.v1.json_number) = true];
+  repeated string alert_msisdns = 18;
+  int32 limit_cooling_off_hours = 19;
+
+  int32 version = 20;
+  google.protobuf.Timestamp updated_at = 21;
+}
+
+message GetSettingsRequest {}
+
+message GetSettingsResponse {
+  Settings settings = 1;
+}
+
+// Every setting, the version it was edited from, and why. An amount left out is 0.
+message UpdateSettingsRequest {
+  bool withdrawals_enabled = 1;
+  string withdrawal_min_amount = 2 [(touchvas.api.v1.json_number) = true];
+  string withdrawal_max_amount = 3 [(touchvas.api.v1.json_number) = true];
+  string withdrawal_daily_amount_limit = 4 [(touchvas.api.v1.json_number) = true];
+  int32 withdrawal_daily_count_limit = 5;
+  int32 withdrawal_interval_seconds = 6;
+  string withdrawal_approval_threshold = 7 [(touchvas.api.v1.json_number) = true];
+  string min_deposit_to_withdraw = 8 [(touchvas.api.v1.json_number) = true];
+  int32 withdrawal_tax_rate_bp = 9;
+  repeated wallet.player.v1.ChargeBand withdrawal_charge_bands = 10;
+
+  bool redirect_enabled = 11;
+  int32 redirect_percentage_bp = 12;
+  int32 deposit_tax_rate_bp = 13;
+  bool cashback_enabled = 14;
+  int32 cashback_daily_limit = 15;
+  string deposit_alert_amount = 16 [(touchvas.api.v1.json_number) = true];
+  repeated string alert_msisdns = 17;
+  int32 limit_cooling_off_hours = 18;
+
+  int32 version = 19;
+  string reason = 20;
+}
+
+message UpdateSettingsResponse {
+  Settings settings = 1;
+}
+
+// ------------------------------------------------------------------------ Audit log
+
+// AuditService reads the audit log of back-office changes to the brand's wallets.
+service AuditService {
+  // ListAuditEntries lists entries. Needs wallet_audit:read.
+  rpc ListAuditEntries(ListAuditEntriesRequest) returns (ListAuditEntriesResponse) {
+    option (google.api.http) = {get: "/v1/admin/wallet/audit"};
+  }
+}
+
+message ListAuditEntriesRequest {
+  string target_id = 1;
+  string actor_id = 2;
+  string action = 3;
+  int32 limit = 4;
+  string after = 5;
+}
+
+message ListAuditEntriesResponse {
+  repeated AuditEntry items = 1;
+  optional string next = 2;
+}
+
+message AuditEntry {
+  string id = 1;
+  string actor_id = 2;
+  string actor_role = 3;
+  // e.g. withdrawal.approve.
+  string action = 4;
+  string target_type = 5;
+  string target_id = 6;
+  optional string reason = 7;
+  optional google.protobuf.Struct details = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+// ------------------------------------------------------------------------ Reports
+
+// ReportService totals the brand's wallets.
+service ReportService {
+  // GetSummary totals transactions by reason between from and to (RFC 3339, at most 7 days
+  // apart; the last 24 hours by default). Needs wallet:read.
+  rpc GetSummary(GetSummaryRequest) returns (GetSummaryResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/reports/summary"
+      response_body: "summary"
+    };
+  }
+
+  // GetBalances totals what the brand's wallets hold. Needs wallet:read.
+  rpc GetBalances(GetBalancesRequest) returns (GetBalancesResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/reports/balances"
+      response_body: "balances"
+    };
+  }
+}
+
+message GetSummaryRequest {
+  // RFC 3339; strings so a bad one gets REST's answer.
+  string from = 1;
+  string to = 2;
+}
+
+message GetSummaryResponse {
+  Summary summary = 1;
+}
+
+// Cash and winnings are signed.
+message Summary {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+  string currency = 3;
+  repeated ReasonTotal reasons = 4;
+}
+
+message ReasonTotal {
+  string reason = 1;
+  // DEBIT or CREDIT.
+  string direction = 2;
+  int64 count = 3 [(touchvas.api.v1.json_number) = true];
+  string amount = 4 [(touchvas.api.v1.json_number) = true];
+  string cash = 5 [(touchvas.api.v1.json_number) = true];
+  string winnings = 6 [(touchvas.api.v1.json_number) = true];
+}
+
+message GetBalancesRequest {}
+
+message GetBalancesResponse {
+  Balances balances = 1;
+}
+
+message Balances {
+  string currency = 1;
+  int64 wallets = 2 [(touchvas.api.v1.json_number) = true];
+  int64 active = 3 [(touchvas.api.v1.json_number) = true];
+  int64 frozen = 4 [(touchvas.api.v1.json_number) = true];
+  int64 closed = 5 [(touchvas.api.v1.json_number) = true];
+  string cash = 6 [(touchvas.api.v1.json_number) = true];
+  string winnings = 7 [(touchvas.api.v1.json_number) = true];
+  string total = 8 [(touchvas.api.v1.json_number) = true];
+}

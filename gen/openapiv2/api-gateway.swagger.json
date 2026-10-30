@@ -90,6 +90,24 @@
       "name": "WalletService"
     },
     {
+      "name": "WithdrawalService"
+    },
+    {
+      "name": "DepositService"
+    },
+    {
+      "name": "AdjustmentService"
+    },
+    {
+      "name": "ApprovalService"
+    },
+    {
+      "name": "SettingsService"
+    },
+    {
+      "name": "ReportService"
+    },
+    {
       "name": "Wallet"
     }
   ],
@@ -100,6 +118,448 @@
     "application/json"
   ],
   "paths": {
+    "/v1/admin/adjustment-batches": {
+      "get": {
+        "summary": "ListBatches lists batches. Needs wallet:read.",
+        "operationId": "AdjustmentService_ListBatches",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListBatchesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      },
+      "post": {
+        "summary": "CreateBatch proposes up to 5000 adjustments at once; a refusal names the first bad line.\nNeeds adjustment:create. 201.",
+        "operationId": "AdjustmentService_CreateBatch",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.CreateBatchRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}": {
+      "get": {
+        "summary": "GetBatch returns one batch. Needs wallet:read.",
+        "operationId": "AdjustmentService_GetBatch",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/approve": {
+      "post": {
+        "summary": "ApproveBatch posts every line of a pending batch, with the checker's second factor. Needs\nadjustment:approve.",
+        "operationId": "AdjustmentService_ApproveBatch",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.ApproveBatchBody"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/lines": {
+      "get": {
+        "summary": "ListBatchLines lists a batch's adjustments; status=FAILED lists the lines the wallet\nrefused. Needs wallet:read.",
+        "operationId": "AdjustmentService_ListBatchLines",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListBatchLinesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "player_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "maker_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/reject": {
+      "post": {
+        "summary": "RejectBatch refuses a pending batch. Needs adjustment:approve.",
+        "operationId": "AdjustmentService_RejectBatch",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.RejectBatchBody"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments": {
+      "get": {
+        "summary": "ListAdjustments lists adjustments; status=PENDING is the checker's queue. Needs\nwallet:read.",
+        "operationId": "AdjustmentService_ListAdjustments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListAdjustmentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "player_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "maker_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      },
+      "post": {
+        "summary": "CreateAdjustment proposes one adjustment. Needs adjustment:create. 201.",
+        "operationId": "AdjustmentService_CreateAdjustment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "line",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentLine"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}": {
+      "get": {
+        "summary": "GetAdjustment returns one adjustment. Needs wallet:read.",
+        "operationId": "AdjustmentService_GetAdjustment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}/approve": {
+      "post": {
+        "summary": "ApproveAdjustment posts a pending adjustment, with the checker's second factor. Needs\nadjustment:approve.",
+        "operationId": "AdjustmentService_ApproveAdjustment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.ApproveAdjustmentBody"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}/reject": {
+      "post": {
+        "summary": "RejectAdjustment refuses a pending adjustment. Needs adjustment:approve.",
+        "operationId": "AdjustmentService_RejectAdjustment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.RejectAdjustmentBody"
+            }
+          }
+        ],
+        "tags": [
+          "AdjustmentService"
+        ]
+      }
+    },
     "/v1/admin/audit": {
       "get": {
         "summary": "ListAuditEntries lists entries, newest first. Needs audit:read.",
@@ -164,6 +624,101 @@
         ],
         "tags": [
           "AuditService"
+        ]
+      }
+    },
+    "/v1/admin/deposits": {
+      "get": {
+        "summary": "ListDeposits lists deposits; status=FAILED is the retry screen. Needs wallet:read.",
+        "operationId": "DepositService_ListDeposits",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListDepositsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "player_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "msisdn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DepositService"
+        ]
+      }
+    },
+    "/v1/admin/deposits/{id}/retry": {
+      "post": {
+        "summary": "RetryDeposit credits a FAILED deposit again; a refusal leaves it FAILED with the new code.\nNeeds deposit:retry.",
+        "operationId": "DepositService_RetryDeposit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.RetryDepositResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.DepositService.RetryDepositBody"
+            }
+          }
+        ],
+        "tags": [
+          "DepositService"
         ]
       }
     },
@@ -733,6 +1288,251 @@
         ]
       }
     },
+    "/v1/admin/players/{player_id}/limits": {
+      "get": {
+        "summary": "GetLimits returns the player's daily spend limit. Needs wallet:read.",
+        "operationId": "WalletService_GetLimits",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/transactions": {
+      "get": {
+        "summary": "ListTransactions returns the player's history. Needs wallet:read.",
+        "operationId": "WalletService_ListTransactions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListTransactionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet": {
+      "get": {
+        "summary": "GetWallet returns the player's wallet. Needs wallet:read.",
+        "operationId": "WalletService_GetWallet",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet/freeze": {
+      "post": {
+        "summary": "FreezeWallet stops the wallet taking bets, deposits and withdrawals. Needs wallet:freeze.",
+        "operationId": "WalletService_FreezeWallet",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WalletService.FreezeWalletBody"
+            }
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet/unfreeze": {
+      "post": {
+        "summary": "UnfreezeWallet makes a frozen wallet active again. Needs wallet:freeze.",
+        "operationId": "WalletService_UnfreezeWallet",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WalletService.UnfreezeWalletBody"
+            }
+          }
+        ],
+        "tags": [
+          "WalletService"
+        ]
+      }
+    },
+    "/v1/admin/reports/balances": {
+      "get": {
+        "summary": "GetBalances totals what the brand's wallets hold. Needs wallet:read.",
+        "operationId": "ReportService_GetBalances",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Balances"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "ReportService"
+        ]
+      }
+    },
+    "/v1/admin/reports/summary": {
+      "get": {
+        "summary": "GetSummary totals transactions by reason between from and to (RFC 3339, at most 7 days\napart; the last 24 hours by default). Needs wallet:read.",
+        "operationId": "ReportService_GetSummary",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Summary"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "description": "RFC 3339; strings so a bad one gets REST's answer.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ReportService"
+        ]
+      }
+    },
     "/v1/admin/roles": {
       "get": {
         "summary": "ListRoles lists the system roles and the operator's custom roles. Needs role:read.",
@@ -888,6 +1688,39 @@
         ]
       }
     },
+    "/v1/admin/second-factor": {
+      "post": {
+        "summary": "SendSecondFactor texts the caller a code, unless they use an authenticator app. Needs\nwithdrawal:approve or adjustment:approve.",
+        "operationId": "ApprovalService_SendSecondFactor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.SendSecondFactorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.SendSecondFactorRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ApprovalService"
+        ]
+      }
+    },
     "/v1/admin/security/attack-mode": {
       "get": {
         "summary": "ListAttackModes lists the endpoints in attack mode. Needs security:read.",
@@ -974,6 +1807,61 @@
         ],
         "tags": [
           "SecurityService"
+        ]
+      }
+    },
+    "/v1/admin/settings": {
+      "get": {
+        "summary": "GetSettings returns the settings; version 0 means none are saved yet and the defaults\napply. Needs wallet:read.",
+        "operationId": "SettingsService_GetSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Settings"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "SettingsService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateSettings replaces every setting. A version other than the stored one is\nSETTINGS_CONFLICT: reload and edit again. Needs wallet_settings:write.",
+        "operationId": "SettingsService_UpdateSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Settings"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Every setting, the version it was edited from, and why. An amount left out is 0.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.UpdateSettingsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SettingsService"
         ]
       }
     },
@@ -1196,6 +2084,221 @@
         ],
         "tags": [
           "UserService"
+        ]
+      }
+    },
+    "/v1/admin/wallet/audit": {
+      "get": {
+        "summary": "ListAuditEntries lists entries. Needs wallet_audit:read.",
+        "operationId": "AuditService_ListAuditEntries",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListAuditEntriesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuditService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals": {
+      "get": {
+        "summary": "ListWithdrawals lists withdrawals; status=PENDING_APPROVAL is the checker's queue. Needs\nwallet:read.",
+        "operationId": "WithdrawalService_ListWithdrawals",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListWithdrawalsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "player_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}": {
+      "get": {
+        "summary": "GetWithdrawal returns one withdrawal. Needs wallet:read.",
+        "operationId": "WithdrawalService_GetWithdrawal",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}/approve": {
+      "post": {
+        "summary": "ApproveWithdrawal pays a pending withdrawal out, with the checker's second factor. Needs\nwithdrawal:approve.",
+        "operationId": "WithdrawalService_ApproveWithdrawal",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WithdrawalService.ApproveWithdrawalBody"
+            }
+          }
+        ],
+        "tags": [
+          "WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}/reject": {
+      "post": {
+        "summary": "RejectWithdrawal refuses a pending withdrawal and refunds the held amount. Needs\nwithdrawal:approve.",
+        "operationId": "WithdrawalService_RejectWithdrawal",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WithdrawalService.RejectWithdrawalBody"
+            }
+          }
+        ],
+        "tags": [
+          "WithdrawalService"
         ]
       }
     },
@@ -3729,6 +4832,1059 @@
         },
         "session": {
           "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      }
+    },
+    "wallet.admin.v1.Adjustment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "batch_id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "description": "CREDIT or DEBIT."
+        },
+        "bucket": {
+          "type": "string",
+          "description": "CASH or WINNINGS."
+        },
+        "amount": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "PENDING, APPROVED, POSTED, REJECTED or FAILED."
+        },
+        "failure_code": {
+          "type": "string"
+        },
+        "transaction_id": {
+          "type": "string"
+        },
+        "maker_id": {
+          "type": "string"
+        },
+        "checker_id": {
+          "type": "string"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "posted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.AdjustmentLine": {
+      "type": "object",
+      "properties": {
+        "player_id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "description": "CREDIT or DEBIT."
+        },
+        "bucket": {
+          "type": "string",
+          "description": "CASH or WINNINGS."
+        },
+        "amount": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "description": "AdjustmentLine is an adjustment to make. A batch line may name the player by msisdn instead\nof player_id."
+    },
+    "wallet.admin.v1.AdjustmentService.ApproveAdjustmentBody": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent."
+        }
+      }
+    },
+    "wallet.admin.v1.AdjustmentService.ApproveBatchBody": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent."
+        }
+      }
+    },
+    "wallet.admin.v1.AdjustmentService.RejectAdjustmentBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.AdjustmentService.RejectBatchBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ApproveAdjustmentResponse": {
+      "type": "object",
+      "properties": {
+        "adjustment": {
+          "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+        }
+      }
+    },
+    "wallet.admin.v1.ApproveBatchResponse": {
+      "type": "object",
+      "properties": {
+        "batch": {
+          "$ref": "#/definitions/wallet.admin.v1.Batch"
+        }
+      }
+    },
+    "wallet.admin.v1.ApproveWithdrawalResponse": {
+      "type": "object",
+      "properties": {
+        "withdrawal": {
+          "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+        }
+      }
+    },
+    "wallet.admin.v1.AuditEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "actor_role": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "description": "e.g. withdrawal.approve."
+        },
+        "target_type": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.Balances": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "wallets": {
+          "type": "string",
+          "format": "int64"
+        },
+        "active": {
+          "type": "string",
+          "format": "int64"
+        },
+        "frozen": {
+          "type": "string",
+          "format": "int64"
+        },
+        "closed": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cash": {
+          "type": "string"
+        },
+        "winnings": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.Batch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "PENDING, APPROVED, REJECTED or DONE."
+        },
+        "line_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_credit": {
+          "type": "string"
+        },
+        "total_debit": {
+          "type": "string"
+        },
+        "posted": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "failed": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maker_id": {
+          "type": "string"
+        },
+        "checker_id": {
+          "type": "string"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.CreateAdjustmentResponse": {
+      "type": "object",
+      "properties": {
+        "adjustment": {
+          "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+        }
+      }
+    },
+    "wallet.admin.v1.CreateBatchRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.AdjustmentLine"
+          }
+        }
+      }
+    },
+    "wallet.admin.v1.CreateBatchResponse": {
+      "type": "object",
+      "properties": {
+        "batch": {
+          "$ref": "#/definitions/wallet.admin.v1.Batch"
+        }
+      }
+    },
+    "wallet.admin.v1.Deposit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "cashback": {
+          "type": "string"
+        },
+        "tax": {
+          "type": "string"
+        },
+        "transaction_charge": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "provider_tx_id": {
+          "type": "string"
+        },
+        "payer_msisdn": {
+          "type": "string"
+        },
+        "payer_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "CREDITED or FAILED."
+        },
+        "failure_code": {
+          "type": "string"
+        },
+        "credit_txn_id": {
+          "type": "string"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.DepositService.RetryDepositBody": {
+      "type": "object",
+      "properties": {
+        "player_id": {
+          "type": "string",
+          "description": "Names the player when the deposit matched nobody."
+        }
+      }
+    },
+    "wallet.admin.v1.FreezeWalletResponse": {
+      "type": "object",
+      "properties": {
+        "wallet": {
+          "$ref": "#/definitions/wallet.admin.v1.Wallet"
+        }
+      }
+    },
+    "wallet.admin.v1.GetAdjustmentResponse": {
+      "type": "object",
+      "properties": {
+        "adjustment": {
+          "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+        }
+      }
+    },
+    "wallet.admin.v1.GetBalancesResponse": {
+      "type": "object",
+      "properties": {
+        "balances": {
+          "$ref": "#/definitions/wallet.admin.v1.Balances"
+        }
+      }
+    },
+    "wallet.admin.v1.GetBatchResponse": {
+      "type": "object",
+      "properties": {
+        "batch": {
+          "$ref": "#/definitions/wallet.admin.v1.Batch"
+        }
+      }
+    },
+    "wallet.admin.v1.GetLimitsResponse": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/wallet.player.v1.Limits"
+        }
+      }
+    },
+    "wallet.admin.v1.GetSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/wallet.admin.v1.Settings"
+        }
+      }
+    },
+    "wallet.admin.v1.GetSummaryResponse": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "$ref": "#/definitions/wallet.admin.v1.Summary"
+        }
+      }
+    },
+    "wallet.admin.v1.GetWalletResponse": {
+      "type": "object",
+      "properties": {
+        "wallet": {
+          "$ref": "#/definitions/wallet.admin.v1.Wallet"
+        }
+      }
+    },
+    "wallet.admin.v1.GetWithdrawalResponse": {
+      "type": "object",
+      "properties": {
+        "withdrawal": {
+          "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+        }
+      }
+    },
+    "wallet.admin.v1.ListAdjustmentsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListAuditEntriesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.AuditEntry"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListBatchLinesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListBatchesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Batch"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListDepositsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Deposit"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Transaction"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ListWithdrawalsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+          }
+        },
+        "next": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.ReasonTotal": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "description": "DEBIT or CREDIT."
+        },
+        "count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "cash": {
+          "type": "string"
+        },
+        "winnings": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.RejectAdjustmentResponse": {
+      "type": "object",
+      "properties": {
+        "adjustment": {
+          "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+        }
+      }
+    },
+    "wallet.admin.v1.RejectBatchResponse": {
+      "type": "object",
+      "properties": {
+        "batch": {
+          "$ref": "#/definitions/wallet.admin.v1.Batch"
+        }
+      }
+    },
+    "wallet.admin.v1.RejectWithdrawalResponse": {
+      "type": "object",
+      "properties": {
+        "withdrawal": {
+          "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+        }
+      }
+    },
+    "wallet.admin.v1.RetryDepositResponse": {
+      "type": "object",
+      "properties": {
+        "deposit": {
+          "$ref": "#/definitions/wallet.admin.v1.Deposit"
+        },
+        "wallet": {
+          "$ref": "#/definitions/wallet.admin.v1.Wallet",
+          "description": "The credited wallet, when the retry succeeded."
+        }
+      }
+    },
+    "wallet.admin.v1.SendSecondFactorRequest": {
+      "type": "object"
+    },
+    "wallet.admin.v1.SendSecondFactorResponse": {
+      "type": "object",
+      "properties": {
+        "factor": {
+          "type": "string",
+          "description": "TOTP (nothing was sent) or SMS."
+        }
+      }
+    },
+    "wallet.admin.v1.Settings": {
+      "type": "object",
+      "properties": {
+        "tenant_id": {
+          "type": "string"
+        },
+        "withdrawals_enabled": {
+          "type": "boolean"
+        },
+        "withdrawal_min_amount": {
+          "type": "string"
+        },
+        "withdrawal_max_amount": {
+          "type": "string"
+        },
+        "withdrawal_daily_amount_limit": {
+          "type": "string"
+        },
+        "withdrawal_daily_count_limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_interval_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_approval_threshold": {
+          "type": "string"
+        },
+        "min_deposit_to_withdraw": {
+          "type": "string"
+        },
+        "withdrawal_tax_rate_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_charge_bands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand"
+          }
+        },
+        "redirect_enabled": {
+          "type": "boolean"
+        },
+        "redirect_percentage_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deposit_tax_rate_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cashback_enabled": {
+          "type": "boolean"
+        },
+        "cashback_daily_limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deposit_alert_amount": {
+          "type": "string"
+        },
+        "alert_msisdns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limit_cooling_off_hours": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Rates are in basis points; a 0 maximum, daily limit or approval threshold means none."
+    },
+    "wallet.admin.v1.Summary": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.admin.v1.ReasonTotal"
+          }
+        }
+      },
+      "description": "Cash and winnings are signed."
+    },
+    "wallet.admin.v1.Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string",
+          "description": "DEBIT or CREDIT."
+        },
+        "reason": {
+          "type": "string",
+          "description": "e.g. CASINO_BET, DEPOSIT."
+        },
+        "source": {
+          "type": "string"
+        },
+        "round_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "cash_delta": {
+          "type": "string"
+        },
+        "winnings_delta": {
+          "type": "string"
+        },
+        "balance_after": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_txn_id": {
+          "type": "string"
+        },
+        "debit_id": {
+          "type": "string"
+        },
+        "reverses_id": {
+          "type": "string"
+        },
+        "cash_after": {
+          "type": "string"
+        },
+        "winnings_after": {
+          "type": "string"
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "String values only; absent when there are none."
+        }
+      },
+      "description": "Transaction is the player's view of a transaction (wallet.player.v1.Transaction) and what\nonly the back office sees."
+    },
+    "wallet.admin.v1.UnfreezeWalletResponse": {
+      "type": "object",
+      "properties": {
+        "wallet": {
+          "$ref": "#/definitions/wallet.admin.v1.Wallet"
+        }
+      }
+    },
+    "wallet.admin.v1.UpdateSettingsRequest": {
+      "type": "object",
+      "properties": {
+        "withdrawals_enabled": {
+          "type": "boolean"
+        },
+        "withdrawal_min_amount": {
+          "type": "string"
+        },
+        "withdrawal_max_amount": {
+          "type": "string"
+        },
+        "withdrawal_daily_amount_limit": {
+          "type": "string"
+        },
+        "withdrawal_daily_count_limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_interval_seconds": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_approval_threshold": {
+          "type": "string"
+        },
+        "min_deposit_to_withdraw": {
+          "type": "string"
+        },
+        "withdrawal_tax_rate_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "withdrawal_charge_bands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand"
+          }
+        },
+        "redirect_enabled": {
+          "type": "boolean"
+        },
+        "redirect_percentage_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deposit_tax_rate_bp": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cashback_enabled": {
+          "type": "boolean"
+        },
+        "cashback_daily_limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deposit_alert_amount": {
+          "type": "string"
+        },
+        "alert_msisdns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limit_cooling_off_hours": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "description": "Every setting, the version it was edited from, and why. An amount left out is 0."
+    },
+    "wallet.admin.v1.UpdateSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/wallet.admin.v1.Settings"
+        }
+      }
+    },
+    "wallet.admin.v1.Wallet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "cash_balance": {
+          "type": "string"
+        },
+        "winnings_balance": {
+          "type": "string"
+        },
+        "total_balance": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "ACTIVE, FROZEN or CLOSED."
+        },
+        "status_reason": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.WalletService.FreezeWalletBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.WalletService.UnfreezeWalletBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "wallet.admin.v1.Withdrawal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "idempotency_key": {
+          "type": "string"
+        },
+        "requested_amount": {
+          "type": "string"
+        },
+        "approved_amount": {
+          "type": "string"
+        },
+        "charge": {
+          "type": "string"
+        },
+        "tax": {
+          "type": "string"
+        },
+        "held_amount": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string",
+          "description": "APP, WEB or USSD."
+        },
+        "status": {
+          "type": "string",
+          "description": "PENDING_APPROVAL, APPROVED, REJECTED, COMPLETED or FAILED."
+        },
+        "hold_txn_id": {
+          "type": "string"
+        },
+        "refund_txn_id": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string"
+        },
+        "provider_tx_id": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "recipient_name": {
+          "type": "string"
+        },
+        "reviewed_by": {
+          "type": "string"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "wallet.admin.v1.WithdrawalService.ApproveWithdrawalBody": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent."
+        }
+      }
+    },
+    "wallet.admin.v1.WithdrawalService.RejectWithdrawalBody": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
         }
       }
     },
