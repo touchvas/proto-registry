@@ -2,7 +2,7 @@
 
 1. Every micro service should have its own folder and proto file inside the folder
 2. Every micro service should have the auto generated files in its own folder under `gen/go`
-3. Whenever you change a .proto file: Run `buf generate proto`
+3. Whenever you change a .proto file: Run `make generate` (`buf generate proto`, then the OpenAPI files)
 4. Commit the changes and the newly generated .pb.go files. 
 5. Check current tag number `git describe --tags`
 5. Tag the release: `git tag $new_tag_number && git push origin $new_tag_number`
@@ -28,8 +28,11 @@ service AuthService {
 }
 ```
 
-- `buf generate proto` then also writes `*.pb.gw.go` next to the Go code, and every annotated
-  endpoint is merged into `gen/openapiv2/api-gateway.swagger.json`.
+- `buf generate proto` then also writes `*.pb.gw.go` next to the Go code, and `make openapi` (part of
+  `make generate`) writes one OpenAPI file per gateway profile: `openapi/player.swagger.json` and
+  `openapi/admin.swagger.json`, which the gateway serves at `/docs`. Each is generated from the protos
+  listed in the Makefile's `PLAYER_PROTOS` / `ADMIN_PROTOS`: add a module's new public API there.
+  `cmd/openapi` then documents amounts as numbers, each module's error body and the auth headers.
 - Versioned packages live in versioned folders: `identity.v1` in `proto/identity/v1/`, with
   `option go_package = "github.com/touchvas/proto-registry/gen/go/identity/v1;identityv1";`.
 - Never annotate service-to-service RPCs (e.g. `identity.v1.IdentityService`): an annotated method

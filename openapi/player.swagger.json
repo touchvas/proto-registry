@@ -1,0 +1,1250 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "CodedError": {
+      "properties": {
+        "code": {
+          "description": "The result code, e.g. INSUFFICIENT_FUNDS.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Why the request failed.",
+          "type": "string"
+        },
+        "number": {
+          "description": "The result code's number.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Error": {
+      "properties": {
+        "error": {
+          "description": "Why the request failed.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.Attribution": {
+      "description": "Attribution records where a signup came from. The client's IP and user agent are taken\nfrom the request, not from here.",
+      "properties": {
+        "affiliate_code": {
+          "type": "string"
+        },
+        "browser": {
+          "type": "string"
+        },
+        "browser_version": {
+          "type": "string"
+        },
+        "btag": {
+          "type": "string"
+        },
+        "click_id": {
+          "type": "string"
+        },
+        "device_info": {
+          "type": "string"
+        },
+        "engine": {
+          "type": "string"
+        },
+        "fbclid": {
+          "type": "string"
+        },
+        "gclid": {
+          "type": "string"
+        },
+        "referrer": {
+          "type": "string"
+        },
+        "traffic_source": {
+          "type": "string"
+        },
+        "utm_campaign": {
+          "type": "string"
+        },
+        "utm_content": {
+          "type": "string"
+        },
+        "utm_medium": {
+          "type": "string"
+        },
+        "utm_source": {
+          "type": "string"
+        },
+        "utm_term": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.Challenge": {
+      "properties": {
+        "challenge": {
+          "type": "string"
+        },
+        "challenge_id": {
+          "type": "string"
+        },
+        "difficulty": {
+          "description": "Leading zero hex digits a solution needs.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "expires_in": {
+          "description": "Seconds until the puzzle expires.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ChangePasswordRequest": {
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ChangePasswordResponse": {
+      "type": "object"
+    },
+    "identity.v1.CreateChallengeBody": {
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ForgotPasswordRequest": {
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ForgotPasswordResponse": {
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.IssuedSession": {
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
+      "properties": {
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.LoginRequest": {
+      "properties": {
+        "channel": {
+          "description": "WEB, ANDROID, IOS, USSD, RETAIL or API.",
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.LoginResponse": {
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.LogoutResponse": {
+      "type": "object"
+    },
+    "identity.v1.PlayerProfile": {
+      "description": "PlayerProfile is a player as the player sees themselves.",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "date_of_birth": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "last_login_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "national_id": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "registration_channel": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.",
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "verified_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.PublicConfig": {
+      "properties": {
+        "brand_code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "min_age_years": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "password_min_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "verification_mode": {
+          "description": "OTP or DIRECT.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ResendCodeRequest": {
+      "properties": {
+        "msisdn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ResendCodeResponse": {
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ResetPasswordRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.ResetPasswordResponse": {
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SelfExcludeRequest": {
+      "properties": {
+        "end_date": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "start_date": {
+          "description": "YYYY-MM-DD, whole days in the brand's timezone.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SelfExcludeResponse": {
+      "properties": {
+        "exclusion": {
+          "$ref": "#/definitions/identity.v1.SelfExclusion"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SelfExclusion": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "ended_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "ends_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "requested_by": {
+          "description": "PLAYER or ADMIN.",
+          "type": "string"
+        },
+        "starts_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "description": "SCHEDULED, ACTIVE or ENDED.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SignupRequest": {
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "attribution": {
+          "$ref": "#/definitions/identity.v1.Attribution"
+        },
+        "channel": {
+          "description": "WEB, ANDROID, IOS, USSD, RETAIL or API.",
+          "type": "string"
+        },
+        "date_of_birth": {
+          "description": "YYYY-MM-DD.",
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "description": "Any local or international form; normalised with the brand's country.",
+          "type": "string"
+        },
+        "national_id": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SignupResponse": {
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession",
+          "description": "Set when the brand verifies directly (no code)."
+        },
+        "verification_required": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.VerifyPhoneRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.VerifyPhoneResponse": {
+      "properties": {
+        "player": {
+          "$ref": "#/definitions/identity.v1.PlayerProfile"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Balance": {
+      "properties": {
+        "cash_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE, FROZEN or CLOSED.",
+          "type": "string"
+        },
+        "total_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "winnings_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawable_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.ChargeBand": {
+      "description": "A withdrawal of from to to, inclusive, costs charge.",
+      "properties": {
+        "charge": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "from": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "to": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Limits": {
+      "description": "0 means no limit; a raised or removed limit shows as pending until pending_from.",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "daily_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "day": {
+          "description": "The brand's calendar day, YYYY-MM-DD.",
+          "type": "string"
+        },
+        "pending_daily_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "pending_from": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "remaining": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "resets_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "spent_today": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.ListTransactionsResponse": {
+      "properties": {
+        "next": {
+          "description": "Set when there may be more.",
+          "type": "string"
+        },
+        "transactions": {
+          "items": {
+            "$ref": "#/definitions/wallet.player.v1.Transaction",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.SetLimitsRequest": {
+      "properties": {
+        "daily_limit": {
+          "description": "Required; 0 removes the limit. Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Transaction": {
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "balance_after": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "cash_delta": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "direction": {
+          "description": "DEBIT or CREDIT.",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "reason": {
+          "description": "e.g. CASINO_BET, DEPOSIT.",
+          "type": "string"
+        },
+        "round_id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "winnings_delta": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.WithdrawalSettings": {
+      "description": "A 0 maximum or daily limit means none.",
+      "properties": {
+        "charge_bands": {
+          "items": {
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "daily_amount_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "daily_count_limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "interval_seconds": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "max_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "min_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "tax_rate_bp": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "info": {
+    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer \u003ctoken\u003e` once logged in.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
+    "title": "Player API",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/balance": {
+      "get": {
+        "operationId": "wallet.player.v1.WalletService.GetBalance",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Balance"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetBalance returns the player's balance.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/challenge": {
+      "post": {
+        "operationId": "identity.v1.AuthService.CreateChallenge",
+        "parameters": [
+          {
+            "description": "The JSON body, which may name the endpoint instead.",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.CreateChallengeBody"
+            }
+          },
+          {
+            "description": "The endpoint the puzzle is for, from the query string (?endpoint=login): signup, login,\nverify, resend, forgot, reset, admin_login, admin_forgot or admin_reset. When empty, the\nbody's endpoint is used, and then signup.",
+            "in": "query",
+            "name": "endpoint",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.Challenge"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateChallenge returns a proof-of-work puzzle for an endpoint. Endpoints answer 428 when\nthe caller must solve one: find a nonce such that sha256(challenge + \":\" + nonce) in hex\nstarts with difficulty zeros, then retry with X-PoW-Id (challenge_id) and X-PoW-Nonce.\nA puzzle works once, for the same user agent, until it expires.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/config": {
+      "get": {
+        "operationId": "identity.v1.BrandService.GetPublicConfig",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PublicConfig"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetPublicConfig returns the settings of the brand resolved for the request (from the\nsession, or the site's domain) that a player app needs before signup.",
+        "tags": [
+          "identity.v1.BrandService"
+        ]
+      }
+    },
+    "/v1/limits": {
+      "get": {
+        "operationId": "wallet.player.v1.WalletService.GetLimits",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetLimits returns the daily spend limit, any raise still waiting, today's spend, what's\nleft and when the day resets.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      },
+      "put": {
+        "operationId": "wallet.player.v1.WalletService.SetLimits",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.SetLimitsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SetLimits sets the daily spend limit (0 removes it). Lowering applies at once; raising or\nremoving applies after the brand's cooling-off hours.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/login": {
+      "post": {
+        "operationId": "identity.v1.AuthService.Login",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LoginResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "Login checks a player's password and starts a session. The player is identified by\nexactly one of msisdn, email or username.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/logout": {
+      "post": {
+        "operationId": "identity.v1.AuthService.Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "Logout ends the calling player's session. Needs a player session. 204.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/password/forgot": {
+      "patch": {
+        "operationId": "identity.v1.AuthService.ForgotPassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ForgotPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ForgotPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ForgotPassword texts a password-reset code. It answers the same whether or not the\nnumber has an account. 202.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/password/reset": {
+      "patch": {
+        "operationId": "identity.v1.AuthService.ResetPassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResetPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResetPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ResetPassword sets a new password with the texted code and ends every session.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/profile": {
+      "get": {
+        "operationId": "identity.v1.PlayerService.GetProfile",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetProfile returns the calling player. Needs a player session.",
+        "tags": [
+          "identity.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/profile/exclusion": {
+      "post": {
+        "operationId": "identity.v1.ResponsibleGamingService.SelfExclude",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExcludeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExcludeResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SelfExclude creates the calling player's exclusion, or extends the open one to a later\nend date. A start date of today applies at once and ends every session; a later one is\nSCHEDULED. Needs a player session. 201.",
+        "tags": [
+          "identity.v1.ResponsibleGamingService"
+        ]
+      }
+    },
+    "/v1/profile/password": {
+      "patch": {
+        "operationId": "identity.v1.AuthService.ChangePassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ChangePasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ChangePasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ChangePassword changes the calling player's password and ends their other sessions.\nNeeds a player session. 204.",
+        "tags": [
+          "identity.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/signup": {
+      "post": {
+        "operationId": "identity.v1.PlayerService.Signup",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SignupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SignupResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "Signup creates a player of the brand. With OTP verification a code is sent by SMS and\nverification_required is true; with DIRECT verification a session is returned. 201.",
+        "tags": [
+          "identity.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/transactions": {
+      "get": {
+        "operationId": "wallet.player.v1.WalletService.ListTransactions",
+        "parameters": [
+          {
+            "description": "1 to 100; 20 otherwise.",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "The previous page's next.",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.ListTransactionsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListTransactions returns the history, newest first; pass next as after for the next page.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "operationId": "identity.v1.PlayerService.VerifyPhone",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.VerifyPhoneRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.VerifyPhoneResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "VerifyPhone confirms the signup code, activates the player and starts a session.",
+        "tags": [
+          "identity.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/verify/resend": {
+      "post": {
+        "operationId": "identity.v1.PlayerService.ResendCode",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResendCodeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.ResendCodeResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ResendCode sends a new signup code to an unverified player. It answers the same whether\nor not the number has an account. 202.",
+        "tags": [
+          "identity.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/withdrawal-settings": {
+      "get": {
+        "operationId": "wallet.player.v1.WalletService.GetWithdrawalSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.WithdrawalSettings"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetWithdrawalSettings returns the brand's withdrawal limits, charges and tax, for the\nwithdraw form.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "security": [
+    {
+      "bearer": [],
+      "brand": []
+    }
+  ],
+  "securityDefinitions": {
+    "bearer": {
+      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    },
+    "brand": {
+      "description": "The brand's code, e.g. betxyz-ke. Sent on every request.",
+      "in": "header",
+      "name": "X-Brand-Code",
+      "type": "apiKey"
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "identity.v1.AuthService"
+    },
+    {
+      "name": "identity.v1.BrandService"
+    },
+    {
+      "name": "identity.v1.PlayerService"
+    },
+    {
+      "name": "identity.v1.ResponsibleGamingService"
+    },
+    {
+      "name": "wallet.player.v1.WalletService"
+    }
+  ]
+}

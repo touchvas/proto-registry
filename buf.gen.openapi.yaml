@@ -1,0 +1,12 @@
+# The OpenAPI files, one per api-gateway-service profile: `make openapi` runs this once per
+# profile on its protos, then cmd/openapi finishes each file.
+version: v1
+plugins:
+  - plugin: openapiv2
+    out: openapi/raw
+    strategy: all
+    opt:
+      - allow_merge=true
+      - merge_file_name=api
+      - json_names_for_fields=false
+      - openapi_naming_strategy=fqn

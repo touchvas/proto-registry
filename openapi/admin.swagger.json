@@ -1,0 +1,4746 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "CodedError": {
+      "properties": {
+        "code": {
+          "description": "The result code, e.g. INSUFFICIENT_FUNDS.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Why the request failed.",
+          "type": "string"
+        },
+        "number": {
+          "description": "The result code's number.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Error": {
+      "properties": {
+        "error": {
+          "description": "Why the request failed.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.Admin": {
+      "description": "Admin is a back-office user.",
+      "properties": {
+        "all_brands": {
+          "description": "Works on every brand of the operator, including brands added later.",
+          "type": "boolean"
+        },
+        "brand_ids": {
+          "description": "The brands worked on when all_brands is false.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "last_login_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "otp_enabled": {
+          "description": "SMS codes as a second factor.",
+          "type": "boolean"
+        },
+        "role_id": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or DISABLED.",
+          "type": "string"
+        },
+        "totp_enabled": {
+          "description": "An authenticator app as a second factor.",
+          "type": "boolean"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.AttackMode": {
+      "properties": {
+        "all_brands": {
+          "description": "Set when the platform turned it on for every brand.",
+          "type": "boolean"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "until": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.AuditEntry": {
+      "properties": {
+        "action": {
+          "description": "e.g. player.status_changed.",
+          "type": "string"
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "actor_kind": {
+          "description": "ADMIN or PLAYER.",
+          "type": "string"
+        },
+        "brand_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.Brand": {
+      "description": "Brand is one operator's business in one country: the tenant.",
+      "properties": {
+        "business_email": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING, ACTIVE or SUSPENDED.",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.BrandDomain": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "purpose": {
+          "description": "PLAYER_SITE or BACK_OFFICE.",
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.BrandSettings": {
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "kyc_required_to_play": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "string"
+        },
+        "min_age_years": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_max_attempts": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_ttl_seconds": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "password_min_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "referral_prefix": {
+          "type": "string"
+        },
+        "single_session": {
+          "description": "A new login ends the player's other sessions.",
+          "type": "boolean"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "verification_mode": {
+          "description": "OTP or DIRECT.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version read; send it back on update.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ChangePasswordRequest": {
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ChangePasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ConfirmTotpRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ConfirmTotpResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.CreateOperatorRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.CreateRoleRequest": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.CreateUserRequest": {
+      "properties": {
+        "all_brands": {
+          "type": "boolean"
+        },
+        "brand_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.DeleteRoleResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.DisableTotpRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.DisableTotpResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ForgotPasswordRequest": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ForgotPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.GetMeResponse": {
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ListBrandsResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/identity.admin.v1.Brand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "offset": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ListPlayersResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/identity.v1.PlayerProfile",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "offset": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ListUsersResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/identity.admin.v1.Admin",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "offset": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.LoginChallenge": {
+      "description": "LoginChallenge asks for a second factor within five minutes, five tries at most.",
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "method": {
+          "description": "TOTP or SMS.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.LoginRequest": {
+      "properties": {
+        "email": {
+          "description": "One of email or msisdn.",
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.LoginResponse": {
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "challenge": {
+          "$ref": "#/definitions/identity.admin.v1.LoginChallenge"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.LogoutResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.OnboardBrandRequest": {
+      "properties": {
+        "business_email": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.Operator": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.Permission": {
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "code": {
+          "description": "e.g. player:status.",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "operator_grantable": {
+          "description": "False for platform-only permissions such as operator:write.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.PlatformService.AddBrandDomainBody": {
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "purpose": {
+          "description": "PLAYER_SITE or BACK_OFFICE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.PlatformService.SuspendBrandBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.PlayerService.ChangePlayerStatusBody": {
+      "properties": {
+        "action": {
+          "description": "SUSPEND, REACTIVATE or CLOSE.",
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.PlayerService.ExcludePlayerBody": {
+      "properties": {
+        "end_date": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "start_date": {
+          "description": "YYYY-MM-DD, whole days in the brand's timezone.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.RemoveBrandDomainResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ResetPasswordRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.ResetPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.ResetUserPasswordResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.Role": {
+      "properties": {
+        "code": {
+          "description": "Set on system roles (ADMIN).",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_system": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.RoleService.UpdateRoleBody": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.SetSmsCodesRequest": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.SetSmsCodesResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.StartAttackModeRequest": {
+      "properties": {
+        "endpoint": {
+          "description": "signup, login, verify, resend, forgot, reset, admin_login, admin_forgot or admin_reset.",
+          "type": "string"
+        },
+        "minutes": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.StartTotpResponse": {
+      "properties": {
+        "otpauth_url": {
+          "type": "string"
+        },
+        "qr_code_png": {
+          "description": "A base64 PNG of the otpauth URL.",
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.StopAttackModeResponse": {
+      "type": "object"
+    },
+    "identity.admin.v1.UserService.ResetUserPasswordBody": {
+      "properties": {
+        "new_password": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.UserService.SetUserEnabledBody": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.UserService.UpdateUserBody": {
+      "properties": {
+        "all_brands": {
+          "description": "Sent to change the user's brands; absent keeps them.",
+          "type": "boolean"
+        },
+        "brand_ids": {
+          "description": "A JSON array of brand ids. Sent (even empty) to change the user's brands; absent keeps\nthem. A ListValue, because a repeated field can't tell empty from absent.",
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "role_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.VerifyLoginRequest": {
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.admin.v1.VerifyLoginResponse": {
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/identity.admin.v1.Admin"
+        },
+        "challenge": {
+          "$ref": "#/definitions/identity.admin.v1.LoginChallenge"
+        },
+        "session": {
+          "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.Challenge": {
+      "properties": {
+        "challenge": {
+          "type": "string"
+        },
+        "challenge_id": {
+          "type": "string"
+        },
+        "difficulty": {
+          "description": "Leading zero hex digits a solution needs.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "expires_in": {
+          "description": "Seconds until the puzzle expires.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.CreateChallengeBody": {
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.IssuedSession": {
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
+      "properties": {
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.PlayerProfile": {
+      "description": "PlayerProfile is a player as the player sees themselves.",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "date_of_birth": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "last_login_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "national_id": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "registration_channel": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.",
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "verified_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "identity.v1.SelfExclusion": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "ended_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "ends_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "requested_by": {
+          "description": "PLAYER or ADMIN.",
+          "type": "string"
+        },
+        "starts_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "description": "SCHEDULED, ACTIVE or ENDED.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Adjustment": {
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "batch_id": {
+          "type": "string"
+        },
+        "bucket": {
+          "description": "CASH or WINNINGS.",
+          "type": "string"
+        },
+        "checker_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "direction": {
+          "description": "CREDIT or DEBIT.",
+          "type": "string"
+        },
+        "failure_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "maker_id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "posted_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING, APPROVED, POSTED, REJECTED or FAILED.",
+          "type": "string"
+        },
+        "transaction_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AdjustmentLine": {
+      "description": "AdjustmentLine is an adjustment to make. A batch line may name the player by msisdn instead\nof player_id.",
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "bucket": {
+          "description": "CASH or WINNINGS.",
+          "type": "string"
+        },
+        "direction": {
+          "description": "CREDIT or DEBIT.",
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AdjustmentService.ApproveAdjustmentBody": {
+      "properties": {
+        "code": {
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AdjustmentService.ApproveBatchBody": {
+      "properties": {
+        "code": {
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AdjustmentService.RejectAdjustmentBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AdjustmentService.RejectBatchBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.AuditEntry": {
+      "properties": {
+        "action": {
+          "description": "e.g. withdrawal.approve.",
+          "type": "string"
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "actor_role": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Balances": {
+      "properties": {
+        "active": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "cash": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "closed": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "frozen": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "total": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "wallets": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "winnings": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Batch": {
+      "properties": {
+        "checker_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "failed": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "finished_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "line_count": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "maker_id": {
+          "type": "string"
+        },
+        "posted": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING, APPROVED, REJECTED or DONE.",
+          "type": "string"
+        },
+        "total_credit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "total_debit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.CreateBatchRequest": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.AdjustmentLine",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Deposit": {
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "cashback": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "credit_txn_id": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "failure_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        },
+        "payer_msisdn": {
+          "type": "string"
+        },
+        "payer_name": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "provider_tx_id": {
+          "type": "string"
+        },
+        "status": {
+          "description": "CREDITED or FAILED.",
+          "type": "string"
+        },
+        "tax": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "transaction_charge": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.DepositService.RetryDepositBody": {
+      "properties": {
+        "player_id": {
+          "description": "Names the player when the deposit matched nobody.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListAdjustmentsResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Adjustment",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListAuditEntriesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.AuditEntry",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListBatchLinesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Adjustment",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListBatchesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Batch",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListDepositsResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Deposit",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListTransactionsResponse": {
+      "properties": {
+        "next": {
+          "type": "string"
+        },
+        "transactions": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Transaction",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ListWithdrawalsResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.Withdrawal",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.ReasonTotal": {
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "cash": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "direction": {
+          "description": "DEBIT or CREDIT.",
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "winnings": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.RetryDepositResponse": {
+      "properties": {
+        "deposit": {
+          "$ref": "#/definitions/wallet.admin.v1.Deposit"
+        },
+        "wallet": {
+          "$ref": "#/definitions/wallet.admin.v1.Wallet",
+          "description": "The credited wallet, when the retry succeeded."
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.SendSecondFactorRequest": {
+      "type": "object"
+    },
+    "wallet.admin.v1.SendSecondFactorResponse": {
+      "properties": {
+        "factor": {
+          "description": "TOTP (nothing was sent) or SMS.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Settings": {
+      "description": "Rates are in basis points; a 0 maximum, daily limit or approval threshold means none.",
+      "properties": {
+        "alert_msisdns": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cashback_daily_limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "cashback_enabled": {
+          "type": "boolean"
+        },
+        "deposit_alert_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "deposit_tax_rate_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "limit_cooling_off_hours": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "min_deposit_to_withdraw": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "redirect_enabled": {
+          "type": "boolean"
+        },
+        "redirect_percentage_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_approval_threshold": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_charge_bands": {
+          "items": {
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "withdrawal_daily_amount_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_daily_count_limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_interval_seconds": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_max_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_min_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_tax_rate_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawals_enabled": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Summary": {
+      "description": "Cash and winnings are signed.",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "from": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "$ref": "#/definitions/wallet.admin.v1.ReasonTotal",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "to": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Transaction": {
+      "description": "Transaction is the player's view of a transaction (wallet.player.v1.Transaction) and what\nonly the back office sees.",
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "balance_after": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "cash_after": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "cash_delta": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "debit_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "direction": {
+          "description": "DEBIT or CREDIT.",
+          "type": "string"
+        },
+        "external_txn_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "String values only; absent when there are none.",
+          "type": "object"
+        },
+        "reason": {
+          "description": "e.g. CASINO_BET, DEPOSIT.",
+          "type": "string"
+        },
+        "reverses_id": {
+          "type": "string"
+        },
+        "round_id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "winnings_after": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "winnings_delta": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.UpdateSettingsRequest": {
+      "description": "Every setting, the version it was edited from, and why. An amount left out is 0.",
+      "properties": {
+        "alert_msisdns": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cashback_daily_limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "cashback_enabled": {
+          "type": "boolean"
+        },
+        "deposit_alert_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "deposit_tax_rate_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "limit_cooling_off_hours": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "min_deposit_to_withdraw": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "redirect_enabled": {
+          "type": "boolean"
+        },
+        "redirect_percentage_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_approval_threshold": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_charge_bands": {
+          "items": {
+            "$ref": "#/definitions/wallet.player.v1.ChargeBand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "withdrawal_daily_amount_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_daily_count_limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_interval_seconds": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawal_max_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_min_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "withdrawal_tax_rate_bp": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "withdrawals_enabled": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Wallet": {
+      "properties": {
+        "cash_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE, FROZEN or CLOSED.",
+          "type": "string"
+        },
+        "status_reason": {
+          "type": "string"
+        },
+        "total_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "winnings_balance": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.WalletService.FreezeWalletBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.WalletService.UnfreezeWalletBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.Withdrawal": {
+      "properties": {
+        "approved_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "approved_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "charge": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "finished_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "held_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "hold_txn_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "idempotency_key": {
+          "type": "string"
+        },
+        "origin": {
+          "description": "APP, WEB or USSD.",
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string"
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "provider_tx_id": {
+          "type": "string"
+        },
+        "recipient_name": {
+          "type": "string"
+        },
+        "refund_txn_id": {
+          "type": "string"
+        },
+        "requested_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "review_reason": {
+          "type": "string"
+        },
+        "reviewed_by": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING_APPROVAL, APPROVED, REJECTED, COMPLETED or FAILED.",
+          "type": "string"
+        },
+        "tax": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.WithdrawalService.ApproveWithdrawalBody": {
+      "properties": {
+        "code": {
+          "description": "A code from the approver's authenticator app, or the SMS code SendSecondFactor sent.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.admin.v1.WithdrawalService.RejectWithdrawalBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.ChargeBand": {
+      "description": "A withdrawal of from to to, inclusive, costs charge.",
+      "properties": {
+        "charge": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "from": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "to": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Limits": {
+      "description": "0 means no limit; a raised or removed limit shows as pending until pending_from.",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "daily_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "day": {
+          "description": "The brand's calendar day, YYYY-MM-DD.",
+          "type": "string"
+        },
+        "pending_daily_limit": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "pending_from": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "remaining": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "resets_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "spent_today": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "info": {
+    "description": "What the back office calls, through api-gateway-service's admin profile. Send `Authorization: Bearer \u003ctoken\u003e` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
+    "title": "Back-office API",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/admin/adjustment-batches": {
+      "get": {
+        "operationId": "wallet.admin.v1.AdjustmentService.ListBatches",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListBatchesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListBatches lists batches. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      },
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.CreateBatch",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.CreateBatchRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "CreateBatch proposes up to 5000 adjustments at once; a refusal names the first bad line.\nNeeds adjustment:create. 201.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}": {
+      "get": {
+        "operationId": "wallet.admin.v1.AdjustmentService.GetBatch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetBatch returns one batch. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/approve": {
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.ApproveBatch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.ApproveBatchBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ApproveBatch posts every line of a pending batch, with the checker's second factor. Needs\nadjustment:approve.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/lines": {
+      "get": {
+        "operationId": "wallet.admin.v1.AdjustmentService.ListBatchLines",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "maker_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListBatchLinesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListBatchLines lists a batch's adjustments; status=FAILED lists the lines the wallet\nrefused. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustment-batches/{id}/reject": {
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.RejectBatch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.RejectBatchBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Batch"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RejectBatch refuses a pending batch. Needs adjustment:approve.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments": {
+      "get": {
+        "operationId": "wallet.admin.v1.AdjustmentService.ListAdjustments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "maker_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListAdjustmentsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListAdjustments lists adjustments; status=PENDING is the checker's queue. Needs\nwallet:read.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      },
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.CreateAdjustment",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "line",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentLine"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "CreateAdjustment proposes one adjustment. Needs adjustment:create. 201.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}": {
+      "get": {
+        "operationId": "wallet.admin.v1.AdjustmentService.GetAdjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetAdjustment returns one adjustment. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}/approve": {
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.ApproveAdjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.ApproveAdjustmentBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ApproveAdjustment posts a pending adjustment, with the checker's second factor. Needs\nadjustment:approve.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/adjustments/{id}/reject": {
+      "post": {
+        "operationId": "wallet.admin.v1.AdjustmentService.RejectAdjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.AdjustmentService.RejectAdjustmentBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Adjustment"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RejectAdjustment refuses a pending adjustment. Needs adjustment:approve.",
+        "tags": [
+          "wallet.admin.v1.AdjustmentService"
+        ]
+      }
+    },
+    "/v1/admin/audit": {
+      "get": {
+        "operationId": "identity.admin.v1.AuditService.ListAuditEntries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "target_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "actor_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.AuditEntry",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListAuditEntries lists entries, newest first. Needs audit:read.",
+        "tags": [
+          "identity.admin.v1.AuditService"
+        ]
+      }
+    },
+    "/v1/admin/deposits": {
+      "get": {
+        "operationId": "wallet.admin.v1.DepositService.ListDeposits",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "msisdn",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListDepositsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListDeposits lists deposits; status=FAILED is the retry screen. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.DepositService"
+        ]
+      }
+    },
+    "/v1/admin/deposits/{id}/retry": {
+      "post": {
+        "operationId": "wallet.admin.v1.DepositService.RetryDeposit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.DepositService.RetryDepositBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.RetryDepositResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RetryDeposit credits a FAILED deposit again; a refusal leaves it FAILED with the new code.\nNeeds deposit:retry.",
+        "tags": [
+          "wallet.admin.v1.DepositService"
+        ]
+      }
+    },
+    "/v1/admin/login": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.Login",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LoginResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "Login checks an admin's password. An admin without a second factor gets a session; one\nwith a second factor gets a challenge that VerifyLogin completes.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/admin/login/verify": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.VerifyLogin",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.VerifyLoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.VerifyLoginResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "VerifyLogin completes a login challenge with a TOTP or SMS code.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/admin/logout": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "Logout ends the calling admin's session. 204.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/admin/me": {
+      "get": {
+        "operationId": "identity.admin.v1.AccountService.GetMe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.GetMeResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetMe returns the calling admin with their role and permissions.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/password": {
+      "patch": {
+        "operationId": "identity.admin.v1.AccountService.ChangePassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ChangePasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ChangePasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ChangePassword changes the calling admin's password and ends their other sessions. 204.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/sms-codes": {
+      "patch": {
+        "operationId": "identity.admin.v1.AccountService.SetSmsCodes",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.SetSmsCodesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.SetSmsCodesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SetSmsCodes turns SMS codes as a second factor on or off. 204.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp": {
+      "post": {
+        "operationId": "identity.admin.v1.AccountService.StartTotp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StartTotpResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "StartTotp begins adding an authenticator app: scan the QR code, then ConfirmTotp.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp/confirm": {
+      "post": {
+        "operationId": "identity.admin.v1.AccountService.ConfirmTotp",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ConfirmTotpRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ConfirmTotpResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfirmTotp turns the authenticator app on with a first code. 204.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/me/totp/disable": {
+      "post": {
+        "operationId": "identity.admin.v1.AccountService.DisableTotp",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DisableTotpRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DisableTotpResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "DisableTotp turns the authenticator app off with a current code. 204.",
+        "tags": [
+          "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/password/forgot": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.ForgotPassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ForgotPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ForgotPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ForgotPassword texts a 6-digit code to the admin's phone number. It answers the same for\nunknown, disabled or phone-less accounts. 202, no body.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/admin/password/reset": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.ResetPassword",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ResetPassword sets a new password with the texted code and ends every session. 204.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/admin/permissions": {
+      "get": {
+        "operationId": "identity.admin.v1.RoleService.ListPermissions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.Permission",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListPermissions lists the permission catalogue. Needs role:read.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      }
+    },
+    "/v1/admin/players": {
+      "get": {
+        "operationId": "identity.admin.v1.PlayerService.ListPlayers",
+        "parameters": [
+          {
+            "description": "PENDING_VERIFICATION, ACTIVE, SUSPENDED, SELF_EXCLUDED or CLOSED.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "msisdn",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "username",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListPlayersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListPlayers lists the brand's players, filtered. Needs player:read.",
+        "tags": [
+          "identity.admin.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}": {
+      "get": {
+        "operationId": "identity.admin.v1.PlayerService.GetPlayer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetPlayer reads one player. Needs player:read.",
+        "tags": [
+          "identity.admin.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}/exclusions": {
+      "get": {
+        "operationId": "identity.admin.v1.PlayerService.ListPlayerExclusions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.v1.SelfExclusion",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListPlayerExclusions lists a player's exclusions, newest first. Needs player:read.",
+        "tags": [
+          "identity.admin.v1.PlayerService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.PlayerService.ExcludePlayer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlayerService.ExcludePlayerBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.SelfExclusion"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ExcludePlayer excludes a player on their behalf, under the self-exclusion rules. Needs\nplayer:exclude. 201.",
+        "tags": [
+          "identity.admin.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{id}/status": {
+      "patch": {
+        "operationId": "identity.admin.v1.PlayerService.ChangePlayerStatus",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlayerService.ChangePlayerStatusBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.PlayerProfile"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ChangePlayerStatus suspends, reactivates or closes a player. Needs player:status.",
+        "tags": [
+          "identity.admin.v1.PlayerService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/limits": {
+      "get": {
+        "operationId": "wallet.admin.v1.WalletService.GetLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "player_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetLimits returns the player's daily spend limit. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/transactions": {
+      "get": {
+        "operationId": "wallet.admin.v1.WalletService.ListTransactions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "player_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListTransactionsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListTransactions returns the player's history. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet": {
+      "get": {
+        "operationId": "wallet.admin.v1.WalletService.GetWallet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "player_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetWallet returns the player's wallet. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet/freeze": {
+      "post": {
+        "operationId": "wallet.admin.v1.WalletService.FreezeWallet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "player_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WalletService.FreezeWalletBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "FreezeWallet stops the wallet taking bets, deposits and withdrawals. Needs wallet:freeze.",
+        "tags": [
+          "wallet.admin.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/admin/players/{player_id}/wallet/unfreeze": {
+      "post": {
+        "operationId": "wallet.admin.v1.WalletService.UnfreezeWallet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "player_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WalletService.UnfreezeWalletBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Wallet"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UnfreezeWallet makes a frozen wallet active again. Needs wallet:freeze.",
+        "tags": [
+          "wallet.admin.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/admin/reports/balances": {
+      "get": {
+        "operationId": "wallet.admin.v1.ReportService.GetBalances",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Balances"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetBalances totals what the brand's wallets hold. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.ReportService"
+        ]
+      }
+    },
+    "/v1/admin/reports/summary": {
+      "get": {
+        "operationId": "wallet.admin.v1.ReportService.GetSummary",
+        "parameters": [
+          {
+            "description": "RFC 3339; strings so a bad one gets REST's answer.",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Summary"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetSummary totals transactions by reason between from and to (RFC 3339, at most 7 days\napart; the last 24 hours by default). Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.ReportService"
+        ]
+      }
+    },
+    "/v1/admin/roles": {
+      "get": {
+        "operationId": "identity.admin.v1.RoleService.ListRoles",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.Role",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListRoles lists the system roles and the operator's custom roles. Needs role:read.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.RoleService.CreateRole",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateRoleRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateRole creates a custom role. Needs role:write. 201.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      }
+    },
+    "/v1/admin/roles/{id}": {
+      "delete": {
+        "operationId": "identity.admin.v1.RoleService.DeleteRole",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.DeleteRoleResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "DeleteRole deletes a custom role no user holds. Needs role:write. 204.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      },
+      "get": {
+        "operationId": "identity.admin.v1.RoleService.GetRole",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetRole reads a role. Needs role:read.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      },
+      "put": {
+        "operationId": "identity.admin.v1.RoleService.UpdateRole",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.RoleService.UpdateRoleBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Role"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateRole replaces a custom role's name, description and permissions. Needs role:write.",
+        "tags": [
+          "identity.admin.v1.RoleService"
+        ]
+      }
+    },
+    "/v1/admin/second-factor": {
+      "post": {
+        "operationId": "wallet.admin.v1.ApprovalService.SendSecondFactor",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.SendSecondFactorRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.SendSecondFactorResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SendSecondFactor texts the caller a code, unless they use an authenticator app. Needs\nwithdrawal:approve or adjustment:approve.",
+        "tags": [
+          "wallet.admin.v1.ApprovalService"
+        ]
+      }
+    },
+    "/v1/admin/security/attack-mode": {
+      "get": {
+        "operationId": "identity.admin.v1.SecurityService.ListAttackModes",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.AttackMode",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListAttackModes lists the endpoints in attack mode. Needs security:read.",
+        "tags": [
+          "identity.admin.v1.SecurityService"
+        ]
+      },
+      "put": {
+        "operationId": "identity.admin.v1.SecurityService.StartAttackMode",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StartAttackModeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.AttackMode"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "StartAttackMode puts an endpoint in attack mode for 1 minute to 24 hours. Needs\nsecurity:write.",
+        "tags": [
+          "identity.admin.v1.SecurityService"
+        ]
+      }
+    },
+    "/v1/admin/security/attack-mode/{endpoint}": {
+      "delete": {
+        "operationId": "identity.admin.v1.SecurityService.StopAttackMode",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.StopAttackModeResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "StopAttackMode ends attack mode on an endpoint. Needs security:write. 204.",
+        "tags": [
+          "identity.admin.v1.SecurityService"
+        ]
+      }
+    },
+    "/v1/admin/settings": {
+      "get": {
+        "operationId": "wallet.admin.v1.SettingsService.GetSettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Settings"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetSettings returns the settings; version 0 means none are saved yet and the defaults\napply. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.SettingsService"
+        ]
+      },
+      "put": {
+        "operationId": "wallet.admin.v1.SettingsService.UpdateSettings",
+        "parameters": [
+          {
+            "description": "Every setting, the version it was edited from, and why. An amount left out is 0.",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.UpdateSettingsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Settings"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UpdateSettings replaces every setting. A version other than the stored one is\nSETTINGS_CONFLICT: reload and edit again. Needs wallet_settings:write.",
+        "tags": [
+          "wallet.admin.v1.SettingsService"
+        ]
+      }
+    },
+    "/v1/admin/users": {
+      "get": {
+        "operationId": "identity.admin.v1.UserService.ListUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListUsersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListUsers lists back-office users. Needs admin_user:read.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.UserService.CreateUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateUser creates a back-office user. Needs admin_user:write. 201.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}": {
+      "get": {
+        "operationId": "identity.admin.v1.UserService.GetUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetUser reads a back-office user. Needs admin_user:read.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      },
+      "patch": {
+        "operationId": "identity.admin.v1.UserService.UpdateUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.UpdateUserBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateUser changes the fields sent. Needs admin_user:write.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}/password": {
+      "put": {
+        "operationId": "identity.admin.v1.UserService.ResetUserPassword",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.ResetUserPasswordBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ResetUserPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ResetUserPassword sets another user's password and ends their sessions. Needs\nadmin_user:write. 204.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      }
+    },
+    "/v1/admin/users/{id}/status": {
+      "patch": {
+        "operationId": "identity.admin.v1.UserService.SetUserEnabled",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.SetUserEnabledBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SetUserEnabled enables or disables a user; disabling ends their sessions. Needs\nadmin_user:write.",
+        "tags": [
+          "identity.admin.v1.UserService"
+        ]
+      }
+    },
+    "/v1/admin/wallet/audit": {
+      "get": {
+        "operationId": "wallet.admin.v1.AuditService.ListAuditEntries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "target_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "actor_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListAuditEntriesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListAuditEntries lists entries. Needs wallet_audit:read.",
+        "tags": [
+          "wallet.admin.v1.AuditService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals": {
+      "get": {
+        "operationId": "wallet.admin.v1.WithdrawalService.ListWithdrawals",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "player_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.ListWithdrawalsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListWithdrawals lists withdrawals; status=PENDING_APPROVAL is the checker's queue. Needs\nwallet:read.",
+        "tags": [
+          "wallet.admin.v1.WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}": {
+      "get": {
+        "operationId": "wallet.admin.v1.WithdrawalService.GetWithdrawal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetWithdrawal returns one withdrawal. Needs wallet:read.",
+        "tags": [
+          "wallet.admin.v1.WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}/approve": {
+      "post": {
+        "operationId": "wallet.admin.v1.WithdrawalService.ApproveWithdrawal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WithdrawalService.ApproveWithdrawalBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ApproveWithdrawal pays a pending withdrawal out, with the checker's second factor. Needs\nwithdrawal:approve.",
+        "tags": [
+          "wallet.admin.v1.WithdrawalService"
+        ]
+      }
+    },
+    "/v1/admin/withdrawals/{id}/reject": {
+      "post": {
+        "operationId": "wallet.admin.v1.WithdrawalService.RejectWithdrawal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.WithdrawalService.RejectWithdrawalBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.admin.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RejectWithdrawal refuses a pending withdrawal and refunds the held amount. Needs\nwithdrawal:approve.",
+        "tags": [
+          "wallet.admin.v1.WithdrawalService"
+        ]
+      }
+    },
+    "/v1/challenge": {
+      "post": {
+        "operationId": "identity.admin.v1.AuthService.CreateChallenge",
+        "parameters": [
+          {
+            "description": "The JSON body, which may name the endpoint instead.",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.v1.CreateChallengeBody"
+            }
+          },
+          {
+            "description": "The endpoint the puzzle is for, from the query string (?endpoint=login): signup, login,\nverify, resend, forgot, reset, admin_login, admin_forgot or admin_reset. When empty, the\nbody's endpoint is used, and then signup.",
+            "in": "query",
+            "name": "endpoint",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.v1.Challenge"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateChallenge returns a proof-of-work puzzle, as identity.v1.AuthService.CreateChallenge\ndoes for the apps: the back office needs one when admin login answers 428 (suspicious\ntraffic, or attack mode on admin_login). It shares identity.v1's messages on purpose.",
+        "tags": [
+          "identity.admin.v1.AuthService"
+        ]
+      }
+    },
+    "/v1/platform/brands": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.ListBrands",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "operator_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.ListBrandsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBrands lists brands, optionally of one operator.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.PlatformService.OnboardBrand",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.OnboardBrandRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "OnboardBrand creates a brand (PENDING) with its settings. 201.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.GetBrand",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetBrand reads one brand.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/activate": {
+      "patch": {
+        "operationId": "identity.admin.v1.PlatformService.ActivateBrand",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ActivateBrand makes a brand ACTIVE.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/domains": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.ListBrandDomains",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.BrandDomain",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBrandDomains lists a brand's domains.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.PlatformService.AddBrandDomain",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlatformService.AddBrandDomainBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "AddBrandDomain registers a domain the brand's sites or back office run on. 201.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/domains/{domain_id}": {
+      "delete": {
+        "operationId": "identity.admin.v1.PlatformService.RemoveBrandDomain",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "domain_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.RemoveBrandDomainResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "RemoveBrandDomain removes a domain. 204.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/settings": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.GetBrandSettings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetBrandSettings reads a brand's settings.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      },
+      "put": {
+        "operationId": "identity.admin.v1.PlatformService.UpdateBrandSettings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The JSON body.",
+            "in": "body",
+            "name": "settings",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateBrandSettings replaces a brand's settings. The body is the whole settings object\nwith the version it was read at; a stale version is a conflict.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/brands/{id}/suspend": {
+      "patch": {
+        "operationId": "identity.admin.v1.PlatformService.SuspendBrand",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.PlatformService.SuspendBrandBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Brand"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SuspendBrand makes a brand SUSPENDED.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/operators": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.ListOperators",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/identity.admin.v1.Operator",
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListOperators lists every operator.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      },
+      "post": {
+        "operationId": "identity.admin.v1.PlatformService.CreateOperator",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.CreateOperatorRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Operator"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateOperator creates an operator, the company that owns brands. 201.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    },
+    "/v1/platform/operators/{id}": {
+      "get": {
+        "operationId": "identity.admin.v1.PlatformService.GetOperator",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Operator"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetOperator reads one operator.",
+        "tags": [
+          "identity.admin.v1.PlatformService"
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "security": [
+    {
+      "bearer": [],
+      "brand": []
+    }
+  ],
+  "securityDefinitions": {
+    "bearer": {
+      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    },
+    "brand": {
+      "description": "The ID of the brand to work on, for staff on several brands. SUPER_ADMIN must always send it.",
+      "in": "header",
+      "name": "X-Act-As-Brand",
+      "type": "apiKey"
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "identity.admin.v1.AccountService"
+    },
+    {
+      "name": "identity.admin.v1.AuditService"
+    },
+    {
+      "name": "identity.admin.v1.AuthService"
+    },
+    {
+      "name": "identity.admin.v1.PlatformService"
+    },
+    {
+      "name": "identity.admin.v1.PlayerService"
+    },
+    {
+      "name": "identity.admin.v1.RoleService"
+    },
+    {
+      "name": "identity.admin.v1.SecurityService"
+    },
+    {
+      "name": "identity.admin.v1.UserService"
+    },
+    {
+      "name": "wallet.admin.v1.AdjustmentService"
+    },
+    {
+      "name": "wallet.admin.v1.ApprovalService"
+    },
+    {
+      "name": "wallet.admin.v1.AuditService"
+    },
+    {
+      "name": "wallet.admin.v1.DepositService"
+    },
+    {
+      "name": "wallet.admin.v1.ReportService"
+    },
+    {
+      "name": "wallet.admin.v1.SettingsService"
+    },
+    {
+      "name": "wallet.admin.v1.WalletService"
+    },
+    {
+      "name": "wallet.admin.v1.WithdrawalService"
+    }
+  ]
+}
