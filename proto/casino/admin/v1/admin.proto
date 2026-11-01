@@ -1,0 +1,512 @@
+syntax = "proto3";
+
+// Back-office casino API: what the back office calls through api-gateway-service's admin
+// profile to set up a brand's casino. casino-service runs once per operator; the gateway sends
+// each request to the deployment of the brand's operator, on its admin port, which only the
+// admin gateway can reach.
+//
+// Every RPC needs a back-office session holding the permission it names. Everything is per
+// brand, since currencies and game licences differ by market: the brand is the session's, or
+// the one in X-Act-As-Brand (a SUPER_ADMIN must always name it). IDs are UUIDs: brands are
+// identity's, games, providers and categories casino's own.
+//
+// Amounts are in the currency's units (940.5 is KES 940.50) and exact: held as decimal
+// strings, written and read as JSON numbers (touchvas.api.v1.json_number), at most 4
+// decimals. Errors are {code, number, message} with casino.player.v1.ResultCode.
+//
+// Lists are in the brand's order (priority, then name); pass next as after for the following
+// page. limit is 1 to 100, 50 otherwise. Creates answer 201.
+package casino.admin.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "touchvas/api/v1/json.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/admin/v1;casinoadminv1";
+
+// ------------------------------------------------------------------------ The brand's casino
+
+// CasinoService switches the brand's casino on or off and sets where its stakes and wins are
+// posted.
+service CasinoService {
+  // GetCasino returns the brand's casino. Needs casino:read.
+  rpc GetCasino(GetCasinoRequest) returns (GetCasinoResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/casino"
+      response_body: "casino"
+    };
+  }
+
+  // UpdateCasino switches the brand's casino on or off, creating it the first time. Needs
+  // casino:write.
+  rpc UpdateCasino(UpdateCasinoRequest) returns (UpdateCasinoResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino"
+      body: "*"
+      response_body: "casino"
+    };
+  }
+
+  // GetTransactionRoute returns where the brand's stakes and wins are posted, without the key.
+  // Needs casino:read.
+  rpc GetTransactionRoute(GetTransactionRouteRequest) returns (GetTransactionRouteResponse) {
+    option (google.api.http) = {
+      get: "/v1/admin/casino/transaction-route"
+      response_body: "route"
+    };
+  }
+
+  // SetTransactionRoute sets the casino-transaction-service the brand's stakes and wins are
+  // posted to, and the key they are signed with. Needs casino_provider:write.
+  rpc SetTransactionRoute(SetTransactionRouteRequest) returns (SetTransactionRouteResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/transaction-route"
+      body: "*"
+      response_body: "route"
+    };
+  }
+}
+
+message Casino {
+  string brand_id = 1;
+  // ACTIVE or INACTIVE.
+  string status = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+message GetCasinoRequest {}
+
+message GetCasinoResponse {
+  Casino casino = 1;
+}
+
+message UpdateCasinoRequest {
+  // ACTIVE or INACTIVE.
+  string status = 1;
+}
+
+message UpdateCasinoResponse {
+  Casino casino = 1;
+}
+
+message TransactionRoute {
+  string base_url = 1;
+  // The version of the signing key; the key itself is never returned.
+  int32 authentication_key_version = 2;
+  // ACTIVE or INACTIVE.
+  string status = 3;
+}
+
+message GetTransactionRouteRequest {}
+
+message GetTransactionRouteResponse {
+  TransactionRoute route = 1;
+}
+
+message SetTransactionRouteRequest {
+  string base_url = 1;
+  // The base64 32-byte HMAC key, the same one the transaction service is given.
+  string authentication_key = 2;
+  int32 authentication_key_version = 3;
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 4;
+}
+
+message SetTransactionRouteResponse {
+  TransactionRoute route = 1;
+}
+
+// -------------------------------------------------------------------------------- Providers
+
+// ProviderService gives the brand the providers it is licensed for, with their credentials,
+// and brings in their games.
+service ProviderService {
+  // ListAvailableProviders returns the providers casino-provider-service has integrated, that
+  // the brand can be given. Needs casino:read.
+  rpc ListAvailableProviders(ListAvailableProvidersRequest) returns (ListAvailableProvidersResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/providers/available"};
+  }
+
+  // ListProviders returns the brand's providers, active or not. Needs casino:read.
+  rpc ListProviders(ListProvidersRequest) returns (ListProvidersResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/providers"};
+  }
+
+  // AssignProvider gives the brand a provider, with the credentials the provider issued it;
+  // casino-provider-service checks them before they are stored, encrypted. Needs
+  // casino_provider:write. Answers 201.
+  rpc AssignProvider(AssignProviderRequest) returns (AssignProviderResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/casino/providers/{provider_id}"
+      body: "*"
+      response_body: "provider"
+    };
+  }
+
+  // UpdateProvider changes how the provider shows in the brand's lobby, or switches it off.
+  // Needs casino:write.
+  rpc UpdateProvider(UpdateProviderRequest) returns (UpdateProviderResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/providers/{provider_id}"
+      body: "*"
+      response_body: "provider"
+    };
+  }
+
+  // RemoveProvider takes the provider away from the brand; its games leave the lobby. Needs
+  // casino_provider:write.
+  rpc RemoveProvider(RemoveProviderRequest) returns (RemoveProviderResponse) {
+    option (google.api.http) = {delete: "/v1/admin/casino/providers/{provider_id}"};
+  }
+
+  // SyncGames brings in the provider's current game list for the brand, a batch per call;
+  // call again until completed. Needs casino_provider:write.
+  rpc SyncGames(SyncGamesRequest) returns (SyncGamesResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/casino/providers/{provider_id}/sync"
+      body: "*"
+    };
+  }
+
+  // ListProviderGames returns the provider's games, active for the brand or not, to pick
+  // from. Needs casino:read.
+  rpc ListProviderGames(ListProviderGamesRequest) returns (ListProviderGamesResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/providers/{provider_id}/games"};
+  }
+}
+
+// AvailableProvider is a provider casino-provider-service has integrated.
+message AvailableProvider {
+  string id = 1;
+  string name = 2;
+  // PRODUCTION or STAGING: the provider endpoint the brand would play on.
+  string environment = 3;
+  // ACTIVE or INACTIVE.
+  string status = 4;
+}
+
+// Provider is a provider the brand was given.
+message Provider {
+  string id = 1;
+  // The provider's own name.
+  string name = 2;
+  string environment = 3;
+  // How the lobby shows it; the provider's own name and image when left out.
+  optional string display_name = 4;
+  optional string image_url = 5;
+  // Lower first.
+  int32 priority = 6;
+  // ACTIVE or INACTIVE.
+  string status = 7;
+}
+
+message ListAvailableProvidersRequest {}
+
+message ListAvailableProvidersResponse {
+  repeated AvailableProvider items = 1;
+}
+
+message ListProvidersRequest {}
+
+message ListProvidersResponse {
+  repeated Provider items = 1;
+}
+
+message AssignProviderRequest {
+  string provider_id = 1;
+  // The credentials and settings the provider issued the brand, in the provider's own shape;
+  // never returned.
+  google.protobuf.Struct config = 2;
+  optional string display_name = 3;
+  optional string image_url = 4;
+  int32 priority = 5;
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 6;
+}
+
+message AssignProviderResponse {
+  Provider provider = 1;
+}
+
+message UpdateProviderRequest {
+  string provider_id = 1;
+  optional string display_name = 2;
+  optional string image_url = 3;
+  int32 priority = 4;
+  // ACTIVE or INACTIVE.
+  string status = 5;
+}
+
+message UpdateProviderResponse {
+  Provider provider = 1;
+}
+
+message RemoveProviderRequest {
+  string provider_id = 1;
+}
+
+message RemoveProviderResponse {}
+
+message SyncGamesRequest {
+  string provider_id = 1;
+  // Games per call, 1 to 500; 200 when left out.
+  int32 batch_size = 2;
+}
+
+message SyncGamesResponse {
+  string provider_id = 1;
+  // Games fetched by this call.
+  int64 fetched_count = 2 [(touchvas.api.v1.json_number) = true];
+  // Whether the provider's whole list is in.
+  bool completed = 3;
+}
+
+message ListProviderGamesRequest {
+  string provider_id = 1;
+  string search = 2;
+  int32 limit = 3;
+  string after = 4;
+}
+
+message ListProviderGamesResponse {
+  repeated Game items = 1;
+  optional string next = 2;
+}
+
+// ------------------------------------------------------------------------------- Categories
+
+// CategoryService groups the brand's games in the lobby.
+service CategoryService {
+  // ListCategories returns the brand's categories, active or not. Needs casino:read.
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/categories"};
+  }
+
+  // CreateCategory adds a category. Needs casino:write. Answers 201.
+  rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/admin/casino/categories"
+      body: "*"
+      response_body: "category"
+    };
+  }
+
+  // UpdateCategory renames, reorders or switches off a category. Needs casino:write.
+  rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/categories/{category_id}"
+      body: "*"
+      response_body: "category"
+    };
+  }
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+  optional string image_url = 3;
+  // Lower first.
+  int32 priority = 4;
+  // ACTIVE or INACTIVE.
+  string status = 5;
+}
+
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated Category items = 1;
+}
+
+message CreateCategoryRequest {
+  string name = 1;
+  optional string image_url = 2;
+  int32 priority = 3;
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 4;
+}
+
+message CreateCategoryResponse {
+  Category category = 1;
+}
+
+message UpdateCategoryRequest {
+  string category_id = 1;
+  string name = 2;
+  optional string image_url = 3;
+  int32 priority = 4;
+  // ACTIVE or INACTIVE.
+  string status = 5;
+}
+
+message UpdateCategoryResponse {
+  Category category = 1;
+}
+
+// -------------------------------------------------------------------------------- Games
+
+// GameService puts games in the brand's lobby and takes them out.
+service GameService {
+  // ListGames returns the brand's games, active or not. Needs casino:read.
+  rpc ListGames(ListGamesRequest) returns (ListGamesResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/games"};
+  }
+
+  // UpdateGame puts a provider's game in the brand's lobby, or changes how it shows there.
+  // Needs casino:write.
+  rpc UpdateGame(UpdateGameRequest) returns (UpdateGameResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/games/{game_id}"
+      body: "*"
+      response_body: "game"
+    };
+  }
+
+  // RemoveGame takes a game out of the brand's lobby. Needs casino:write.
+  rpc RemoveGame(RemoveGameRequest) returns (RemoveGameResponse) {
+    option (google.api.http) = {delete: "/v1/admin/casino/games/{game_id}"};
+  }
+}
+
+// Game is a provider's game as the brand sees it.
+message Game {
+  string id = 1;
+  string provider_id = 2;
+  // The provider's name for it.
+  string name = 3;
+  optional string thumbnail_url = 4;
+  // What the provider tells about the game, as it sent it.
+  optional google.protobuf.Struct metadata = 5;
+  // ACTIVE or INACTIVE at the provider.
+  string provider_status = 6;
+  // Whether the game is in the brand's lobby, and how it shows there. In the lobby when status
+  // is set.
+  optional string display_name = 7;
+  optional string image_url = 8;
+  int32 priority = 9;
+  repeated string category_ids = 10;
+  // ACTIVE or INACTIVE in the brand's lobby; empty when the brand never added it.
+  string status = 11;
+}
+
+message ListGamesRequest {
+  string provider_id = 1;
+  string category_id = 2;
+  // Part of the game's name, any case.
+  string search = 3;
+  int32 limit = 4;
+  string after = 5;
+}
+
+message ListGamesResponse {
+  repeated Game items = 1;
+  optional string next = 2;
+}
+
+message UpdateGameRequest {
+  string game_id = 1;
+  optional string display_name = 2;
+  optional string image_url = 3;
+  int32 priority = 4;
+  repeated string category_ids = 5;
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 6;
+}
+
+message UpdateGameResponse {
+  Game game = 1;
+}
+
+message RemoveGameRequest {
+  string game_id = 1;
+}
+
+message RemoveGameResponse {}
+
+// ------------------------------------------------------------------------------- Limits
+
+// LimitService sets the stakes the brand's games accept, per currency: the brand's, and a
+// game's own where it differs.
+service LimitService {
+  // ListLimits returns the brand's limits in each currency. Needs casino:read.
+  rpc ListLimits(ListLimitsRequest) returns (ListLimitsResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/limits"};
+  }
+
+  // SetLimits sets the brand's limits in a currency. Needs casino:write.
+  rpc SetLimits(SetLimitsRequest) returns (SetLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/limits/{currency}"
+      body: "*"
+      response_body: "limits"
+    };
+  }
+
+  // ListGameLimits returns a game's own limits in each currency. Needs casino:read.
+  rpc ListGameLimits(ListGameLimitsRequest) returns (ListGameLimitsResponse) {
+    option (google.api.http) = {get: "/v1/admin/casino/games/{game_id}/limits"};
+  }
+
+  // SetGameLimits sets a game's own limits in a currency, over the brand's. Needs
+  // casino:write.
+  rpc SetGameLimits(SetGameLimitsRequest) returns (SetGameLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/admin/casino/games/{game_id}/limits/{currency}"
+      body: "*"
+      response_body: "limits"
+    };
+  }
+}
+
+// Limits are the stakes accepted in one currency.
+message Limits {
+  string currency = 1;
+  string minimum_stake = 2 [(touchvas.api.v1.json_number) = true];
+  string maximum_stake = 3 [(touchvas.api.v1.json_number) = true];
+  string maximum_win = 4 [(touchvas.api.v1.json_number) = true];
+  // ACTIVE or INACTIVE.
+  string status = 5;
+}
+
+message ListLimitsRequest {}
+
+message ListLimitsResponse {
+  repeated Limits items = 1;
+}
+
+message SetLimitsRequest {
+  // ISO 4217, e.g. KES.
+  string currency = 1;
+  string minimum_stake = 2 [(touchvas.api.v1.json_number) = true];
+  string maximum_stake = 3 [(touchvas.api.v1.json_number) = true];
+  string maximum_win = 4 [(touchvas.api.v1.json_number) = true];
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 5;
+}
+
+message SetLimitsResponse {
+  Limits limits = 1;
+}
+
+message ListGameLimitsRequest {
+  string game_id = 1;
+}
+
+message ListGameLimitsResponse {
+  repeated Limits items = 1;
+}
+
+message SetGameLimitsRequest {
+  string game_id = 1;
+  string currency = 2;
+  string minimum_stake = 3 [(touchvas.api.v1.json_number) = true];
+  string maximum_stake = 4 [(touchvas.api.v1.json_number) = true];
+  string maximum_win = 5 [(touchvas.api.v1.json_number) = true];
+  // ACTIVE or INACTIVE; ACTIVE when left out.
+  string status = 6;
+}
+
+message SetGameLimitsResponse {
+  Limits limits = 1;
+}

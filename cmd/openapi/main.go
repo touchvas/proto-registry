@@ -3,7 +3,7 @@
 //
 //   - fields marked (touchvas.api.v1.json_number) are JSON numbers, not strings;
 //   - errors are the module's body ({"error"} from identity, {code, number, message} from
-//     wallet), not google.rpc.Status;
+//     wallet and casino), not google.rpc.Status;
 //   - each operation is tagged and named by its full service name, so two modules' services of
 //     the same name (identity's and wallet's AuditService) stay apart;
 //   - the headers a client authenticates and names its brand with are declared, for "Try it
@@ -53,11 +53,11 @@ var profiles = map[string]struct {
 }
 
 const common = "Amounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; " +
-	"a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet, " +
+	"a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet and casino, " +
 	"`{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`."
 
 // codedErrorPackages answer errors as {code, number, message}; the others as {"error"}.
-var codedErrorPackages = []string{"wallet."}
+var codedErrorPackages = []string{"wallet.", "casino."}
 
 func main() {
 	image := flag.String("image", "", "file descriptor set of the protos (buf build --as-file-descriptor-set)")

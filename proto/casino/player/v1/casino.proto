@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+// Player casino API: the lobby and game launch the player apps call through
+// api-gateway-service's player profile. casino-service runs once per operator; the gateway
+// sends each request to the deployment of the brand's operator, on its player port, which
+// only the player gateway can reach.
+//
+// The brand is the session's, or for a request without one the brand the gateway resolved
+// from the domain or X-Brand-Code (x-gateway-brand-id); requests never name it. The player is
+// the session's. IDs are UUIDs: brands and players are identity's, games, providers and
+// categories casino's own.
+//
+// Amounts are in the currency's units (940.5 is KES 940.50) and exact: held as decimal
+// strings, written and read as JSON numbers (touchvas.api.v1.json_number), at most 4
+// decimals. Errors are {code, number, message} with ResultCode.
+//
+// Lists are in the brand's order (priority, then name); pass next as after for the following
+// page. limit is 1 to 100, 24 otherwise.
+package casino.player.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "touchvas/api/v1/json.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/player/v1;casinoplayerv1";
+
+// GameService is the brand's lobby: its providers, categories and games, the stake limits of a
+// game, and launching one.
+service GameService {
+  // ListProviders returns the brand's active providers. No session needed.
+  rpc ListProviders(ListProvidersRequest) returns (ListProvidersResponse) {
+    option (google.api.http) = {get: "/v1/casino/providers"};
+  }
+
+  // ListCategories returns the brand's active categories. No session needed.
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse) {
+    option (google.api.http) = {get: "/v1/casino/categories"};
+  }
+
+  // ListGames returns the brand's active games, filtered by provider, category or name. No
+  // session needed.
+  rpc ListGames(ListGamesRequest) returns (ListGamesResponse) {
+    option (google.api.http) = {get: "/v1/casino/games"};
+  }
+
+  // GetGameLimits returns a game's stake limits in the brand's currency: the game's own, else
+  // the brand's. No session needed.
+  rpc GetGameLimits(GetGameLimitsRequest) returns (GetGameLimitsResponse) {
+    option (google.api.http) = {
+      get: "/v1/casino/games/{game_id}/limits"
+      response_body: "limits"
+    };
+  }
+
+  // LaunchGame returns the URL that opens a game. A real-money launch needs a player session
+  // and plays in the brand's currency; a demo launch needs none.
+  rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/games/{game_id}/launch"
+      body: "*"
+    };
+  }
+}
+
+// ResultCode is the number of a refusal (ErrorInfo metadata "number"); its name, without
+// RESULT_CODE_, is the reason ("code" in the JSON).
+enum ResultCode {
+  RESULT_CODE_UNSPECIFIED = 0;
+  RESULT_CODE_OK = 1;
+
+  // 400: a field is missing or malformed.
+  RESULT_CODE_INVALID_REQUEST = 1100;
+  // 400: a currency casino has no limits in for the brand.
+  RESULT_CODE_UNSUPPORTED_CURRENCY = 1101;
+
+  // 404: no such game, provider or category for the brand.
+  RESULT_CODE_GAME_NOT_FOUND = 3001;
+  RESULT_CODE_PROVIDER_NOT_FOUND = 3002;
+  RESULT_CODE_CATEGORY_NOT_FOUND = 3003;
+  // 403: the brand has no casino, or it is switched off.
+  RESULT_CODE_CASINO_DISABLED = 3004;
+  // 409: the game or its provider is inactive for the brand.
+  RESULT_CODE_GAME_UNAVAILABLE = 3005;
+  // 409: the game has no stake limits in the currency, so it can't be launched.
+  RESULT_CODE_LIMITS_NOT_CONFIGURED = 3006;
+  // 403: real money needs a player session.
+  RESULT_CODE_SESSION_REQUIRED = 3007;
+
+  // 409: the change conflicts with what exists (a provider assigned twice, a duplicate name).
+  RESULT_CODE_CONFLICT = 4001;
+
+  // 502 / 504: the provider, or casino-provider-service, failed or didn't answer.
+  RESULT_CODE_PROVIDER_FAILURE = 5001;
+  RESULT_CODE_PROVIDER_TIMEOUT = 5002;
+
+  // 400: the gateway forwarded no brand (x-gateway-brand-id), or one casino doesn't know.
+  RESULT_CODE_TENANT_UNKNOWN = 9001;
+}
+
+// Provider is a game provider of the brand.
+message Provider {
+  string id = 1;
+  // The brand's display name, else the provider's.
+  string name = 2;
+  optional string image_url = 3;
+}
+
+// Category groups the brand's games in the lobby.
+message Category {
+  string id = 1;
+  string name = 2;
+  optional string image_url = 3;
+}
+
+// Game is a game of the brand's lobby.
+message Game {
+  string id = 1;
+  string provider_id = 2;
+  // The brand's display name, else the provider's.
+  string name = 3;
+  // The brand's image, else the provider's thumbnail.
+  optional string image_url = 4;
+  // The categories the brand put the game in.
+  repeated string category_ids = 5;
+  // What the provider tells about the game (RTP, volatility, features), as it sent it.
+  optional google.protobuf.Struct metadata = 6;
+}
+
+// Limits are the stakes a game accepts in one currency.
+message Limits {
+  string currency = 1;
+  string minimum_stake = 2 [(touchvas.api.v1.json_number) = true];
+  string maximum_stake = 3 [(touchvas.api.v1.json_number) = true];
+  string maximum_win = 4 [(touchvas.api.v1.json_number) = true];
+}
+
+message ListProvidersRequest {}
+
+message ListProvidersResponse {
+  repeated Provider items = 1;
+}
+
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated Category items = 1;
+}
+
+message ListGamesRequest {
+  string provider_id = 1;
+  string category_id = 2;
+  // Part of the game's name, any case.
+  string search = 3;
+  int32 limit = 4;
+  string after = 5;
+}
+
+message ListGamesResponse {
+  repeated Game items = 1;
+  optional string next = 2;
+}
+
+message GetGameLimitsRequest {
+  string game_id = 1;
+}
+
+message GetGameLimitsResponse {
+  Limits limits = 1;
+}
+
+message LaunchGameRequest {
+  string game_id = 1;
+  // A demo plays with the provider's play money.
+  bool demo = 2;
+  // The player's language, e.g. en; the brand's otherwise.
+  string language = 3;
+  // DESKTOP or MOBILE.
+  string device = 4;
+}
+
+message LaunchGameResponse {
+  string launch_url = 1;
+  string provider_id = 2;
+}

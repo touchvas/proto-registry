@@ -8,8 +8,8 @@ OPENAPI_DIR := openapi
 OPENAPI_RAW := $(OPENAPI_DIR)/raw
 # The protos each api-gateway-service profile serves (its routes.Player and routes.Admin).
 # A module's new public API is added here too, or its endpoints are missing from the docs.
-PLAYER_PROTOS := proto/identity/v1 proto/wallet/player/v1
-ADMIN_PROTOS := proto/identity/admin/v1 proto/wallet/admin/v1
+PLAYER_PROTOS := proto/identity/v1 proto/wallet/player/v1 proto/casino/player/v1
+ADMIN_PROTOS := proto/identity/admin/v1 proto/wallet/admin/v1 proto/casino/admin/v1
 
 .PHONY: all
 all: generate

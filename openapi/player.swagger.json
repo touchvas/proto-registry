@@ -30,6 +30,156 @@
       },
       "type": "object"
     },
+    "casino.player.v1.Category": {
+      "description": "Category groups the brand's games in the lobby.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.Game": {
+      "description": "Game is a game of the brand's lobby.",
+      "properties": {
+        "category_ids": {
+          "description": "The categories the brand put the game in.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "description": "The brand's image, else the provider's thumbnail.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "What the provider tells about the game (RTP, volatility, features), as it sent it.",
+          "type": "object"
+        },
+        "name": {
+          "description": "The brand's display name, else the provider's.",
+          "type": "string"
+        },
+        "provider_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.GameService.LaunchGameBody": {
+      "properties": {
+        "demo": {
+          "description": "A demo plays with the provider's play money.",
+          "type": "boolean"
+        },
+        "device": {
+          "description": "DESKTOP or MOBILE.",
+          "type": "string"
+        },
+        "language": {
+          "description": "The player's language, e.g. en; the brand's otherwise.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.LaunchGameResponse": {
+      "properties": {
+        "launch_url": {
+          "type": "string"
+        },
+        "provider_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.Limits": {
+      "description": "Limits are the stakes a game accepts in one currency.",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "maximum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "maximum_win": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "minimum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.ListCategoriesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.player.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.ListGamesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.player.v1.Game",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.ListProvidersResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.player.v1.Provider",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.player.v1.Provider": {
+      "description": "Provider is a game provider of the brand.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "description": "The brand's display name, else the provider's.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "identity.v1.Attribution": {
       "description": "Attribution records where a signup came from. The client's IP and user agent are taken\nfrom the request, not from here.",
       "properties": {
@@ -686,7 +836,7 @@
     }
   },
   "info": {
-    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer \u003ctoken\u003e` once logged in.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
+    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer \u003ctoken\u003e` once logged in.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet and casino, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
     "title": "Player API",
     "version": "v1"
   },
@@ -711,6 +861,179 @@
         "summary": "GetBalance returns the player's balance.",
         "tags": [
           "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/casino/categories": {
+      "get": {
+        "operationId": "casino.player.v1.GameService.ListCategories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.ListCategoriesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListCategories returns the brand's active categories. No session needed.",
+        "tags": [
+          "casino.player.v1.GameService"
+        ]
+      }
+    },
+    "/v1/casino/games": {
+      "get": {
+        "operationId": "casino.player.v1.GameService.ListGames",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "provider_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Part of the game's name, any case.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.ListGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListGames returns the brand's active games, filtered by provider, category or name. No\nsession needed.",
+        "tags": [
+          "casino.player.v1.GameService"
+        ]
+      }
+    },
+    "/v1/casino/games/{game_id}/launch": {
+      "post": {
+        "operationId": "casino.player.v1.GameService.LaunchGame",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.GameService.LaunchGameBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.LaunchGameResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "LaunchGame returns the URL that opens a game. A real-money launch needs a player session\nand plays in the brand's currency; a demo launch needs none.",
+        "tags": [
+          "casino.player.v1.GameService"
+        ]
+      }
+    },
+    "/v1/casino/games/{game_id}/limits": {
+      "get": {
+        "operationId": "casino.player.v1.GameService.GetGameLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetGameLimits returns a game's stake limits in the brand's currency: the game's own, else\nthe brand's. No session needed.",
+        "tags": [
+          "casino.player.v1.GameService"
+        ]
+      }
+    },
+    "/v1/casino/providers": {
+      "get": {
+        "operationId": "casino.player.v1.GameService.ListProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.player.v1.ListProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListProviders returns the brand's active providers. No session needed.",
+        "tags": [
+          "casino.player.v1.GameService"
         ]
       }
     },
@@ -1231,6 +1554,9 @@
   },
   "swagger": "2.0",
   "tags": [
+    {
+      "name": "casino.player.v1.GameService"
+    },
     {
       "name": "identity.v1.AuthService"
     },

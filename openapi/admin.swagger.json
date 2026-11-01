@@ -30,6 +30,490 @@
       },
       "type": "object"
     },
+    "casino.admin.v1.AvailableProvider": {
+      "description": "AvailableProvider is a provider casino-provider-service has integrated.",
+      "properties": {
+        "environment": {
+          "description": "PRODUCTION or STAGING: the provider endpoint the brand would play on.",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.Casino": {
+      "properties": {
+        "brand_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.Category": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "description": "Lower first.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.CategoryService.UpdateCategoryBody": {
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.CreateCategoryRequest": {
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.Game": {
+      "description": "Game is a provider's game as the brand sees it.",
+      "properties": {
+        "category_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "display_name": {
+          "description": "Whether the game is in the brand's lobby, and how it shows there. In the lobby when status\nis set.",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "What the provider tells about the game, as it sent it.",
+          "type": "object"
+        },
+        "name": {
+          "description": "The provider's name for it.",
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "provider_status": {
+          "description": "ACTIVE or INACTIVE at the provider.",
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE in the brand's lobby; empty when the brand never added it.",
+          "type": "string"
+        },
+        "thumbnail_url": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.GameService.UpdateGameBody": {
+      "properties": {
+        "category_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.LimitService.SetGameLimitsBody": {
+      "properties": {
+        "maximum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "maximum_win": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "minimum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.LimitService.SetLimitsBody": {
+      "properties": {
+        "maximum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "maximum_win": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "minimum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.Limits": {
+      "description": "Limits are the stakes accepted in one currency.",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "maximum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "maximum_win": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "minimum_stake": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListAvailableProvidersResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.AvailableProvider",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListCategoriesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListGameLimitsResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Limits",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListGamesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Game",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListLimitsResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Limits",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListProviderGamesResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Game",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ListProvidersResponse": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.admin.v1.Provider",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.Provider": {
+      "description": "Provider is a provider the brand was given.",
+      "properties": {
+        "display_name": {
+          "description": "How the lobby shows it; the provider's own name and image when left out.",
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "description": "The provider's own name.",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Lower first.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ProviderService.AssignProviderBody": {
+      "properties": {
+        "config": {
+          "description": "The credentials and settings the provider issued the brand, in the provider's own shape;\nnever returned.",
+          "type": "object"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ProviderService.SyncGamesBody": {
+      "properties": {
+        "batch_size": {
+          "description": "Games per call, 1 to 500; 200 when left out.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.ProviderService.UpdateProviderBody": {
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.RemoveGameResponse": {
+      "type": "object"
+    },
+    "casino.admin.v1.RemoveProviderResponse": {
+      "type": "object"
+    },
+    "casino.admin.v1.SetTransactionRouteRequest": {
+      "properties": {
+        "authentication_key": {
+          "description": "The base64 32-byte HMAC key, the same one the transaction service is given.",
+          "type": "string"
+        },
+        "authentication_key_version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE; ACTIVE when left out.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.SyncGamesResponse": {
+      "properties": {
+        "completed": {
+          "description": "Whether the provider's whole list is in.",
+          "type": "boolean"
+        },
+        "fetched_count": {
+          "description": "Games fetched by this call.",
+          "format": "int64",
+          "type": "integer"
+        },
+        "provider_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.TransactionRoute": {
+      "properties": {
+        "authentication_key_version": {
+          "description": "The version of the signing key; the key itself is never returned.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.admin.v1.UpdateCasinoRequest": {
+      "properties": {
+        "status": {
+          "description": "ACTIVE or INACTIVE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "identity.admin.v1.Admin": {
       "description": "Admin is a back-office user.",
       "properties": {
@@ -1994,7 +2478,7 @@
     }
   },
   "info": {
-    "description": "What the back office calls, through api-gateway-service's admin profile. Send `Authorization: Bearer \u003ctoken\u003e` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
+    "description": "What the back office calls, through api-gateway-service's admin profile. Send `Authorization: Bearer \u003ctoken\u003e` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\nAmounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet and casino, `{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`.",
     "title": "Back-office API",
     "version": "v1"
   },
@@ -2505,6 +2989,711 @@
         "summary": "ListAuditEntries lists entries, newest first. Needs audit:read.",
         "tags": [
           "identity.admin.v1.AuditService"
+        ]
+      }
+    },
+    "/v1/admin/casino": {
+      "get": {
+        "operationId": "casino.admin.v1.CasinoService.GetCasino",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Casino"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetCasino returns the brand's casino. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.CasinoService"
+        ]
+      },
+      "put": {
+        "operationId": "casino.admin.v1.CasinoService.UpdateCasino",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.UpdateCasinoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Casino"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UpdateCasino switches the brand's casino on or off, creating it the first time. Needs\ncasino:write.",
+        "tags": [
+          "casino.admin.v1.CasinoService"
+        ]
+      }
+    },
+    "/v1/admin/casino/categories": {
+      "get": {
+        "operationId": "casino.admin.v1.CategoryService.ListCategories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListCategoriesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListCategories returns the brand's categories, active or not. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.CategoryService"
+        ]
+      },
+      "post": {
+        "operationId": "casino.admin.v1.CategoryService.CreateCategory",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.CreateCategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Category"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "CreateCategory adds a category. Needs casino:write. Answers 201.",
+        "tags": [
+          "casino.admin.v1.CategoryService"
+        ]
+      }
+    },
+    "/v1/admin/casino/categories/{category_id}": {
+      "put": {
+        "operationId": "casino.admin.v1.CategoryService.UpdateCategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "category_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.CategoryService.UpdateCategoryBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Category"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UpdateCategory renames, reorders or switches off a category. Needs casino:write.",
+        "tags": [
+          "casino.admin.v1.CategoryService"
+        ]
+      }
+    },
+    "/v1/admin/casino/games": {
+      "get": {
+        "operationId": "casino.admin.v1.GameService.ListGames",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "provider_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Part of the game's name, any case.",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListGames returns the brand's games, active or not. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.GameService"
+        ]
+      }
+    },
+    "/v1/admin/casino/games/{game_id}": {
+      "delete": {
+        "operationId": "casino.admin.v1.GameService.RemoveGame",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.RemoveGameResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RemoveGame takes a game out of the brand's lobby. Needs casino:write.",
+        "tags": [
+          "casino.admin.v1.GameService"
+        ]
+      },
+      "put": {
+        "operationId": "casino.admin.v1.GameService.UpdateGame",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.GameService.UpdateGameBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Game"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UpdateGame puts a provider's game in the brand's lobby, or changes how it shows there.\nNeeds casino:write.",
+        "tags": [
+          "casino.admin.v1.GameService"
+        ]
+      }
+    },
+    "/v1/admin/casino/games/{game_id}/limits": {
+      "get": {
+        "operationId": "casino.admin.v1.LimitService.ListGameLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListGameLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListGameLimits returns a game's own limits in each currency. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.LimitService"
+        ]
+      }
+    },
+    "/v1/admin/casino/games/{game_id}/limits/{currency}": {
+      "put": {
+        "operationId": "casino.admin.v1.LimitService.SetGameLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.LimitService.SetGameLimitsBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SetGameLimits sets a game's own limits in a currency, over the brand's. Needs\ncasino:write.",
+        "tags": [
+          "casino.admin.v1.LimitService"
+        ]
+      }
+    },
+    "/v1/admin/casino/limits": {
+      "get": {
+        "operationId": "casino.admin.v1.LimitService.ListLimits",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListLimits returns the brand's limits in each currency. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.LimitService"
+        ]
+      }
+    },
+    "/v1/admin/casino/limits/{currency}": {
+      "put": {
+        "operationId": "casino.admin.v1.LimitService.SetLimits",
+        "parameters": [
+          {
+            "description": "ISO 4217, e.g. KES.",
+            "in": "path",
+            "name": "currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.LimitService.SetLimitsBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Limits"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SetLimits sets the brand's limits in a currency. Needs casino:write.",
+        "tags": [
+          "casino.admin.v1.LimitService"
+        ]
+      }
+    },
+    "/v1/admin/casino/providers": {
+      "get": {
+        "operationId": "casino.admin.v1.ProviderService.ListProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListProviders returns the brand's providers, active or not. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      }
+    },
+    "/v1/admin/casino/providers/available": {
+      "get": {
+        "operationId": "casino.admin.v1.ProviderService.ListAvailableProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListAvailableProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListAvailableProviders returns the providers casino-provider-service has integrated, that\nthe brand can be given. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      }
+    },
+    "/v1/admin/casino/providers/{provider_id}": {
+      "delete": {
+        "operationId": "casino.admin.v1.ProviderService.RemoveProvider",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.RemoveProviderResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RemoveProvider takes the provider away from the brand; its games leave the lobby. Needs\ncasino_provider:write.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      },
+      "post": {
+        "operationId": "casino.admin.v1.ProviderService.AssignProvider",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ProviderService.AssignProviderBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Provider"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "AssignProvider gives the brand a provider, with the credentials the provider issued it;\ncasino-provider-service checks them before they are stored, encrypted. Needs\ncasino_provider:write. Answers 201.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      },
+      "put": {
+        "operationId": "casino.admin.v1.ProviderService.UpdateProvider",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ProviderService.UpdateProviderBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.Provider"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "UpdateProvider changes how the provider shows in the brand's lobby, or switches it off.\nNeeds casino:write.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      }
+    },
+    "/v1/admin/casino/providers/{provider_id}/games": {
+      "get": {
+        "operationId": "casino.admin.v1.ProviderService.ListProviderGames",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ListProviderGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "ListProviderGames returns the provider's games, active for the brand or not, to pick\nfrom. Needs casino:read.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      }
+    },
+    "/v1/admin/casino/providers/{provider_id}/sync": {
+      "post": {
+        "operationId": "casino.admin.v1.ProviderService.SyncGames",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.ProviderService.SyncGamesBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.SyncGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SyncGames brings in the provider's current game list for the brand, a batch per call;\ncall again until completed. Needs casino_provider:write.",
+        "tags": [
+          "casino.admin.v1.ProviderService"
+        ]
+      }
+    },
+    "/v1/admin/casino/transaction-route": {
+      "get": {
+        "operationId": "casino.admin.v1.CasinoService.GetTransactionRoute",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.TransactionRoute"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetTransactionRoute returns where the brand's stakes and wins are posted, without the key.\nNeeds casino:read.",
+        "tags": [
+          "casino.admin.v1.CasinoService"
+        ]
+      },
+      "put": {
+        "operationId": "casino.admin.v1.CasinoService.SetTransactionRoute",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.SetTransactionRouteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/casino.admin.v1.TransactionRoute"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "SetTransactionRoute sets the casino-transaction-service the brand's stakes and wins are\nposted to, and the key they are signed with. Needs casino_provider:write.",
+        "tags": [
+          "casino.admin.v1.CasinoService"
         ]
       }
     },
@@ -4694,6 +5883,21 @@
   },
   "swagger": "2.0",
   "tags": [
+    {
+      "name": "casino.admin.v1.CasinoService"
+    },
+    {
+      "name": "casino.admin.v1.CategoryService"
+    },
+    {
+      "name": "casino.admin.v1.GameService"
+    },
+    {
+      "name": "casino.admin.v1.LimitService"
+    },
+    {
+      "name": "casino.admin.v1.ProviderService"
+    },
     {
       "name": "identity.admin.v1.AccountService"
     },
