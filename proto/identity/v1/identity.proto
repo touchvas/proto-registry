@@ -28,8 +28,9 @@ service IdentityService {
 
   // GetBrand reads the calling brand (x-tenant-id) and the settings other domains need,
   // such as the currency wallets are opened in. An unknown brand is NOT_FOUND and an
-  // inactive one PERMISSION_DENIED, as on every call. Callers cache it and refresh on
-  // identity.events.brand.status_changed and brand.settings_changed.
+  // inactive one PERMISSION_DENIED, as on every call. Identity reads it from the platform
+  // module (platform.v1.RegistryService.GetBrand, which new callers use directly). Callers
+  // cache it and refresh on platform.events.brand.status_changed and brand.settings_changed.
   rpc GetBrand(GetBrandRequest) returns (Brand);
 
   // RegisterUnverifiedPlayer registers a player of the brand from a phone number alone, as

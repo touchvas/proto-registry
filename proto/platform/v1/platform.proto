@@ -28,6 +28,10 @@ service RegistryService {
   // GetBrand reads a brand and its settings, whatever its status: callers decide what an
   // inactive brand may do. NOT_FOUND for an unknown brand.
   rpc GetBrand(GetBrandRequest) returns (GetBrandResponse);
+
+  // ListBrands lists an operator's brands, whatever their status, oldest first. An unknown
+  // operator has none.
+  rpc ListBrands(ListBrandsRequest) returns (ListBrandsResponse);
 }
 
 message ResolveDomainRequest {
@@ -65,6 +69,14 @@ message GetBrandRequest {
 message GetBrandResponse {
   Brand brand = 1;
   BrandSettings settings = 2;
+}
+
+message ListBrandsRequest {
+  string operator_id = 1;
+}
+
+message ListBrandsResponse {
+  repeated Brand brands = 1;
 }
 
 // Brand is one operator's business in one country (one licence): the tenant.

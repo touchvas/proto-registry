@@ -28,6 +28,7 @@ const (
 	RegistryService_ResolveDomain_FullMethodName = "/platform.v1.RegistryService/ResolveDomain"
 	RegistryService_ResolveBrand_FullMethodName  = "/platform.v1.RegistryService/ResolveBrand"
 	RegistryService_GetBrand_FullMethodName      = "/platform.v1.RegistryService/GetBrand"
+	RegistryService_ListBrands_FullMethodName    = "/platform.v1.RegistryService/ListBrands"
 )
 
 // RegistryServiceClient is the client API for RegistryService service.
@@ -46,6 +47,9 @@ type RegistryServiceClient interface {
 	// GetBrand reads a brand and its settings, whatever its status: callers decide what an
 	// inactive brand may do. NOT_FOUND for an unknown brand.
 	GetBrand(ctx context.Context, in *GetBrandRequest, opts ...grpc.CallOption) (*GetBrandResponse, error)
+	// ListBrands lists an operator's brands, whatever their status, oldest first. An unknown
+	// operator has none.
+	ListBrands(ctx context.Context, in *ListBrandsRequest, opts ...grpc.CallOption) (*ListBrandsResponse, error)
 }
 
 type registryServiceClient struct {
@@ -86,6 +90,16 @@ func (c *registryServiceClient) GetBrand(ctx context.Context, in *GetBrandReques
 	return out, nil
 }
 
+func (c *registryServiceClient) ListBrands(ctx context.Context, in *ListBrandsRequest, opts ...grpc.CallOption) (*ListBrandsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListBrandsResponse)
+	err := c.cc.Invoke(ctx, RegistryService_ListBrands_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RegistryServiceServer is the server API for RegistryService service.
 // All implementations must embed UnimplementedRegistryServiceServer
 // for forward compatibility.
@@ -102,6 +116,9 @@ type RegistryServiceServer interface {
 	// GetBrand reads a brand and its settings, whatever its status: callers decide what an
 	// inactive brand may do. NOT_FOUND for an unknown brand.
 	GetBrand(context.Context, *GetBrandRequest) (*GetBrandResponse, error)
+	// ListBrands lists an operator's brands, whatever their status, oldest first. An unknown
+	// operator has none.
+	ListBrands(context.Context, *ListBrandsRequest) (*ListBrandsResponse, error)
 	mustEmbedUnimplementedRegistryServiceServer()
 }
 
@@ -120,6 +137,9 @@ func (UnimplementedRegistryServiceServer) ResolveBrand(context.Context, *Resolve
 }
 func (UnimplementedRegistryServiceServer) GetBrand(context.Context, *GetBrandRequest) (*GetBrandResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBrand not implemented")
+}
+func (UnimplementedRegistryServiceServer) ListBrands(context.Context, *ListBrandsRequest) (*ListBrandsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBrands not implemented")
 }
 func (UnimplementedRegistryServiceServer) mustEmbedUnimplementedRegistryServiceServer() {}
 func (UnimplementedRegistryServiceServer) testEmbeddedByValue()                         {}
@@ -196,6 +216,24 @@ func _RegistryService_GetBrand_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RegistryService_ListBrands_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBrandsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServiceServer).ListBrands(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistryService_ListBrands_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServiceServer).ListBrands(ctx, req.(*ListBrandsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RegistryService_ServiceDesc is the grpc.ServiceDesc for RegistryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -214,6 +252,10 @@ var RegistryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBrand",
 			Handler:    _RegistryService_GetBrand_Handler,
+		},
+		{
+			MethodName: "ListBrands",
+			Handler:    _RegistryService_ListBrands_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

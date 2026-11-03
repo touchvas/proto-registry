@@ -281,39 +281,6 @@ message Challenge {
   int32 expires_in = 5;
 }
 
-// ------------------------------------------------------------------------ Brand config
-
-// BrandService serves brand settings to the apps.
-service BrandService {
-  // GetPublicConfig returns the settings of the brand resolved for the request (from the
-  // session, or the site's domain) that a player app needs before signup.
-  rpc GetPublicConfig(GetPublicConfigRequest) returns (GetPublicConfigResponse) {
-    option (google.api.http) = {
-      get: "/v1/config"
-      response_body: "config"
-    };
-  }
-}
-
-message GetPublicConfigRequest {}
-
-message GetPublicConfigResponse {
-  PublicConfig config = 1;
-}
-
-message PublicConfig {
-  string brand_code = 1;
-  string country_code = 2;
-  string currency = 3;
-  string language = 4;
-  string timezone = 5;
-  // OTP or DIRECT.
-  string verification_mode = 6;
-  int32 otp_length = 7;
-  int32 password_min_length = 8;
-  int32 min_age_years = 9;
-}
-
 // ------------------------------------------------------------------------ Self-exclusion
 
 // ResponsibleGamingService lets players exclude themselves.

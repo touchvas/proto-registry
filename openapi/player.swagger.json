@@ -412,42 +412,6 @@
       },
       "type": "object"
     },
-    "identity.v1.PublicConfig": {
-      "properties": {
-        "brand_code": {
-          "type": "string"
-        },
-        "country_code": {
-          "type": "string"
-        },
-        "currency": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "min_age_years": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "otp_length": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "password_min_length": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "timezone": {
-          "type": "string"
-        },
-        "verification_mode": {
-          "description": "OTP or DIRECT.",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "identity.v1.ResendCodeRequest": {
       "properties": {
         "msisdn": {
@@ -630,6 +594,42 @@
         },
         "session": {
           "$ref": "#/definitions/identity.v1.IssuedSession"
+        }
+      },
+      "type": "object"
+    },
+    "platform.v1.PublicConfig": {
+      "properties": {
+        "brand_code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "min_age_years": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "password_min_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "verification_mode": {
+          "description": "OTP or DIRECT.",
+          "type": "string"
         }
       },
       "type": "object"
@@ -1080,12 +1080,12 @@
     },
     "/v1/config": {
       "get": {
-        "operationId": "identity.v1.BrandService.GetPublicConfig",
+        "operationId": "platform.v1.BrandService.GetPublicConfig",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.v1.PublicConfig"
+              "$ref": "#/definitions/platform.v1.PublicConfig"
             }
           },
           "default": {
@@ -1095,9 +1095,9 @@
             }
           }
         },
-        "summary": "GetPublicConfig returns the settings of the brand resolved for the request (from the\nsession, or the site's domain) that a player app needs before signup.",
+        "summary": "GetPublicConfig returns the settings of the request's brand (the one the gateway\nresolved) that a player app needs before signup.",
         "tags": [
-          "identity.v1.BrandService"
+          "platform.v1.BrandService"
         ]
       }
     },
@@ -1561,13 +1561,13 @@
       "name": "identity.v1.AuthService"
     },
     {
-      "name": "identity.v1.BrandService"
-    },
-    {
       "name": "identity.v1.PlayerService"
     },
     {
       "name": "identity.v1.ResponsibleGamingService"
+    },
+    {
+      "name": "platform.v1.BrandService"
     },
     {
       "name": "wallet.player.v1.WalletService"

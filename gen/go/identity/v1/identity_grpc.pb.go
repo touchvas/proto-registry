@@ -50,8 +50,9 @@ type IdentityServiceClient interface {
 	ChangePlayerStatus(ctx context.Context, in *ChangePlayerStatusRequest, opts ...grpc.CallOption) (*Player, error)
 	// GetBrand reads the calling brand (x-tenant-id) and the settings other domains need,
 	// such as the currency wallets are opened in. An unknown brand is NOT_FOUND and an
-	// inactive one PERMISSION_DENIED, as on every call. Callers cache it and refresh on
-	// identity.events.brand.status_changed and brand.settings_changed.
+	// inactive one PERMISSION_DENIED, as on every call. Identity reads it from the platform
+	// module (platform.v1.RegistryService.GetBrand, which new callers use directly). Callers
+	// cache it and refresh on platform.events.brand.status_changed and brand.settings_changed.
 	GetBrand(ctx context.Context, in *GetBrandRequest, opts ...grpc.CallOption) (*Brand, error)
 	// RegisterUnverifiedPlayer registers a player of the brand from a phone number alone, as
 	// wallet does for a paybill payment no player holds. The player has no password and stays
@@ -165,8 +166,9 @@ type IdentityServiceServer interface {
 	ChangePlayerStatus(context.Context, *ChangePlayerStatusRequest) (*Player, error)
 	// GetBrand reads the calling brand (x-tenant-id) and the settings other domains need,
 	// such as the currency wallets are opened in. An unknown brand is NOT_FOUND and an
-	// inactive one PERMISSION_DENIED, as on every call. Callers cache it and refresh on
-	// identity.events.brand.status_changed and brand.settings_changed.
+	// inactive one PERMISSION_DENIED, as on every call. Identity reads it from the platform
+	// module (platform.v1.RegistryService.GetBrand, which new callers use directly). Callers
+	// cache it and refresh on platform.events.brand.status_changed and brand.settings_changed.
 	GetBrand(context.Context, *GetBrandRequest) (*Brand, error)
 	// RegisterUnverifiedPlayer registers a player of the brand from a phone number alone, as
 	// wallet does for a paybill payment no player holds. The player has no password and stays

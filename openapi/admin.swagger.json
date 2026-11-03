@@ -633,133 +633,6 @@
       },
       "type": "object"
     },
-    "identity.admin.v1.Brand": {
-      "description": "Brand is one operator's business in one country: the tenant.",
-      "properties": {
-        "business_email": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string"
-        },
-        "country_code": {
-          "type": "string"
-        },
-        "created_at": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "created_by": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "operator_id": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "status": {
-          "description": "PENDING, ACTIVE or SUSPENDED.",
-          "type": "string"
-        },
-        "updated_at": {
-          "format": "date-time",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.BrandDomain": {
-      "properties": {
-        "created_at": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "host": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "is_active": {
-          "type": "boolean"
-        },
-        "purpose": {
-          "description": "PLAYER_SITE or BACK_OFFICE.",
-          "type": "string"
-        },
-        "tenant_id": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.BrandSettings": {
-      "properties": {
-        "currency": {
-          "type": "string"
-        },
-        "kyc_required_to_play": {
-          "type": "boolean"
-        },
-        "language": {
-          "type": "string"
-        },
-        "min_age_years": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "otp_length": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "otp_max_attempts": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "otp_ttl_seconds": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "password_min_length": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "referral_prefix": {
-          "type": "string"
-        },
-        "single_session": {
-          "description": "A new login ends the player's other sessions.",
-          "type": "boolean"
-        },
-        "tenant_id": {
-          "type": "string"
-        },
-        "timezone": {
-          "type": "string"
-        },
-        "updated_at": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "verification_mode": {
-          "description": "OTP or DIRECT.",
-          "type": "string"
-        },
-        "version": {
-          "description": "The version read; send it back on update.",
-          "format": "int32",
-          "type": "integer"
-        }
-      },
-      "type": "object"
-    },
     "identity.admin.v1.ChangePasswordRequest": {
       "properties": {
         "current_password": {
@@ -783,17 +656,6 @@
       "type": "object"
     },
     "identity.admin.v1.ConfirmTotpResponse": {
-      "type": "object"
-    },
-    "identity.admin.v1.CreateOperatorRequest": {
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
       "type": "object"
     },
     "identity.admin.v1.CreateRoleRequest": {
@@ -886,30 +748,6 @@
         },
         "role": {
           "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.ListBrandsResponse": {
-      "properties": {
-        "data": {
-          "items": {
-            "$ref": "#/definitions/identity.admin.v1.Brand",
-            "type": "object"
-          },
-          "type": "array"
-        },
-        "limit": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "offset": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "total": {
-          "format": "int32",
-          "type": "integer"
         }
       },
       "type": "object"
@@ -1011,63 +849,6 @@
     "identity.admin.v1.LogoutResponse": {
       "type": "object"
     },
-    "identity.admin.v1.OnboardBrandRequest": {
-      "properties": {
-        "business_email": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string"
-        },
-        "country_code": {
-          "type": "string"
-        },
-        "currency": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "operator_id": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "timezone": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.Operator": {
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "created_at": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "created_by": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "updated_at": {
-          "format": "date-time",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "identity.admin.v1.Permission": {
       "properties": {
         "action": {
@@ -1086,26 +867,6 @@
         "operator_grantable": {
           "description": "False for platform-only permissions such as operator:write.",
           "type": "boolean"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.PlatformService.AddBrandDomainBody": {
-      "properties": {
-        "host": {
-          "type": "string"
-        },
-        "purpose": {
-          "description": "PLAYER_SITE or BACK_OFFICE.",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "identity.admin.v1.PlatformService.SuspendBrandBody": {
-      "properties": {
-        "reason": {
-          "type": "string"
         }
       },
       "type": "object"
@@ -1135,9 +896,6 @@
           "type": "string"
         }
       },
-      "type": "object"
-    },
-    "identity.admin.v1.RemoveBrandDomainResponse": {
       "type": "object"
     },
     "identity.admin.v1.ResetPasswordRequest": {
@@ -1478,6 +1236,248 @@
           "type": "string"
         }
       },
+      "type": "object"
+    },
+    "platform.admin.v1.Brand": {
+      "description": "Brand is one operator's business in one country: the tenant.",
+      "properties": {
+        "business_email": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING, ACTIVE or SUSPENDED.",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.BrandDomain": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "purpose": {
+          "description": "PLAYER_SITE or BACK_OFFICE.",
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.BrandSettings": {
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "kyc_required_to_play": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "string"
+        },
+        "min_age_years": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_max_attempts": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "otp_ttl_seconds": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "password_min_length": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "referral_prefix": {
+          "type": "string"
+        },
+        "single_session": {
+          "description": "A new login ends the player's other sessions.",
+          "type": "boolean"
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "verification_mode": {
+          "description": "OTP or DIRECT.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version read; send it back on update.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.CreateOperatorRequest": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.ListBrandsResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/platform.admin.v1.Brand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "offset": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.OnboardBrandRequest": {
+      "properties": {
+        "business_email": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.Operator": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.PlatformService.AddBrandDomainBody": {
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "purpose": {
+          "description": "PLAYER_SITE or BACK_OFFICE.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.PlatformService.SuspendBrandBody": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "platform.admin.v1.RemoveBrandDomainResponse": {
       "type": "object"
     },
     "wallet.admin.v1.Adjustment": {
@@ -5415,7 +5415,7 @@
     },
     "/v1/platform/brands": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.ListBrands",
+        "operationId": "platform.admin.v1.PlatformService.ListBrands",
         "parameters": [
           {
             "in": "query",
@@ -5442,7 +5442,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.ListBrandsResponse"
+              "$ref": "#/definitions/platform.admin.v1.ListBrandsResponse"
             }
           },
           "default": {
@@ -5454,18 +5454,18 @@
         },
         "summary": "ListBrands lists brands, optionally of one operator.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       },
       "post": {
-        "operationId": "identity.admin.v1.PlatformService.OnboardBrand",
+        "operationId": "platform.admin.v1.PlatformService.OnboardBrand",
         "parameters": [
           {
             "in": "body",
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.OnboardBrandRequest"
+              "$ref": "#/definitions/platform.admin.v1.OnboardBrandRequest"
             }
           }
         ],
@@ -5473,7 +5473,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Brand"
+              "$ref": "#/definitions/platform.admin.v1.Brand"
             }
           },
           "default": {
@@ -5485,13 +5485,13 @@
         },
         "summary": "OnboardBrand creates a brand (PENDING) with its settings. 201.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.GetBrand",
+        "operationId": "platform.admin.v1.PlatformService.GetBrand",
         "parameters": [
           {
             "in": "path",
@@ -5504,7 +5504,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Brand"
+              "$ref": "#/definitions/platform.admin.v1.Brand"
             }
           },
           "default": {
@@ -5516,13 +5516,13 @@
         },
         "summary": "GetBrand reads one brand.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}/activate": {
       "patch": {
-        "operationId": "identity.admin.v1.PlatformService.ActivateBrand",
+        "operationId": "platform.admin.v1.PlatformService.ActivateBrand",
         "parameters": [
           {
             "in": "path",
@@ -5535,7 +5535,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Brand"
+              "$ref": "#/definitions/platform.admin.v1.Brand"
             }
           },
           "default": {
@@ -5547,13 +5547,13 @@
         },
         "summary": "ActivateBrand makes a brand ACTIVE.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}/domains": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.ListBrandDomains",
+        "operationId": "platform.admin.v1.PlatformService.ListBrandDomains",
         "parameters": [
           {
             "in": "path",
@@ -5567,7 +5567,7 @@
             "description": "",
             "schema": {
               "items": {
-                "$ref": "#/definitions/identity.admin.v1.BrandDomain",
+                "$ref": "#/definitions/platform.admin.v1.BrandDomain",
                 "type": "object"
               },
               "type": "array"
@@ -5582,11 +5582,11 @@
         },
         "summary": "ListBrandDomains lists a brand's domains.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       },
       "post": {
-        "operationId": "identity.admin.v1.PlatformService.AddBrandDomain",
+        "operationId": "platform.admin.v1.PlatformService.AddBrandDomain",
         "parameters": [
           {
             "in": "path",
@@ -5599,7 +5599,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.PlatformService.AddBrandDomainBody"
+              "$ref": "#/definitions/platform.admin.v1.PlatformService.AddBrandDomainBody"
             }
           }
         ],
@@ -5607,7 +5607,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.BrandDomain"
+              "$ref": "#/definitions/platform.admin.v1.BrandDomain"
             }
           },
           "default": {
@@ -5619,13 +5619,13 @@
         },
         "summary": "AddBrandDomain registers a domain the brand's sites or back office run on. 201.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}/domains/{domain_id}": {
       "delete": {
-        "operationId": "identity.admin.v1.PlatformService.RemoveBrandDomain",
+        "operationId": "platform.admin.v1.PlatformService.RemoveBrandDomain",
         "parameters": [
           {
             "in": "path",
@@ -5644,7 +5644,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.RemoveBrandDomainResponse"
+              "$ref": "#/definitions/platform.admin.v1.RemoveBrandDomainResponse"
             }
           },
           "default": {
@@ -5656,13 +5656,13 @@
         },
         "summary": "RemoveBrandDomain removes a domain. 204.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}/settings": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.GetBrandSettings",
+        "operationId": "platform.admin.v1.PlatformService.GetBrandSettings",
         "parameters": [
           {
             "in": "path",
@@ -5675,7 +5675,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+              "$ref": "#/definitions/platform.admin.v1.BrandSettings"
             }
           },
           "default": {
@@ -5687,11 +5687,11 @@
         },
         "summary": "GetBrandSettings reads a brand's settings.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       },
       "put": {
-        "operationId": "identity.admin.v1.PlatformService.UpdateBrandSettings",
+        "operationId": "platform.admin.v1.PlatformService.UpdateBrandSettings",
         "parameters": [
           {
             "in": "path",
@@ -5705,7 +5705,7 @@
             "name": "settings",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+              "$ref": "#/definitions/platform.admin.v1.BrandSettings"
             }
           }
         ],
@@ -5713,7 +5713,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.BrandSettings"
+              "$ref": "#/definitions/platform.admin.v1.BrandSettings"
             }
           },
           "default": {
@@ -5725,13 +5725,13 @@
         },
         "summary": "UpdateBrandSettings replaces a brand's settings. The body is the whole settings object\nwith the version it was read at; a stale version is a conflict.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/brands/{id}/suspend": {
       "patch": {
-        "operationId": "identity.admin.v1.PlatformService.SuspendBrand",
+        "operationId": "platform.admin.v1.PlatformService.SuspendBrand",
         "parameters": [
           {
             "in": "path",
@@ -5744,7 +5744,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.PlatformService.SuspendBrandBody"
+              "$ref": "#/definitions/platform.admin.v1.PlatformService.SuspendBrandBody"
             }
           }
         ],
@@ -5752,7 +5752,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Brand"
+              "$ref": "#/definitions/platform.admin.v1.Brand"
             }
           },
           "default": {
@@ -5764,19 +5764,19 @@
         },
         "summary": "SuspendBrand makes a brand SUSPENDED.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/operators": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.ListOperators",
+        "operationId": "platform.admin.v1.PlatformService.ListOperators",
         "responses": {
           "200": {
             "description": "",
             "schema": {
               "items": {
-                "$ref": "#/definitions/identity.admin.v1.Operator",
+                "$ref": "#/definitions/platform.admin.v1.Operator",
                 "type": "object"
               },
               "type": "array"
@@ -5791,18 +5791,18 @@
         },
         "summary": "ListOperators lists every operator.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       },
       "post": {
-        "operationId": "identity.admin.v1.PlatformService.CreateOperator",
+        "operationId": "platform.admin.v1.PlatformService.CreateOperator",
         "parameters": [
           {
             "in": "body",
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.CreateOperatorRequest"
+              "$ref": "#/definitions/platform.admin.v1.CreateOperatorRequest"
             }
           }
         ],
@@ -5810,7 +5810,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Operator"
+              "$ref": "#/definitions/platform.admin.v1.Operator"
             }
           },
           "default": {
@@ -5822,13 +5822,13 @@
         },
         "summary": "CreateOperator creates an operator, the company that owns brands. 201.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     },
     "/v1/platform/operators/{id}": {
       "get": {
-        "operationId": "identity.admin.v1.PlatformService.GetOperator",
+        "operationId": "platform.admin.v1.PlatformService.GetOperator",
         "parameters": [
           {
             "in": "path",
@@ -5841,7 +5841,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/identity.admin.v1.Operator"
+              "$ref": "#/definitions/platform.admin.v1.Operator"
             }
           },
           "default": {
@@ -5853,7 +5853,7 @@
         },
         "summary": "GetOperator reads one operator.",
         "tags": [
-          "identity.admin.v1.PlatformService"
+          "platform.admin.v1.PlatformService"
         ]
       }
     }
@@ -5908,9 +5908,6 @@
       "name": "identity.admin.v1.AuthService"
     },
     {
-      "name": "identity.admin.v1.PlatformService"
-    },
-    {
       "name": "identity.admin.v1.PlayerService"
     },
     {
@@ -5921,6 +5918,9 @@
     },
     {
       "name": "identity.admin.v1.UserService"
+    },
+    {
+      "name": "platform.admin.v1.PlatformService"
     },
     {
       "name": "wallet.admin.v1.AdjustmentService"
