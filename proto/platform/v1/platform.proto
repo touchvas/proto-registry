@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+// The platform module is the registry every other module shares: operators, their brands, the
+// brands' settings and the domains they run on.
+//
+// RegistryService is what the gateway and the modules ask, on the platform module's internal
+// port;
+package platform.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/platform/v1;platformv1";
+
+// ------------------------------------------------------------------------ Registry
+
+// RegistryService answers which brand a request is for, which operator owns it, and the
+// brand's settings. Callers cache the answers and refresh them on platform.events.brand.*.
+service RegistryService {
+  // ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
+  // other host.
+  rpc ResolveDomain(ResolveDomainRequest) returns (ResolveDomainResponse);
+
+  // ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-Code or
+  // staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+  rpc ResolveBrand(ResolveBrandRequest) returns (ResolveBrandResponse);
+
+  // GetBrand reads a brand and its settings, whatever its status: callers decide what an
+  // inactive brand may do. NOT_FOUND for an unknown brand.
+  rpc GetBrand(GetBrandRequest) returns (GetBrandResponse);
+}
+
+message ResolveDomainRequest {
+  // A bare host, e.g. ke.betxyz.com.
+  string host = 1;
+}
+
+message ResolveDomainResponse {
+  string brand_id = 1;
+  string brand_code = 2;
+  // PENDING, ACTIVE or SUSPENDED.
+  string brand_status = 3;
+  // The operator (the company) the brand belongs to.
+  string operator_id = 4;
+}
+
+message ResolveBrandRequest {
+  // The brand's ID (a UUID) or code, e.g. betxyz-ke.
+  string brand = 1;
+}
+
+message ResolveBrandResponse {
+  string brand_id = 1;
+  string brand_code = 2;
+  // PENDING, ACTIVE or SUSPENDED.
+  string brand_status = 3;
+  // The operator (the company) the brand belongs to.
+  string operator_id = 4;
+}
+
+message GetBrandRequest {
+  string brand_id = 1;
+}
+
+message GetBrandResponse {
+  Brand brand = 1;
+  BrandSettings settings = 2;
+}
+
+// Brand is one operator's business in one country (one licence): the tenant.
+message Brand {
+  string id = 1;
+  string operator_id = 2;
+  string code = 3;
+  string name = 4;
+  // ISO 3166-1 alpha-2, fixed at onboarding.
+  string country_code = 5;
+  // PENDING, ACTIVE or SUSPENDED.
+  string status = 6;
+}
+
+message BrandSettings {
+  // ISO 4217.
+  string currency = 1;
+  string language = 2;
+  // IANA zone, e.g. Africa/Nairobi: the brand's "today" for daily limits.
+  string timezone = 3;
+  // OTP or DIRECT.
+  string verification_mode = 4;
+  int32 otp_length = 5;
+  int32 otp_ttl_seconds = 6;
+  int32 otp_max_attempts = 7;
+  string referral_prefix = 8;
+  int32 password_min_length = 9;
+  int32 min_age_years = 10;
+  bool kyc_required_to_play = 11;
+  // A new login ends the player's other sessions.
+  bool single_session = 12;
+  // Goes up on every settings change.
+  int32 version = 13;
+  google.protobuf.Timestamp updated_at = 14;
+}
+
+// ------------------------------------------------------------------------ Brand config
+
+// BrandService serves brand settings to the apps.
+service BrandService {
+  // GetPublicConfig returns the settings of the request's brand (the one the gateway
+  // resolved) that a player app needs before signup.
+  rpc GetPublicConfig(GetPublicConfigRequest) returns (GetPublicConfigResponse) {
+    option (google.api.http) = {
+      get: "/v1/config"
+      response_body: "config"
+    };
+  }
+}
+
+message GetPublicConfigRequest {}
+
+message GetPublicConfigResponse {
+  PublicConfig config = 1;
+}
+
+message PublicConfig {
+  string brand_code = 1;
+  string country_code = 2;
+  string currency = 3;
+  string language = 4;
+  string timezone = 5;
+  // OTP or DIRECT.
+  string verification_mode = 6;
+  int32 otp_length = 7;
+  int32 password_min_length = 8;
+  int32 min_age_years = 9;
+}
