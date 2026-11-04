@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+package sportsbook.v1;
+
+option go_package = "touchvas/sportsbook-service/contracts/gen/sportsbook/v1;sportsbookv1";
+
+// Player methods require `authorization` metadata. PlaceBet additionally
+// requires `idempotency-key`. Request IDs use `x-request-id` metadata.
+service SportsbookPlayerService {
+  rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponse);
+  rpc ListBets(PlayerListBetsRequest) returns (ListBetsResponse);
+  rpc GetBetslip(PlayerGetBetslipRequest) returns (GetBetslipResponse);
+}
+
+// Identity authorization will be attached to this service as a unary
+// interceptor when the identity-service admin contract is ready.
+service SportsbookAdminService {
+  rpc ListBets(AdminListBetsRequest) returns (ListBetsResponse);
+  rpc GetBetslip(AdminGetBetslipRequest) returns (GetBetslipResponse);
+  rpc SetOperatorLimits(SetOperatorLimitsRequest) returns (BetLimitsResponse);
+  rpc SetBrandLimits(SetBrandLimitsRequest) returns (BetLimitsResponse);
+  rpc GetEffectiveLimits(GetEffectiveLimitsRequest) returns (BetLimitsResponse);
+}
+
+message SelectionRequest {
+  string match_id = 1;
+  string market_id = 2;
+  string outcome_id = 3;
+  string specifier = 4;
+}
+
+message PricedSelection {
+  string match_id = 1;
+  string market_id = 2;
+  string outcome_id = 3;
+  string specifier = 4;
+  string sport_id = 5;
+  string match_name = 6;
+  string market_name = 7;
+  string outcome_name = 8;
+  string odds = 9;
+  bool live = 10;
+  string starts_at = 11;
+}
+
+message PlaceBetRequest {
+  uint64 brand_id = 1;
+  string stake = 2;
+  string source = 3;
+  repeated SelectionRequest selections = 4;
+}
+
+message BetPlacement {
+  string bet_uuid = 1;
+  string reference = 2;
+  string status = 3;
+  string stake = 4;
+  string currency = 5;
+  string total_odds = 6;
+  string possible_win = 7;
+  string balance = 8;
+  repeated PricedSelection selections = 9;
+  bool duplicate = 10;
+}
+
+message PlaceBetResponse {
+  int32 status_code = 1;
+  string status_description = 2;
+  BetPlacement data = 3;
+}
+
+message PlayerListBetsRequest {
+  uint64 brand_id = 1;
+  string placement_status = 2;
+  string settlement_status = 3;
+  uint32 page = 4;
+  uint32 per_page = 5;
+}
+
+message AdminListBetsRequest {
+  uint64 brand_id = 1;
+  uint64 player_id = 2;
+  string placement_status = 3;
+  string settlement_status = 4;
+  uint32 page = 5;
+  uint32 per_page = 6;
+}
+
+message BetSummary {
+  uint64 id = 1;
+  string operation_id = 2;
+  string bet_uuid = 3;
+  string reference = 4;
+  uint64 operator_id = 5;
+  uint64 brand_id = 6;
+  uint64 player_id = 7;
+  string placement_status = 8;
+  string settlement_status = 9;
+  string bet_type = 10;
+  string stake = 11;
+  string currency = 12;
+  string total_odds = 13;
+  string possible_win = 14;
+  string payout = 15;
+  bool has_payout = 16;
+  uint32 selection_count = 17;
+  uint32 settled_selection_count = 18;
+  string created_at = 19;
+  string updated_at = 20;
+}
+
+message BetPage {
+  repeated BetSummary bets = 1;
+  uint32 page = 2;
+  uint32 per_page = 3;
+  uint64 total = 4;
+}
+
+message ListBetsResponse {
+  int32 status_code = 1;
+  string status_description = 2;
+  BetPage data = 3;
+}
+
+message PlayerGetBetslipRequest {
+  uint64 brand_id = 1;
+  // Accepts bet_uuid, public reference, or operation_id.
+  string identifier = 2;
+}
+
+message AdminGetBetslipRequest {
+  // Zero searches every brand owned by this operator deployment.
+  uint64 brand_id = 1;
+  string identifier = 2;
+}
+
+message BetslipSelection {
+  uint64 id = 1;
+  string market_id = 2;
+  string outcome_id = 3;
+  string specifier = 4;
+  string market_name = 5;
+  string outcome_name = 6;
+  string odds = 7;
+  string settlement_status = 8;
+  string settlement_factor = 9;
+  bool has_settlement_factor = 10;
+}
+
+message BetslipEvent {
+  uint64 id = 1;
+  string event_id = 2;
+  string sport_id = 3;
+  string event_name = 4;
+  bool live = 5;
+  string starts_at = 6;
+  string settlement_status = 7;
+  uint64 provider_revision = 8;
+  repeated BetslipSelection selections = 9;
+}
+
+message Betslip {
+  BetSummary bet = 1;
+  string risk_reference = 2;
+  string risk_reason = 3;
+  string debit_wallet_reference = 4;
+  string settlement_wallet_reference = 5;
+  repeated BetslipEvent events = 6;
+}
+
+message GetBetslipResponse {
+  int32 status_code = 1;
+  string status_description = 2;
+  Betslip data = 3;
+}
+
+message BetLimits {
+  string currency = 1;
+  string minimum_stake = 2;
+  string maximum_stake = 3;
+  string maximum_payout = 4;
+  string minimum_single_odds = 5;
+  string minimum_accumulator_odds = 6;
+  string maximum_total_odds = 7;
+  uint32 maximum_selections = 8;
+  string source = 9;
+  bool active = 10;
+}
+
+message SetOperatorLimitsRequest {
+  BetLimits limits = 1;
+}
+
+message SetBrandLimitsRequest {
+  uint64 brand_id = 1;
+  BetLimits limits = 2;
+}
+
+message GetEffectiveLimitsRequest {
+  uint64 brand_id = 1;
+  string currency = 2;
+}
+
+message BetLimitsResponse {
+  int32 status_code = 1;
+  string status_description = 2;
+  BetLimits data = 3;
+}

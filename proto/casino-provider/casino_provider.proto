@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package casino.provider.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "touchvas/casino-provider-service/contracts/gen/casino_provider/v1;providerv1";
+
+service CasinoProviderService {
+  rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse);
+  rpc GetGames(GetGamesRequest) returns (GetGamesResponse);
+  rpc SyncGames(SyncGamesRequest) returns (stream SyncGamesResponse);
+}
+
+// CasinoProviderRegistryService projects tenant-owned routing data into the
+// shared registry. Global operators and providers are administered over the
+// provider-service HTTP control plane; casino-service never connects to this
+// database directly.
+service CasinoProviderRegistryService {
+  rpc ListAvailableProviders(ListAvailableProvidersRequest) returns (ListAvailableProvidersResponse);
+  rpc ValidateProviderConfig(ValidateProviderConfigRequest) returns (ValidateProviderConfigResponse);
+  rpc UpsertProvider(UpsertProviderRequest) returns (RegistryWriteResponse);
+  rpc UpsertBrand(UpsertBrandRequest) returns (RegistryWriteResponse);
+  rpc UpsertBrandProviderAccount(UpsertBrandProviderAccountRequest) returns (RegistryWriteResponse);
+  rpc UpsertTransactionRoute(UpsertTransactionRouteRequest) returns (RegistryWriteResponse);
+  rpc Health(RegistryHealthRequest) returns (RegistryHealthResponse);
+}
+
+message ListAvailableProvidersRequest {
+  string request_id = 1;
+}
+
+message AvailableProvider {
+  string provider_uuid = 1;
+  string name = 2;
+  string environment = 3;
+  string base_url = 4;
+  string adapter_key = 5;
+}
+
+message ListAvailableProvidersResponse {
+  string request_id = 1;
+  repeated AvailableProvider providers = 2;
+}
+
+message ValidateProviderConfigRequest {
+  string request_id = 1;
+  string provider_uuid = 2;
+  google.protobuf.Struct provider_config = 3;
+}
+
+message ValidateProviderConfigResponse {
+  string request_id = 1;
+  AvailableProvider provider = 2;
+}
+
+message LaunchGameRequest {
+  string request_id = 1;
+  reserved 2, 3;
+  uint64 operator_id = 4;
+  uint64 brand_id = 5;
+  // Required only when demo is false.
+  uint64 player_id = 6;
+  // Required only when demo is false. This is the casino's internal player
+  // credential; provider-service never forwards or stores it.
+  string player_token = 7;
+  string game_uuid = 8;
+  string currency = 9;
+  // false selects real-money mode; true selects provider demo mode.
+  bool demo = 10;
+  string country = 11;
+  string language = 12;
+  string device = 13;
+  // Required. The selected provider adapter owns this object's schema.
+  google.protobuf.Struct provider_config = 14;
+  // Stable global provider UUID. The operator-specific account is resolved internally.
+  string provider_uuid = 15;
+}
+
+message LaunchGameResponse {
+  reserved 1, 2, 4;
+  string launch_url = 3;
+}
+
+message GetGamesRequest {
+  string request_id = 1;
+  reserved 2, 3;
+  uint64 operator_id = 4;
+  uint64 brand_id = 5;
+  uint32 page = 6;
+  uint32 per_page = 7;
+  bool has_status = 8;
+  uint32 status = 9;
+  string provider_game_uuid = 10;
+  // Required. The selected provider adapter owns this object's schema.
+  google.protobuf.Struct provider_config = 11;
+  // Stable global provider UUID. The operator-specific account is resolved internally.
+  string provider_uuid = 12;
+}
+
+message Game {
+  string game_uuid = 1;
+  uint64 provider_game_id = 2;
+  string provider_game_uuid = 3;
+  string name = 4;
+  reserved 5, 6, 7, 8, 9, 12;
+  string thumbnail_url = 10;
+  bool active = 11;
+  string metadata_json = 13;
+}
+
+message GetGamesResponse {
+  reserved 1, 2;
+  uint32 page = 3;
+  uint32 per_page = 4;
+  uint64 total = 5;
+  repeated Game games = 6;
+  string provider_uuid = 7;
+}
+
+message SyncGamesRequest {
+  string request_id = 1;
+  string provider_uuid = 2;
+  uint64 operator_id = 3;
+  uint64 brand_id = 4;
+  google.protobuf.Struct provider_config = 5;
+  // Provider page size and streamed batch size. Defaults to 200; maximum 500.
+  uint32 batch_size = 6;
+}
+
+message SyncGamesResponse {
+  string request_id = 1;
+  string provider_uuid = 2;
+  uint32 page = 3;
+  uint32 per_page = 4;
+  uint64 total = 5;
+  uint64 fetched_count = 6;
+  repeated Game games = 7;
+  // True only on the final message after every provider page succeeds.
+  bool completed = 8;
+}
+
+message UpsertProviderRequest {
+  string request_id = 1;
+  string provider_uuid = 2;
+  string name = 3;
+  string adapter_key = 4;
+  string status = 5;
+  string environment = 6;
+  string base_url = 7;
+  string endpoint_status = 8;
+}
+
+message UpsertBrandRequest {
+  string request_id = 1;
+  uint64 operator_id = 2;
+  uint64 brand_id = 3;
+  string name = 4;
+  string status = 5;
+}
+
+message UpsertBrandProviderAccountRequest {
+  string request_id = 1;
+  string provider_account_uuid = 2;
+  uint64 operator_id = 3;
+  uint64 brand_id = 4;
+  string provider_uuid = 5;
+  string environment = 6;
+  string status = 7;
+}
+
+message UpsertTransactionRouteRequest {
+  string request_id = 1;
+  uint64 operator_id = 2;
+  string base_url = 3;
+  uint32 authentication_key_version = 4;
+  bytes authentication_key_ciphertext = 5;
+  bytes authentication_key_nonce = 6;
+  uint32 encryption_key_version = 7;
+  string status = 8;
+}
+
+message RegistryWriteResponse {
+  string request_id = 1;
+}
+
+message RegistryHealthRequest {}
+
+message RegistryHealthResponse {
+  string status = 1;
+}

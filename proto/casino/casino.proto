@@ -1,115 +1,314 @@
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 syntax = "proto3";
-option go_package = "github.com/touchvas/proto-registry/gen/go/casino";
-package protobuf;
 
-// The Casino service definition.
-service Casino {
-  rpc CashBackSummary(CashBackSummaryRequest) returns (CashBackSummaryResponse) {}
-  rpc BetSummary(CasinoBetSummaryRequest) returns (CasinoBetSummaryResponse) {}
-  rpc AwardFreeSpin(AwardFreeSpinRequest) returns (AwardFreeSpinResponse) {}
-  rpc SupportsFreeBet (SupportsFreeBetRequest) returns (SupportsFreeBetResponse) {}
-  rpc Ping (EmptyBody) returns (CasinoPong) {}
-  rpc TrackingSummary(CasinoSummaryRequest) returns (CasinoSummaryResponse) {}
+package casino.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "touchvas/casino-service/contracts/gen/casino/v1;casinov1";
+
+// CasinoPublicService exposes the brand-specific catalogue and game launch
+// operations consumed by player-facing applications.
+service CasinoPublicService {
+  rpc ListProviders(ListPublicProvidersRequest) returns (ProvidersResponse);
+  rpc ListCategories(ListPublicCategoriesRequest) returns (CategoriesResponse);
+  rpc ListGames(ListPublicGamesRequest) returns (BrandGamesResponse);
+  rpc GetEffectiveGameLimits(GetEffectiveGameLimitsRequest) returns (GameLimitsResponse);
+  rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse);
 }
 
-message CasinoSummaryRequest {
-  string startDate = 1;
-  string endDate = 2;
-  int64 profileID = 3;
+// CasinoOperatorAdminService exposes the backoffice operations for the single
+// operator represented by this casino-service deployment. Identity-service
+// authorization will be attached as a unary interceptor before production.
+service CasinoOperatorAdminService {
+  rpc ListAvailableProviders(EmptyRequest) returns (AvailableProvidersResponse);
+  rpc SyncProviderGames(SyncProviderGamesRequest) returns (SyncGamesResponse);
+  rpc ListProviderGames(ProviderRequest) returns (GamesResponse);
+  rpc CreateBrand(CreateBrandRequest) returns (BrandResponse);
+  rpc ListBrands(EmptyRequest) returns (BrandsResponse);
+  rpc UpdateBrand(UpdateBrandRequest) returns (BrandResponse);
+  rpc AssignBrandProvider(AssignBrandProviderRequest) returns (BrandProviderResponse);
+  rpc UpdateBrandProvider(UpdateBrandProviderRequest) returns (BrandProviderResponse);
+  rpc DisableBrandProvider(BrandProviderRequest) returns (OperationResponse);
+  rpc ConfigureTransactionRoute(ConfigureTransactionRouteRequest) returns (OperationResponse);
+  rpc CreateCategory(CreateCategoryRequest) returns (CategoryResponse);
+  rpc ListCategories(ListAdminCategoriesRequest) returns (CategoriesResponse);
+  rpc UpdateCategory(UpdateCategoryRequest) returns (CategoryResponse);
+  rpc ConfigureBrandGame(ConfigureBrandGameRequest) returns (BrandGameResponse);
+  rpc RemoveBrandGame(BrandGameRequest) returns (OperationResponse);
+  rpc ListBrandGames(ListBrandGamesRequest) returns (BrandGamesResponse);
+  rpc ConfigureOperatorLimits(ConfigureOperatorLimitsRequest) returns (GameLimitsResponse);
+  rpc ConfigureBrandLimits(ConfigureBrandLimitsRequest) returns (GameLimitsResponse);
+  rpc ConfigureBrandGameLimits(ConfigureBrandGameLimitsRequest) returns (GameLimitsResponse);
 }
 
-message CasinoSummaryItem {
-  string date = 1;
-  int64 profileId = 2;
+message EmptyRequest {}
+
+message ProviderRequest { string provider_uuid = 1; }
+
+message BrandProviderRequest {
+  uint64 brand_id = 1;
+  string provider_uuid = 2;
+}
+
+message BrandGameRequest {
+  uint64 brand_id = 1;
+  string game_uuid = 2;
+}
+
+message ListPublicProvidersRequest { uint64 brand_id = 1; }
+message ListPublicCategoriesRequest { uint64 brand_id = 1; }
+
+message ListPublicGamesRequest {
+  uint64 brand_id = 1;
+  string provider_uuid = 2;
+  string category_uuid = 3;
+  string search = 4;
+  uint32 page = 5;
+  uint32 per_page = 6;
+}
+
+message GetEffectiveGameLimitsRequest {
+  uint64 brand_id = 1;
+  string game_uuid = 2;
   string currency = 3;
-  int64 bets =4;
-  float stake =5;
-  float ggr = 6;
-  float ngr =7;
 }
 
-message CasinoSummaryResponse {
-  repeated CasinoSummaryItem summaries = 1;
+message LaunchGameRequest {
+  uint64 brand_id = 1;
+  string game_uuid = 2;
+  uint64 player_id = 3;
+  string player_token = 4;
+  string currency = 5;
+  bool demo = 6;
+  string country = 7;
+  string language = 8;
+  string device = 9;
 }
 
-
-
-message EmptyBody {
-
+message SyncProviderGamesRequest {
+  string provider_uuid = 1;
+  uint64 brand_id = 2;
+  uint32 batch_size = 3;
 }
 
-message CasinoPong {
-  int64 Status = 1;
-  string Data = 2;
-  string Lang = 3;
+message CreateBrandRequest {
+  uint64 brand_id = 1;
+  string name = 2;
+  string status = 3;
 }
 
-// The request message containing the selection details.
-message CasinoBetSummaryRequest {
-  int32 profileID = 1;
-  string Lang = 2;
+message UpdateBrandRequest {
+  uint64 brand_id = 1;
+  string name = 2;
+  string status = 3;
 }
 
-message CasinoBetSummaryResponse {
-  int32 NumberOfBets = 1;
-  float Stake = 2;
-  float Winning = 3;
-  string Lang = 4;
+message AssignBrandProviderRequest {
+  uint64 brand_id = 1;
+  string provider_uuid = 2;
+  google.protobuf.Struct provider_config = 3;
+  string display_name = 4;
+  string image_url = 5;
+  uint32 priority = 6;
+  string status = 7;
 }
 
-message AwardFreeSpinRequest {
-  int64 ProfileID = 1;
-  int64 Quantity = 2;
-  float MinimumCashout = 3;
-  int64 BonusID = 4;
-  int64 ProviderID = 5;
-  string Games = 6;
-  float Amount = 7;
-  string Lang = 8;
+message UpdateBrandProviderRequest {
+  uint64 brand_id = 1;
+  string provider_uuid = 2;
+  string display_name = 3;
+  string image_url = 4;
+  uint32 priority = 5;
+  string status = 6;
 }
 
-message AwardFreeSpinResponse {
-  int64 Status = 1;
-  string Data = 2;
-  string Lang = 3;
+message ConfigureTransactionRouteRequest {
+  string base_url = 1;
+  string authentication_key = 2;
+  uint32 authentication_key_version = 3;
+  string status = 4;
 }
 
-message SupportsFreeBetRequest {
-  int64 ProviderID = 1;
-  string Lang = 2;
+message CreateCategoryRequest {
+  uint64 brand_id = 1;
+  string name = 2;
+  string image_url = 3;
+  uint32 priority = 4;
+  string status = 5;
 }
 
-message SupportsFreeBetResponse {
-  bool Response = 1;
-  string Lang = 2;
+message ListAdminCategoriesRequest { uint64 brand_id = 1; }
+
+message UpdateCategoryRequest {
+  uint64 brand_id = 1;
+  string category_uuid = 2;
+  string name = 3;
+  string image_url = 4;
+  uint32 priority = 5;
+  string status = 6;
 }
 
-message CashBackSummaryRequest {
-  int64 ProviderID = 1;
-  int64 MinimumStake = 2;
-  int64 ProfileID = 3;
-  string Date = 4;
-  string Lang = 5;
-
+message ConfigureBrandGameRequest {
+  uint64 brand_id = 1;
+  string game_uuid = 2;
+  string display_name = 3;
+  string image_url = 4;
+  uint32 priority = 5;
+  repeated string category_uuids = 6;
+  string status = 7;
 }
 
-message CashBackSummaryResponse {
-  int64 NumberOfBets = 1;
-  float Stake = 2;
-  float Winning = 3;
-  string Lang = 4;
+message ListBrandGamesRequest {
+  uint64 brand_id = 1;
+  string provider_uuid = 2;
+  string search = 3;
+  uint32 page = 4;
+  uint32 per_page = 5;
 }
+
+message GameLimitsInput {
+  string minimum_stake = 1;
+  string maximum_stake = 2;
+  string maximum_win = 3;
+  string status = 4;
+}
+
+message ConfigureOperatorLimitsRequest {
+  string currency = 1;
+  GameLimitsInput limits = 2;
+}
+
+message ConfigureBrandLimitsRequest {
+  uint64 brand_id = 1;
+  string currency = 2;
+  GameLimitsInput limits = 3;
+}
+
+message ConfigureBrandGameLimitsRequest {
+  uint64 brand_id = 1;
+  string game_uuid = 2;
+  string currency = 3;
+  GameLimitsInput limits = 4;
+}
+
+message Brand {
+  uint64 id = 1;
+  string uuid = 2;
+  uint64 operator_id = 3;
+  uint64 brand_id = 4;
+  string name = 5;
+  string status = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message AvailableProvider {
+  string uuid = 1;
+  string name = 2;
+  string environment = 3;
+  string status = 4;
+}
+
+message Provider {
+  uint64 id = 1;
+  string uuid = 2;
+  string name = 3;
+  string image_url = 4;
+  uint32 priority = 5;
+  string status = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message BrandProviderAccount {
+  uint64 id = 1;
+  string provider_account_uuid = 2;
+  uint64 operator_id = 3;
+  uint64 brand_id = 4;
+  uint64 provider_id = 5;
+  string provider_uuid = 6;
+  uint64 provider_endpoint_id = 7;
+  string environment = 8;
+  string display_name = 9;
+  string image_url = 10;
+  uint32 priority = 11;
+  string status = 12;
+}
+
+message Game {
+  uint64 id = 1;
+  string uuid = 2;
+  uint64 provider_id = 3;
+  string provider_uuid = 4;
+  uint64 provider_game_id = 5;
+  string provider_game_uuid = 6;
+  string name = 7;
+  string thumbnail_url = 8;
+  string metadata_json = 9;
+  string provider_status = 10;
+  string status = 11;
+}
+
+message Category {
+  uint64 id = 1;
+  string uuid = 2;
+  uint64 operator_id = 3;
+  uint64 brand_id = 4;
+  string name = 5;
+  string image_url = 6;
+  uint32 priority = 7;
+  string status = 8;
+}
+
+message BrandGame {
+  Game game = 1;
+  string display_name = 2;
+  string image_url = 3;
+  uint32 priority = 4;
+  string brand_status = 5;
+  repeated Category categories = 6;
+}
+
+message GameLimits {
+  string currency = 1;
+  string minimum_stake = 2;
+  string maximum_stake = 3;
+  string maximum_win = 4;
+  string source = 5;
+  string status = 6;
+}
+
+message SyncResult {
+  string provider_uuid = 1;
+  uint64 fetched_count = 2;
+  bool completed = 3;
+}
+
+message LaunchResult {
+  string launch_url = 1;
+  string provider_uuid = 2;
+}
+
+message BrandGamePage {
+  repeated BrandGame items = 1;
+  uint32 page = 2;
+  uint32 per_page = 3;
+  uint64 total = 4;
+}
+
+message OperationResult { bool completed = 1; }
+
+message BrandResponse { int32 status_code = 1; string status_description = 2; Brand data = 3; }
+message BrandsResponse { int32 status_code = 1; string status_description = 2; repeated Brand data = 3; }
+message AvailableProvidersResponse { int32 status_code = 1; string status_description = 2; repeated AvailableProvider data = 3; }
+message ProvidersResponse { int32 status_code = 1; string status_description = 2; repeated Provider data = 3; }
+message BrandProviderResponse { int32 status_code = 1; string status_description = 2; BrandProviderAccount data = 3; }
+message GamesResponse { int32 status_code = 1; string status_description = 2; repeated Game data = 3; }
+message CategoryResponse { int32 status_code = 1; string status_description = 2; Category data = 3; }
+message CategoriesResponse { int32 status_code = 1; string status_description = 2; repeated Category data = 3; }
+message BrandGameResponse { int32 status_code = 1; string status_description = 2; BrandGame data = 3; }
+message BrandGamesResponse { int32 status_code = 1; string status_description = 2; BrandGamePage data = 3; }
+message GameLimitsResponse { int32 status_code = 1; string status_description = 2; GameLimits data = 3; }
+message SyncGamesResponse { int32 status_code = 1; string status_description = 2; SyncResult data = 3; }
+message LaunchGameResponse { int32 status_code = 1; string status_description = 2; LaunchResult data = 3; }
+message OperationResponse { int32 status_code = 1; string status_description = 2; OperationResult data = 3; }
