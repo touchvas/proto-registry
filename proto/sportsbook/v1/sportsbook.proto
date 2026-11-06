@@ -1,26 +1,15 @@
 syntax = "proto3";
 
+// Messages of sportsbook's two public APIs: player.proto (SportsbookPlayerService, the player
+// gateway) and admin.proto (SportsbookAdminService, the admin gateway). Both keep the package
+// sportsbook.v1, so the gRPC method names sportsbook-service serves don't change.
+//
+// Amounts and odds are decimal strings. Every response carries status_code and
+// status_description: a request the service refuses (a closed market, a stake over the limit)
+// still answers HTTP 200, with the reason there; only transport failures are HTTP errors.
 package sportsbook.v1;
 
-option go_package = "touchvas/sportsbook-service/contracts/gen/sportsbook/v1;sportsbookv1";
-
-// Player methods require `authorization` metadata. PlaceBet additionally
-// requires `idempotency-key`. Request IDs use `x-request-id` metadata.
-service SportsbookPlayerService {
-  rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponse);
-  rpc ListBets(PlayerListBetsRequest) returns (ListBetsResponse);
-  rpc GetBetslip(PlayerGetBetslipRequest) returns (GetBetslipResponse);
-}
-
-// Identity authorization will be attached to this service as a unary
-// interceptor when the identity-service admin contract is ready.
-service SportsbookAdminService {
-  rpc ListBets(AdminListBetsRequest) returns (ListBetsResponse);
-  rpc GetBetslip(AdminGetBetslipRequest) returns (GetBetslipResponse);
-  rpc SetOperatorLimits(SetOperatorLimitsRequest) returns (BetLimitsResponse);
-  rpc SetBrandLimits(SetBrandLimitsRequest) returns (BetLimitsResponse);
-  rpc GetEffectiveLimits(GetEffectiveLimitsRequest) returns (BetLimitsResponse);
-}
+option go_package = "github.com/touchvas/proto-registry/gen/go/sportsbook/v1;sportsbookv1";
 
 message SelectionRequest {
   string match_id = 1;

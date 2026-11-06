@@ -2,7 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: sportsbook/sportsbook.proto
+// source: sportsbook/v1/admin.proto
+
+// Back-office sportsbook API: every player's bets and the stake and payout limits, which the
+// back office calls through api-gateway-service's admin profile.
+//
+// Staff authorization (identity's admin session) is not checked yet: sportsbook-service will
+// add it as a unary interceptor once identity's admin contract is ready.
 
 package sportsbookv1
 
@@ -19,191 +25,6 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SportsbookPlayerService_PlaceBet_FullMethodName   = "/sportsbook.v1.SportsbookPlayerService/PlaceBet"
-	SportsbookPlayerService_ListBets_FullMethodName   = "/sportsbook.v1.SportsbookPlayerService/ListBets"
-	SportsbookPlayerService_GetBetslip_FullMethodName = "/sportsbook.v1.SportsbookPlayerService/GetBetslip"
-)
-
-// SportsbookPlayerServiceClient is the client API for SportsbookPlayerService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Player methods require `authorization` metadata. PlaceBet additionally
-// requires `idempotency-key`. Request IDs use `x-request-id` metadata.
-type SportsbookPlayerServiceClient interface {
-	PlaceBet(ctx context.Context, in *PlaceBetRequest, opts ...grpc.CallOption) (*PlaceBetResponse, error)
-	ListBets(ctx context.Context, in *PlayerListBetsRequest, opts ...grpc.CallOption) (*ListBetsResponse, error)
-	GetBetslip(ctx context.Context, in *PlayerGetBetslipRequest, opts ...grpc.CallOption) (*GetBetslipResponse, error)
-}
-
-type sportsbookPlayerServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSportsbookPlayerServiceClient(cc grpc.ClientConnInterface) SportsbookPlayerServiceClient {
-	return &sportsbookPlayerServiceClient{cc}
-}
-
-func (c *sportsbookPlayerServiceClient) PlaceBet(ctx context.Context, in *PlaceBetRequest, opts ...grpc.CallOption) (*PlaceBetResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PlaceBetResponse)
-	err := c.cc.Invoke(ctx, SportsbookPlayerService_PlaceBet_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *sportsbookPlayerServiceClient) ListBets(ctx context.Context, in *PlayerListBetsRequest, opts ...grpc.CallOption) (*ListBetsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListBetsResponse)
-	err := c.cc.Invoke(ctx, SportsbookPlayerService_ListBets_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *sportsbookPlayerServiceClient) GetBetslip(ctx context.Context, in *PlayerGetBetslipRequest, opts ...grpc.CallOption) (*GetBetslipResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetBetslipResponse)
-	err := c.cc.Invoke(ctx, SportsbookPlayerService_GetBetslip_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// SportsbookPlayerServiceServer is the server API for SportsbookPlayerService service.
-// All implementations must embed UnimplementedSportsbookPlayerServiceServer
-// for forward compatibility.
-//
-// Player methods require `authorization` metadata. PlaceBet additionally
-// requires `idempotency-key`. Request IDs use `x-request-id` metadata.
-type SportsbookPlayerServiceServer interface {
-	PlaceBet(context.Context, *PlaceBetRequest) (*PlaceBetResponse, error)
-	ListBets(context.Context, *PlayerListBetsRequest) (*ListBetsResponse, error)
-	GetBetslip(context.Context, *PlayerGetBetslipRequest) (*GetBetslipResponse, error)
-	mustEmbedUnimplementedSportsbookPlayerServiceServer()
-}
-
-// UnimplementedSportsbookPlayerServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedSportsbookPlayerServiceServer struct{}
-
-func (UnimplementedSportsbookPlayerServiceServer) PlaceBet(context.Context, *PlaceBetRequest) (*PlaceBetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlaceBet not implemented")
-}
-func (UnimplementedSportsbookPlayerServiceServer) ListBets(context.Context, *PlayerListBetsRequest) (*ListBetsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListBets not implemented")
-}
-func (UnimplementedSportsbookPlayerServiceServer) GetBetslip(context.Context, *PlayerGetBetslipRequest) (*GetBetslipResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBetslip not implemented")
-}
-func (UnimplementedSportsbookPlayerServiceServer) mustEmbedUnimplementedSportsbookPlayerServiceServer() {
-}
-func (UnimplementedSportsbookPlayerServiceServer) testEmbeddedByValue() {}
-
-// UnsafeSportsbookPlayerServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SportsbookPlayerServiceServer will
-// result in compilation errors.
-type UnsafeSportsbookPlayerServiceServer interface {
-	mustEmbedUnimplementedSportsbookPlayerServiceServer()
-}
-
-func RegisterSportsbookPlayerServiceServer(s grpc.ServiceRegistrar, srv SportsbookPlayerServiceServer) {
-	// If the following call pancis, it indicates UnimplementedSportsbookPlayerServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&SportsbookPlayerService_ServiceDesc, srv)
-}
-
-func _SportsbookPlayerService_PlaceBet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlaceBetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SportsbookPlayerServiceServer).PlaceBet(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SportsbookPlayerService_PlaceBet_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SportsbookPlayerServiceServer).PlaceBet(ctx, req.(*PlaceBetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SportsbookPlayerService_ListBets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlayerListBetsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SportsbookPlayerServiceServer).ListBets(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SportsbookPlayerService_ListBets_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SportsbookPlayerServiceServer).ListBets(ctx, req.(*PlayerListBetsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SportsbookPlayerService_GetBetslip_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlayerGetBetslipRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SportsbookPlayerServiceServer).GetBetslip(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SportsbookPlayerService_GetBetslip_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SportsbookPlayerServiceServer).GetBetslip(ctx, req.(*PlayerGetBetslipRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// SportsbookPlayerService_ServiceDesc is the grpc.ServiceDesc for SportsbookPlayerService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var SportsbookPlayerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sportsbook.v1.SportsbookPlayerService",
-	HandlerType: (*SportsbookPlayerServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "PlaceBet",
-			Handler:    _SportsbookPlayerService_PlaceBet_Handler,
-		},
-		{
-			MethodName: "ListBets",
-			Handler:    _SportsbookPlayerService_ListBets_Handler,
-		},
-		{
-			MethodName: "GetBetslip",
-			Handler:    _SportsbookPlayerService_GetBetslip_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "sportsbook/sportsbook.proto",
-}
-
-const (
 	SportsbookAdminService_ListBets_FullMethodName           = "/sportsbook.v1.SportsbookAdminService/ListBets"
 	SportsbookAdminService_GetBetslip_FullMethodName         = "/sportsbook.v1.SportsbookAdminService/GetBetslip"
 	SportsbookAdminService_SetOperatorLimits_FullMethodName  = "/sportsbook.v1.SportsbookAdminService/SetOperatorLimits"
@@ -215,13 +36,22 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Identity authorization will be attached to this service as a unary
-// interceptor when the identity-service admin contract is ready.
+// SportsbookAdminService lists any player's bets and sets the operator's and brands' limits.
 type SportsbookAdminServiceClient interface {
+	// ListBets returns a page of bets, newest first, filtered by brand, player, or placement or
+	// settlement status.
 	ListBets(ctx context.Context, in *AdminListBetsRequest, opts ...grpc.CallOption) (*ListBetsResponse, error)
+	// GetBetslip returns one bet with its events and selections, its risk decision and its
+	// wallet references. identifier is the bet's UUID, its public reference or its operation
+	// ID; brand_id 0 searches every brand of the operator.
 	GetBetslip(ctx context.Context, in *AdminGetBetslipRequest, opts ...grpc.CallOption) (*GetBetslipResponse, error)
+	// SetOperatorLimits sets the operator's default limits for a currency, which apply to every
+	// brand without its own.
 	SetOperatorLimits(ctx context.Context, in *SetOperatorLimitsRequest, opts ...grpc.CallOption) (*BetLimitsResponse, error)
+	// SetBrandLimits sets a brand's own limits for a currency, overriding the operator's.
 	SetBrandLimits(ctx context.Context, in *SetBrandLimitsRequest, opts ...grpc.CallOption) (*BetLimitsResponse, error)
+	// GetEffectiveLimits returns the limits that apply to a brand in a currency: its own, else
+	// the operator's (source says which).
 	GetEffectiveLimits(ctx context.Context, in *GetEffectiveLimitsRequest, opts ...grpc.CallOption) (*BetLimitsResponse, error)
 }
 
@@ -287,13 +117,22 @@ func (c *sportsbookAdminServiceClient) GetEffectiveLimits(ctx context.Context, i
 // All implementations must embed UnimplementedSportsbookAdminServiceServer
 // for forward compatibility.
 //
-// Identity authorization will be attached to this service as a unary
-// interceptor when the identity-service admin contract is ready.
+// SportsbookAdminService lists any player's bets and sets the operator's and brands' limits.
 type SportsbookAdminServiceServer interface {
+	// ListBets returns a page of bets, newest first, filtered by brand, player, or placement or
+	// settlement status.
 	ListBets(context.Context, *AdminListBetsRequest) (*ListBetsResponse, error)
+	// GetBetslip returns one bet with its events and selections, its risk decision and its
+	// wallet references. identifier is the bet's UUID, its public reference or its operation
+	// ID; brand_id 0 searches every brand of the operator.
 	GetBetslip(context.Context, *AdminGetBetslipRequest) (*GetBetslipResponse, error)
+	// SetOperatorLimits sets the operator's default limits for a currency, which apply to every
+	// brand without its own.
 	SetOperatorLimits(context.Context, *SetOperatorLimitsRequest) (*BetLimitsResponse, error)
+	// SetBrandLimits sets a brand's own limits for a currency, overriding the operator's.
 	SetBrandLimits(context.Context, *SetBrandLimitsRequest) (*BetLimitsResponse, error)
+	// GetEffectiveLimits returns the limits that apply to a brand in a currency: its own, else
+	// the operator's (source says which).
 	GetEffectiveLimits(context.Context, *GetEffectiveLimitsRequest) (*BetLimitsResponse, error)
 	mustEmbedUnimplementedSportsbookAdminServiceServer()
 }
@@ -461,5 +300,5 @@ var SportsbookAdminService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "sportsbook/sportsbook.proto",
+	Metadata: "sportsbook/v1/admin.proto",
 }

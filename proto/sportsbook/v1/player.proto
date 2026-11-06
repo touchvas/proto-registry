@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+// Player sportsbook API: placing bets and reading the player's own bets, which the player
+// apps call through api-gateway-service's player profile.
+//
+// Every method needs the player's session (Authorization: Bearer <token>); the bets are the
+// session's player's, in the brand named by brand_id. Request IDs travel as x-request-id.
+package sportsbook.v1;
+
+import "google/api/annotations.proto";
+import "sportsbook/v1/sportsbook.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/sportsbook/v1;sportsbookv1";
+
+// SportsbookPlayerService places a player's bets and lists them.
+service SportsbookPlayerService {
+  // PlaceBet prices the selections, checks the brand's limits and the player's balance, and
+  // places the bet. Send an Idempotency-Key header (8 to 128 printable ASCII characters,
+  // required): a retry with the same key returns the first placement (duplicate is true)
+  // instead of placing a second bet.
+  rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponse) {
+    option (google.api.http) = {
+      post: "/v1/sportsbook/bets"
+      body: "*"
+    };
+  }
+
+  // ListBets returns a page of the player's bets, newest first, filtered by placement or
+  // settlement status.
+  rpc ListBets(PlayerListBetsRequest) returns (ListBetsResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/bets"};
+  }
+
+  // GetBetslip returns one of the player's bets with its events and selections. identifier
+  // is the bet's UUID, its public reference or its operation ID.
+  rpc GetBetslip(PlayerGetBetslipRequest) returns (GetBetslipResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/bets/{identifier}"};
+  }
+}

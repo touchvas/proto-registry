@@ -996,6 +996,283 @@
     "platform.admin.v1.RemoveBrandDomainResponse": {
       "type": "object"
     },
+    "sportsbook.v1.BetLimits": {
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "maximum_payout": {
+          "type": "string"
+        },
+        "maximum_selections": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "maximum_stake": {
+          "type": "string"
+        },
+        "maximum_total_odds": {
+          "type": "string"
+        },
+        "minimum_accumulator_odds": {
+          "type": "string"
+        },
+        "minimum_single_odds": {
+          "type": "string"
+        },
+        "minimum_stake": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetLimitsResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.BetLimits"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetPage": {
+      "properties": {
+        "bets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetSummary",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "per_page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "total": {
+          "format": "uint64",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetSummary": {
+      "properties": {
+        "bet_type": {
+          "type": "string"
+        },
+        "bet_uuid": {
+          "type": "string"
+        },
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "has_payout": {
+          "type": "boolean"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "payout": {
+          "type": "string"
+        },
+        "placement_status": {
+          "type": "string"
+        },
+        "player_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "possible_win": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "selection_count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "settled_selection_count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "stake": {
+          "type": "string"
+        },
+        "total_odds": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.Betslip": {
+      "properties": {
+        "bet": {
+          "$ref": "#/definitions/sportsbook.v1.BetSummary"
+        },
+        "debit_wallet_reference": {
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetslipEvent",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "risk_reason": {
+          "type": "string"
+        },
+        "risk_reference": {
+          "type": "string"
+        },
+        "settlement_wallet_reference": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetslipEvent": {
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "event_name": {
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "live": {
+          "type": "boolean"
+        },
+        "provider_revision": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetslipSelection",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "starts_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetslipSelection": {
+      "properties": {
+        "has_settlement_factor": {
+          "type": "boolean"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "market_id": {
+          "type": "string"
+        },
+        "market_name": {
+          "type": "string"
+        },
+        "odds": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "outcome_name": {
+          "type": "string"
+        },
+        "settlement_factor": {
+          "type": "string"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "specifier": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.GetBetslipResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.Betslip"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.ListBetsResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.BetPage"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "wallet.admin.v1.Adjustment": {
       "properties": {
         "amount": {
@@ -4667,6 +4944,219 @@
           "platform.admin.v1.PlatformService"
         ]
       }
+    },
+    "/v1/sportsbook/bets": {
+      "get": {
+        "operationId": "sportsbook.v1.SportsbookAdminService.ListBets",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "player_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "placement_status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "settlement_status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.ListBetsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBets returns a page of bets, newest first, filtered by brand, player, or placement or\nsettlement status.",
+        "tags": [
+          "sportsbook.v1.SportsbookAdminService"
+        ]
+      }
+    },
+    "/v1/sportsbook/bets/{identifier}": {
+      "get": {
+        "operationId": "sportsbook.v1.SportsbookAdminService.GetBetslip",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Zero searches every brand owned by this operator deployment.",
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.GetBetslipResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetBetslip returns one bet with its events and selections, its risk decision and its\nwallet references. identifier is the bet's UUID, its public reference or its operation\nID; brand_id 0 searches every brand of the operator.",
+        "tags": [
+          "sportsbook.v1.SportsbookAdminService"
+        ]
+      }
+    },
+    "/v1/sportsbook/brands/{brand_id}/limits": {
+      "get": {
+        "operationId": "sportsbook.v1.SportsbookAdminService.GetEffectiveLimits",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.BetLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetEffectiveLimits returns the limits that apply to a brand in a currency: its own, else\nthe operator's (source says which).",
+        "tags": [
+          "sportsbook.v1.SportsbookAdminService"
+        ]
+      },
+      "put": {
+        "operationId": "sportsbook.v1.SportsbookAdminService.SetBrandLimits",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "limits",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.BetLimits"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.BetLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SetBrandLimits sets a brand's own limits for a currency, overriding the operator's.",
+        "tags": [
+          "sportsbook.v1.SportsbookAdminService"
+        ]
+      }
+    },
+    "/v1/sportsbook/limits": {
+      "put": {
+        "operationId": "sportsbook.v1.SportsbookAdminService.SetOperatorLimits",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "limits",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.BetLimits"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.BetLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SetOperatorLimits sets the operator's default limits for a currency, which apply to every\nbrand without its own.",
+        "tags": [
+          "sportsbook.v1.SportsbookAdminService"
+        ]
+      }
     }
   },
   "produces": [
@@ -4717,6 +5207,9 @@
     },
     {
       "name": "platform.admin.v1.PlatformService"
+    },
+    {
+      "name": "sportsbook.v1.SportsbookAdminService"
     },
     {
       "name": "wallet.admin.v1.AdjustmentService"

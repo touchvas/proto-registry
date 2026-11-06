@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+// Back-office sportsbook API: every player's bets and the stake and payout limits, which the
+// back office calls through api-gateway-service's admin profile.
+//
+// Staff authorization (identity's admin session) is not checked yet: sportsbook-service will
+// add it as a unary interceptor once identity's admin contract is ready.
+package sportsbook.v1;
+
+import "google/api/annotations.proto";
+import "sportsbook/v1/sportsbook.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/sportsbook/v1;sportsbookv1";
+
+// SportsbookAdminService lists any player's bets and sets the operator's and brands' limits.
+service SportsbookAdminService {
+  // ListBets returns a page of bets, newest first, filtered by brand, player, or placement or
+  // settlement status.
+  rpc ListBets(AdminListBetsRequest) returns (ListBetsResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/bets"};
+  }
+
+  // GetBetslip returns one bet with its events and selections, its risk decision and its
+  // wallet references. identifier is the bet's UUID, its public reference or its operation
+  // ID; brand_id 0 searches every brand of the operator.
+  rpc GetBetslip(AdminGetBetslipRequest) returns (GetBetslipResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/bets/{identifier}"};
+  }
+
+  // SetOperatorLimits sets the operator's default limits for a currency, which apply to every
+  // brand without its own.
+  rpc SetOperatorLimits(SetOperatorLimitsRequest) returns (BetLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/sportsbook/limits"
+      body: "limits"
+    };
+  }
+
+  // SetBrandLimits sets a brand's own limits for a currency, overriding the operator's.
+  rpc SetBrandLimits(SetBrandLimitsRequest) returns (BetLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/sportsbook/brands/{brand_id}/limits"
+      body: "limits"
+    };
+  }
+
+  // GetEffectiveLimits returns the limits that apply to a brand in a currency: its own, else
+  // the operator's (source says which).
+  rpc GetEffectiveLimits(GetEffectiveLimitsRequest) returns (BetLimitsResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/brands/{brand_id}/limits"};
+  }
+}

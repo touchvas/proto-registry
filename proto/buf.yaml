@@ -14,6 +14,13 @@ lint:
     RPC_REQUEST_RESPONSE_UNIQUE:
       - identity/v1/player.proto
       - identity/admin/v1/admin.proto
+      # Sportsbook's player and admin services share response messages, under the names
+      # sportsbook-service implements.
+      - sportsbook/v1
+    RPC_REQUEST_STANDARD_NAME:
+      - sportsbook/v1
+    RPC_RESPONSE_STANDARD_NAME:
+      - sportsbook/v1
 breaking:
   use:
     - FILE

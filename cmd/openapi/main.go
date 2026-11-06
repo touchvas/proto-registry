@@ -62,7 +62,7 @@ var codedErrorPackages = []string{"wallet.", "casino."}
 func main() {
 	image := flag.String("image", "", "file descriptor set of the protos (buf build --as-file-descriptor-set)")
 	profile := flag.String("profile", "", "player or admin")
-	protos := flag.String("protos", "", "the profile's proto directories under proto/, space-separated (identity/v1 wallet/player/v1)")
+	protos := flag.String("protos", "", "the profile's proto directories or files under proto/, space-separated (identity/v1 sportsbook/v1/player.proto)")
 	in := flag.String("in", "", "the file protoc-gen-openapiv2 wrote")
 	out := flag.String("out", "", "where to write the finished file")
 	flag.Parse()
@@ -253,7 +253,7 @@ func numbers(def any, md protoreflect.MessageDescriptor) {
 func httpMethods(files *protoregistry.Files, protos []string) map[string]protoreflect.MethodDescriptor {
 	out := map[string]protoreflect.MethodDescriptor{}
 	files.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
-		if !slices.ContainsFunc(protos, func(dir string) bool { return strings.HasPrefix(fd.Path(), dir+"/") }) {
+		if !slices.ContainsFunc(protos, func(p string) bool { return fd.Path() == p || strings.HasPrefix(fd.Path(), p+"/") }) {
 			return true
 		}
 		for i := 0; i < fd.Services().Len(); i++ {

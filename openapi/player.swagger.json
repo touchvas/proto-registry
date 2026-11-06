@@ -484,6 +484,363 @@
       },
       "type": "object"
     },
+    "sportsbook.v1.BetPage": {
+      "properties": {
+        "bets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetSummary",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "per_page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "total": {
+          "format": "uint64",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetPlacement": {
+      "properties": {
+        "balance": {
+          "type": "string"
+        },
+        "bet_uuid": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "duplicate": {
+          "type": "boolean"
+        },
+        "possible_win": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.PricedSelection",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "stake": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "total_odds": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetSummary": {
+      "properties": {
+        "bet_type": {
+          "type": "string"
+        },
+        "bet_uuid": {
+          "type": "string"
+        },
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "has_payout": {
+          "type": "boolean"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "payout": {
+          "type": "string"
+        },
+        "placement_status": {
+          "type": "string"
+        },
+        "player_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "possible_win": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "selection_count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "settled_selection_count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "stake": {
+          "type": "string"
+        },
+        "total_odds": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.Betslip": {
+      "properties": {
+        "bet": {
+          "$ref": "#/definitions/sportsbook.v1.BetSummary"
+        },
+        "debit_wallet_reference": {
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetslipEvent",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "risk_reason": {
+          "type": "string"
+        },
+        "risk_reference": {
+          "type": "string"
+        },
+        "settlement_wallet_reference": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetslipEvent": {
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "event_name": {
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "live": {
+          "type": "boolean"
+        },
+        "provider_revision": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.BetslipSelection",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "starts_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.BetslipSelection": {
+      "properties": {
+        "has_settlement_factor": {
+          "type": "boolean"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "market_id": {
+          "type": "string"
+        },
+        "market_name": {
+          "type": "string"
+        },
+        "odds": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "outcome_name": {
+          "type": "string"
+        },
+        "settlement_factor": {
+          "type": "string"
+        },
+        "settlement_status": {
+          "type": "string"
+        },
+        "specifier": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.GetBetslipResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.Betslip"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.ListBetsResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.BetPage"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.PlaceBetRequest": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.SelectionRequest",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "source": {
+          "type": "string"
+        },
+        "stake": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.PlaceBetResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/sportsbook.v1.BetPlacement"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.PricedSelection": {
+      "properties": {
+        "live": {
+          "type": "boolean"
+        },
+        "market_id": {
+          "type": "string"
+        },
+        "market_name": {
+          "type": "string"
+        },
+        "match_id": {
+          "type": "string"
+        },
+        "match_name": {
+          "type": "string"
+        },
+        "odds": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "outcome_name": {
+          "type": "string"
+        },
+        "specifier": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "starts_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.SelectionRequest": {
+      "properties": {
+        "market_id": {
+          "type": "string"
+        },
+        "match_id": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "specifier": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "wallet.player.v1.Balance": {
       "properties": {
         "cash_balance": {
@@ -1076,6 +1433,134 @@
         ]
       }
     },
+    "/v1/sportsbook/bets": {
+      "get": {
+        "operationId": "sportsbook.v1.SportsbookPlayerService.ListBets",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "placement_status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "settlement_status",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.ListBetsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBets returns a page of the player's bets, newest first, filtered by placement or\nsettlement status.",
+        "tags": [
+          "sportsbook.v1.SportsbookPlayerService"
+        ]
+      },
+      "post": {
+        "operationId": "sportsbook.v1.SportsbookPlayerService.PlaceBet",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.PlaceBetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.PlaceBetResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "PlaceBet prices the selections, checks the brand's limits and the player's balance, and\nplaces the bet. Send an Idempotency-Key header (8 to 128 printable ASCII characters,\nrequired): a retry with the same key returns the first placement (duplicate is true)\ninstead of placing a second bet.",
+        "tags": [
+          "sportsbook.v1.SportsbookPlayerService"
+        ]
+      }
+    },
+    "/v1/sportsbook/bets/{identifier}": {
+      "get": {
+        "operationId": "sportsbook.v1.SportsbookPlayerService.GetBetslip",
+        "parameters": [
+          {
+            "description": "Accepts bet_uuid, public reference, or operation_id.",
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.GetBetslipResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetBetslip returns one of the player's bets with its events and selections. identifier\nis the bet's UUID, its public reference or its operation ID.",
+        "tags": [
+          "sportsbook.v1.SportsbookPlayerService"
+        ]
+      }
+    },
     "/v1/transactions": {
       "get": {
         "operationId": "wallet.player.v1.WalletService.ListTransactions",
@@ -1242,6 +1727,9 @@
     },
     {
       "name": "platform.v1.BrandService"
+    },
+    {
+      "name": "sportsbook.v1.SportsbookPlayerService"
     },
     {
       "name": "wallet.player.v1.WalletService"
