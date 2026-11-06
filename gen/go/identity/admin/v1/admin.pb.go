@@ -9,8 +9,6 @@
 // on identity's admin port, which only the admin gateway can reach.
 //
 // Admins work on the brand of the site they log in on, or switch with X-Act-As-Brand.
-// Operators, brands and their settings are the platform module's (platform.admin.v1). Empty
-// lists are always [] (REST sends null or leaves some out).
 
 package identityadminv1
 
