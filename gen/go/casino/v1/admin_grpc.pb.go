@@ -2,7 +2,14 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: casino/casino.proto
+// source: casino/v1/admin.proto
+
+// Back-office casino API: providers, brands, categories, the brands' games and the stake
+// limits of the operator this casino-service deployment serves, which the back office calls
+// through api-gateway-service's admin profile.
+//
+// Staff authorization (identity's admin session) is not checked yet: casino-service will add
+// it as a unary interceptor before production.
 
 package casinov1
 
@@ -17,266 +24,6 @@ import (
 // is compatible with the grpc package it is being compiled against.
 // Requires gRPC-Go v1.64.0 or later.
 const _ = grpc.SupportPackageIsVersion9
-
-const (
-	CasinoPublicService_ListProviders_FullMethodName          = "/casino.v1.CasinoPublicService/ListProviders"
-	CasinoPublicService_ListCategories_FullMethodName         = "/casino.v1.CasinoPublicService/ListCategories"
-	CasinoPublicService_ListGames_FullMethodName              = "/casino.v1.CasinoPublicService/ListGames"
-	CasinoPublicService_GetEffectiveGameLimits_FullMethodName = "/casino.v1.CasinoPublicService/GetEffectiveGameLimits"
-	CasinoPublicService_LaunchGame_FullMethodName             = "/casino.v1.CasinoPublicService/LaunchGame"
-)
-
-// CasinoPublicServiceClient is the client API for CasinoPublicService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// CasinoPublicService exposes the brand-specific catalogue and game launch
-// operations consumed by player-facing applications.
-type CasinoPublicServiceClient interface {
-	ListProviders(ctx context.Context, in *ListPublicProvidersRequest, opts ...grpc.CallOption) (*ProvidersResponse, error)
-	ListCategories(ctx context.Context, in *ListPublicCategoriesRequest, opts ...grpc.CallOption) (*CategoriesResponse, error)
-	ListGames(ctx context.Context, in *ListPublicGamesRequest, opts ...grpc.CallOption) (*BrandGamesResponse, error)
-	GetEffectiveGameLimits(ctx context.Context, in *GetEffectiveGameLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error)
-	LaunchGame(ctx context.Context, in *LaunchGameRequest, opts ...grpc.CallOption) (*LaunchGameResponse, error)
-}
-
-type casinoPublicServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewCasinoPublicServiceClient(cc grpc.ClientConnInterface) CasinoPublicServiceClient {
-	return &casinoPublicServiceClient{cc}
-}
-
-func (c *casinoPublicServiceClient) ListProviders(ctx context.Context, in *ListPublicProvidersRequest, opts ...grpc.CallOption) (*ProvidersResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProvidersResponse)
-	err := c.cc.Invoke(ctx, CasinoPublicService_ListProviders_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *casinoPublicServiceClient) ListCategories(ctx context.Context, in *ListPublicCategoriesRequest, opts ...grpc.CallOption) (*CategoriesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoriesResponse)
-	err := c.cc.Invoke(ctx, CasinoPublicService_ListCategories_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *casinoPublicServiceClient) ListGames(ctx context.Context, in *ListPublicGamesRequest, opts ...grpc.CallOption) (*BrandGamesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BrandGamesResponse)
-	err := c.cc.Invoke(ctx, CasinoPublicService_ListGames_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *casinoPublicServiceClient) GetEffectiveGameLimits(ctx context.Context, in *GetEffectiveGameLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GameLimitsResponse)
-	err := c.cc.Invoke(ctx, CasinoPublicService_GetEffectiveGameLimits_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *casinoPublicServiceClient) LaunchGame(ctx context.Context, in *LaunchGameRequest, opts ...grpc.CallOption) (*LaunchGameResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LaunchGameResponse)
-	err := c.cc.Invoke(ctx, CasinoPublicService_LaunchGame_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// CasinoPublicServiceServer is the server API for CasinoPublicService service.
-// All implementations must embed UnimplementedCasinoPublicServiceServer
-// for forward compatibility.
-//
-// CasinoPublicService exposes the brand-specific catalogue and game launch
-// operations consumed by player-facing applications.
-type CasinoPublicServiceServer interface {
-	ListProviders(context.Context, *ListPublicProvidersRequest) (*ProvidersResponse, error)
-	ListCategories(context.Context, *ListPublicCategoriesRequest) (*CategoriesResponse, error)
-	ListGames(context.Context, *ListPublicGamesRequest) (*BrandGamesResponse, error)
-	GetEffectiveGameLimits(context.Context, *GetEffectiveGameLimitsRequest) (*GameLimitsResponse, error)
-	LaunchGame(context.Context, *LaunchGameRequest) (*LaunchGameResponse, error)
-	mustEmbedUnimplementedCasinoPublicServiceServer()
-}
-
-// UnimplementedCasinoPublicServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedCasinoPublicServiceServer struct{}
-
-func (UnimplementedCasinoPublicServiceServer) ListProviders(context.Context, *ListPublicProvidersRequest) (*ProvidersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListProviders not implemented")
-}
-func (UnimplementedCasinoPublicServiceServer) ListCategories(context.Context, *ListPublicCategoriesRequest) (*CategoriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListCategories not implemented")
-}
-func (UnimplementedCasinoPublicServiceServer) ListGames(context.Context, *ListPublicGamesRequest) (*BrandGamesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListGames not implemented")
-}
-func (UnimplementedCasinoPublicServiceServer) GetEffectiveGameLimits(context.Context, *GetEffectiveGameLimitsRequest) (*GameLimitsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEffectiveGameLimits not implemented")
-}
-func (UnimplementedCasinoPublicServiceServer) LaunchGame(context.Context, *LaunchGameRequest) (*LaunchGameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LaunchGame not implemented")
-}
-func (UnimplementedCasinoPublicServiceServer) mustEmbedUnimplementedCasinoPublicServiceServer() {}
-func (UnimplementedCasinoPublicServiceServer) testEmbeddedByValue()                             {}
-
-// UnsafeCasinoPublicServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to CasinoPublicServiceServer will
-// result in compilation errors.
-type UnsafeCasinoPublicServiceServer interface {
-	mustEmbedUnimplementedCasinoPublicServiceServer()
-}
-
-func RegisterCasinoPublicServiceServer(s grpc.ServiceRegistrar, srv CasinoPublicServiceServer) {
-	// If the following call pancis, it indicates UnimplementedCasinoPublicServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&CasinoPublicService_ServiceDesc, srv)
-}
-
-func _CasinoPublicService_ListProviders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPublicProvidersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoPublicServiceServer).ListProviders(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CasinoPublicService_ListProviders_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoPublicServiceServer).ListProviders(ctx, req.(*ListPublicProvidersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CasinoPublicService_ListCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPublicCategoriesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoPublicServiceServer).ListCategories(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CasinoPublicService_ListCategories_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoPublicServiceServer).ListCategories(ctx, req.(*ListPublicCategoriesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CasinoPublicService_ListGames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPublicGamesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoPublicServiceServer).ListGames(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CasinoPublicService_ListGames_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoPublicServiceServer).ListGames(ctx, req.(*ListPublicGamesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CasinoPublicService_GetEffectiveGameLimits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEffectiveGameLimitsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoPublicServiceServer).GetEffectiveGameLimits(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CasinoPublicService_GetEffectiveGameLimits_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoPublicServiceServer).GetEffectiveGameLimits(ctx, req.(*GetEffectiveGameLimitsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CasinoPublicService_LaunchGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LaunchGameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CasinoPublicServiceServer).LaunchGame(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CasinoPublicService_LaunchGame_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CasinoPublicServiceServer).LaunchGame(ctx, req.(*LaunchGameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// CasinoPublicService_ServiceDesc is the grpc.ServiceDesc for CasinoPublicService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var CasinoPublicService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "casino.v1.CasinoPublicService",
-	HandlerType: (*CasinoPublicServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ListProviders",
-			Handler:    _CasinoPublicService_ListProviders_Handler,
-		},
-		{
-			MethodName: "ListCategories",
-			Handler:    _CasinoPublicService_ListCategories_Handler,
-		},
-		{
-			MethodName: "ListGames",
-			Handler:    _CasinoPublicService_ListGames_Handler,
-		},
-		{
-			MethodName: "GetEffectiveGameLimits",
-			Handler:    _CasinoPublicService_GetEffectiveGameLimits_Handler,
-		},
-		{
-			MethodName: "LaunchGame",
-			Handler:    _CasinoPublicService_LaunchGame_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "casino/casino.proto",
-}
 
 const (
 	CasinoOperatorAdminService_ListAvailableProviders_FullMethodName    = "/casino.v1.CasinoOperatorAdminService/ListAvailableProviders"
@@ -304,28 +51,54 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// CasinoOperatorAdminService exposes the backoffice operations for the single
-// operator represented by this casino-service deployment. Identity-service
-// authorization will be attached as a unary interceptor before production.
+// CasinoOperatorAdminService administers the operator's casino.
 type CasinoOperatorAdminServiceClient interface {
+	// ListAvailableProviders returns the provider integrations registered in
+	// casino-provider-service, which the operator may assign to its brands.
 	ListAvailableProviders(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*AvailableProvidersResponse, error)
+	// SyncProviderGames imports a provider's game catalogue. Games keep their UUIDs across
+	// syncs.
 	SyncProviderGames(ctx context.Context, in *SyncProviderGamesRequest, opts ...grpc.CallOption) (*SyncGamesResponse, error)
+	// ListProviderGames returns a provider's imported games, including those no brand offers
+	// yet.
 	ListProviderGames(ctx context.Context, in *ProviderRequest, opts ...grpc.CallOption) (*GamesResponse, error)
+	// CreateBrand registers one of the operator's brands with the casino.
 	CreateBrand(ctx context.Context, in *CreateBrandRequest, opts ...grpc.CallOption) (*BrandResponse, error)
+	// ListBrands returns every brand of the operator.
 	ListBrands(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*BrandsResponse, error)
+	// UpdateBrand changes a brand's name or status.
 	UpdateBrand(ctx context.Context, in *UpdateBrandRequest, opts ...grpc.CallOption) (*BrandResponse, error)
+	// AssignBrandProvider gives a brand a provider, with the provider's configuration (its
+	// credentials), which is validated and stored encrypted.
 	AssignBrandProvider(ctx context.Context, in *AssignBrandProviderRequest, opts ...grpc.CallOption) (*BrandProviderResponse, error)
+	// UpdateBrandProvider changes how a brand presents a provider, or its status. It doesn't
+	// change the provider's configuration.
 	UpdateBrandProvider(ctx context.Context, in *UpdateBrandProviderRequest, opts ...grpc.CallOption) (*BrandProviderResponse, error)
+	// DisableBrandProvider removes a provider from a brand's lobby.
 	DisableBrandProvider(ctx context.Context, in *BrandProviderRequest, opts ...grpc.CallOption) (*OperationResponse, error)
+	// ConfigureTransactionRoute sets where providers' bet and win transactions go, and the key
+	// that signs them (stored encrypted).
 	ConfigureTransactionRoute(ctx context.Context, in *ConfigureTransactionRouteRequest, opts ...grpc.CallOption) (*OperationResponse, error)
+	// CreateCategory adds a lobby category to a brand.
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error)
+	// ListCategories returns a brand's categories, active and inactive, in priority order.
 	ListCategories(ctx context.Context, in *ListAdminCategoriesRequest, opts ...grpc.CallOption) (*CategoriesResponse, error)
+	// UpdateCategory changes a category's name, image, priority or status.
 	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error)
+	// ConfigureBrandGame adds a provider's game to a brand's lobby, or changes how the brand
+	// presents it and its categories.
 	ConfigureBrandGame(ctx context.Context, in *ConfigureBrandGameRequest, opts ...grpc.CallOption) (*BrandGameResponse, error)
+	// RemoveBrandGame removes a game from a brand's lobby. The provider's game stays.
 	RemoveBrandGame(ctx context.Context, in *BrandGameRequest, opts ...grpc.CallOption) (*OperationResponse, error)
+	// ListBrandGames returns a page of a brand's games, active and inactive.
 	ListBrandGames(ctx context.Context, in *ListBrandGamesRequest, opts ...grpc.CallOption) (*BrandGamesResponse, error)
+	// ConfigureOperatorLimits sets the operator's limits in a currency, which apply where
+	// neither the brand nor the game has its own.
 	ConfigureOperatorLimits(ctx context.Context, in *ConfigureOperatorLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error)
+	// ConfigureBrandLimits sets a brand's limits in a currency, overriding the operator's.
 	ConfigureBrandLimits(ctx context.Context, in *ConfigureBrandLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error)
+	// ConfigureBrandGameLimits sets one game's limits for a brand in a currency, overriding
+	// the brand's and the operator's.
 	ConfigureBrandGameLimits(ctx context.Context, in *ConfigureBrandGameLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error)
 }
 
@@ -531,28 +304,54 @@ func (c *casinoOperatorAdminServiceClient) ConfigureBrandGameLimits(ctx context.
 // All implementations must embed UnimplementedCasinoOperatorAdminServiceServer
 // for forward compatibility.
 //
-// CasinoOperatorAdminService exposes the backoffice operations for the single
-// operator represented by this casino-service deployment. Identity-service
-// authorization will be attached as a unary interceptor before production.
+// CasinoOperatorAdminService administers the operator's casino.
 type CasinoOperatorAdminServiceServer interface {
+	// ListAvailableProviders returns the provider integrations registered in
+	// casino-provider-service, which the operator may assign to its brands.
 	ListAvailableProviders(context.Context, *EmptyRequest) (*AvailableProvidersResponse, error)
+	// SyncProviderGames imports a provider's game catalogue. Games keep their UUIDs across
+	// syncs.
 	SyncProviderGames(context.Context, *SyncProviderGamesRequest) (*SyncGamesResponse, error)
+	// ListProviderGames returns a provider's imported games, including those no brand offers
+	// yet.
 	ListProviderGames(context.Context, *ProviderRequest) (*GamesResponse, error)
+	// CreateBrand registers one of the operator's brands with the casino.
 	CreateBrand(context.Context, *CreateBrandRequest) (*BrandResponse, error)
+	// ListBrands returns every brand of the operator.
 	ListBrands(context.Context, *EmptyRequest) (*BrandsResponse, error)
+	// UpdateBrand changes a brand's name or status.
 	UpdateBrand(context.Context, *UpdateBrandRequest) (*BrandResponse, error)
+	// AssignBrandProvider gives a brand a provider, with the provider's configuration (its
+	// credentials), which is validated and stored encrypted.
 	AssignBrandProvider(context.Context, *AssignBrandProviderRequest) (*BrandProviderResponse, error)
+	// UpdateBrandProvider changes how a brand presents a provider, or its status. It doesn't
+	// change the provider's configuration.
 	UpdateBrandProvider(context.Context, *UpdateBrandProviderRequest) (*BrandProviderResponse, error)
+	// DisableBrandProvider removes a provider from a brand's lobby.
 	DisableBrandProvider(context.Context, *BrandProviderRequest) (*OperationResponse, error)
+	// ConfigureTransactionRoute sets where providers' bet and win transactions go, and the key
+	// that signs them (stored encrypted).
 	ConfigureTransactionRoute(context.Context, *ConfigureTransactionRouteRequest) (*OperationResponse, error)
+	// CreateCategory adds a lobby category to a brand.
 	CreateCategory(context.Context, *CreateCategoryRequest) (*CategoryResponse, error)
+	// ListCategories returns a brand's categories, active and inactive, in priority order.
 	ListCategories(context.Context, *ListAdminCategoriesRequest) (*CategoriesResponse, error)
+	// UpdateCategory changes a category's name, image, priority or status.
 	UpdateCategory(context.Context, *UpdateCategoryRequest) (*CategoryResponse, error)
+	// ConfigureBrandGame adds a provider's game to a brand's lobby, or changes how the brand
+	// presents it and its categories.
 	ConfigureBrandGame(context.Context, *ConfigureBrandGameRequest) (*BrandGameResponse, error)
+	// RemoveBrandGame removes a game from a brand's lobby. The provider's game stays.
 	RemoveBrandGame(context.Context, *BrandGameRequest) (*OperationResponse, error)
+	// ListBrandGames returns a page of a brand's games, active and inactive.
 	ListBrandGames(context.Context, *ListBrandGamesRequest) (*BrandGamesResponse, error)
+	// ConfigureOperatorLimits sets the operator's limits in a currency, which apply where
+	// neither the brand nor the game has its own.
 	ConfigureOperatorLimits(context.Context, *ConfigureOperatorLimitsRequest) (*GameLimitsResponse, error)
+	// ConfigureBrandLimits sets a brand's limits in a currency, overriding the operator's.
 	ConfigureBrandLimits(context.Context, *ConfigureBrandLimitsRequest) (*GameLimitsResponse, error)
+	// ConfigureBrandGameLimits sets one game's limits for a brand in a currency, overriding
+	// the brand's and the operator's.
 	ConfigureBrandGameLimits(context.Context, *ConfigureBrandGameLimitsRequest) (*GameLimitsResponse, error)
 	mustEmbedUnimplementedCasinoOperatorAdminServiceServer()
 }
@@ -1070,5 +869,5 @@ var CasinoOperatorAdminService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "casino/casino.proto",
+	Metadata: "casino/v1/admin.proto",
 }

@@ -1,0 +1,157 @@
+syntax = "proto3";
+
+// Back-office casino API: providers, brands, categories, the brands' games and the stake
+// limits of the operator this casino-service deployment serves, which the back office calls
+// through api-gateway-service's admin profile.
+//
+// Staff authorization (identity's admin session) is not checked yet: casino-service will add
+// it as a unary interceptor before production.
+package casino.v1;
+
+import "google/api/annotations.proto";
+import "casino/v1/casino.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/v1;casinov1";
+
+// CasinoOperatorAdminService administers the operator's casino.
+service CasinoOperatorAdminService {
+  // ListAvailableProviders returns the provider integrations registered in
+  // casino-provider-service, which the operator may assign to its brands.
+  rpc ListAvailableProviders(EmptyRequest) returns (AvailableProvidersResponse) {
+    option (google.api.http) = {get: "/v1/casino/available-providers"};
+  }
+
+  // SyncProviderGames imports a provider's game catalogue. Games keep their UUIDs across
+  // syncs.
+  rpc SyncProviderGames(SyncProviderGamesRequest) returns (SyncGamesResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/providers/{provider_uuid}/sync"
+      body: "*"
+    };
+  }
+
+  // ListProviderGames returns a provider's imported games, including those no brand offers
+  // yet.
+  rpc ListProviderGames(ProviderRequest) returns (GamesResponse) {
+    option (google.api.http) = {get: "/v1/casino/providers/{provider_uuid}/games"};
+  }
+
+  // CreateBrand registers one of the operator's brands with the casino.
+  rpc CreateBrand(CreateBrandRequest) returns (BrandResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/brands"
+      body: "*"
+    };
+  }
+
+  // ListBrands returns every brand of the operator.
+  rpc ListBrands(EmptyRequest) returns (BrandsResponse) {
+    option (google.api.http) = {get: "/v1/casino/brands"};
+  }
+
+  // UpdateBrand changes a brand's name or status.
+  rpc UpdateBrand(UpdateBrandRequest) returns (BrandResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}"
+      body: "*"
+    };
+  }
+
+  // AssignBrandProvider gives a brand a provider, with the provider's configuration (its
+  // credentials), which is validated and stored encrypted.
+  rpc AssignBrandProvider(AssignBrandProviderRequest) returns (BrandProviderResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/brands/{brand_id}/providers"
+      body: "*"
+    };
+  }
+
+  // UpdateBrandProvider changes how a brand presents a provider, or its status. It doesn't
+  // change the provider's configuration.
+  rpc UpdateBrandProvider(UpdateBrandProviderRequest) returns (BrandProviderResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}/providers/{provider_uuid}"
+      body: "*"
+    };
+  }
+
+  // DisableBrandProvider removes a provider from a brand's lobby.
+  rpc DisableBrandProvider(BrandProviderRequest) returns (OperationResponse) {
+    option (google.api.http) = {post: "/v1/casino/brands/{brand_id}/providers/{provider_uuid}/disable"};
+  }
+
+  // ConfigureTransactionRoute sets where providers' bet and win transactions go, and the key
+  // that signs them (stored encrypted).
+  rpc ConfigureTransactionRoute(ConfigureTransactionRouteRequest) returns (OperationResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/transaction-route"
+      body: "*"
+    };
+  }
+
+  // CreateCategory adds a lobby category to a brand.
+  rpc CreateCategory(CreateCategoryRequest) returns (CategoryResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/brands/{brand_id}/categories"
+      body: "*"
+    };
+  }
+
+  // ListCategories returns a brand's categories, active and inactive, in priority order.
+  rpc ListCategories(ListAdminCategoriesRequest) returns (CategoriesResponse) {
+    option (google.api.http) = {get: "/v1/casino/brands/{brand_id}/categories"};
+  }
+
+  // UpdateCategory changes a category's name, image, priority or status.
+  rpc UpdateCategory(UpdateCategoryRequest) returns (CategoryResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}/categories/{category_uuid}"
+      body: "*"
+    };
+  }
+
+  // ConfigureBrandGame adds a provider's game to a brand's lobby, or changes how the brand
+  // presents it and its categories.
+  rpc ConfigureBrandGame(ConfigureBrandGameRequest) returns (BrandGameResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}/games/{game_uuid}"
+      body: "*"
+    };
+  }
+
+  // RemoveBrandGame removes a game from a brand's lobby. The provider's game stays.
+  rpc RemoveBrandGame(BrandGameRequest) returns (OperationResponse) {
+    option (google.api.http) = {delete: "/v1/casino/brands/{brand_id}/games/{game_uuid}"};
+  }
+
+  // ListBrandGames returns a page of a brand's games, active and inactive.
+  rpc ListBrandGames(ListBrandGamesRequest) returns (BrandGamesResponse) {
+    option (google.api.http) = {get: "/v1/casino/brands/{brand_id}/games"};
+  }
+
+  // ConfigureOperatorLimits sets the operator's limits in a currency, which apply where
+  // neither the brand nor the game has its own.
+  rpc ConfigureOperatorLimits(ConfigureOperatorLimitsRequest) returns (GameLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/limits/{currency}"
+      body: "limits"
+    };
+  }
+
+  // ConfigureBrandLimits sets a brand's limits in a currency, overriding the operator's.
+  rpc ConfigureBrandLimits(ConfigureBrandLimitsRequest) returns (GameLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}/limits/{currency}"
+      body: "limits"
+    };
+  }
+
+  // ConfigureBrandGameLimits sets one game's limits for a brand in a currency, overriding
+  // the brand's and the operator's.
+  rpc ConfigureBrandGameLimits(ConfigureBrandGameLimitsRequest) returns (GameLimitsResponse) {
+    option (google.api.http) = {
+      put: "/v1/casino/brands/{brand_id}/games/{game_uuid}/limits/{currency}"
+      body: "limits"
+    };
+  }
+}

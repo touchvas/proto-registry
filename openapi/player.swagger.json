@@ -30,6 +30,311 @@
       },
       "type": "object"
     },
+    "casino.v1.BrandGame": {
+      "properties": {
+        "brand_status": {
+          "type": "string"
+        },
+        "categories": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "game": {
+          "$ref": "#/definitions/casino.v1.Game"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGamePage": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.BrandGame",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "per_page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "total": {
+          "format": "uint64",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGamesResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.BrandGamePage"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoPublicService.LaunchGameBody": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "demo": {
+          "type": "boolean"
+        },
+        "device": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "player_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "player_token": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CategoriesResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Category": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Game": {
+      "properties": {
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "metadata_json": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider_game_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_game_uuid": {
+          "type": "string"
+        },
+        "provider_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_status": {
+          "type": "string"
+        },
+        "provider_uuid": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "thumbnail_url": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GameLimits": {
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "maximum_stake": {
+          "type": "string"
+        },
+        "maximum_win": {
+          "type": "string"
+        },
+        "minimum_stake": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GameLimitsResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.GameLimits"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.LaunchGameResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.LaunchResult"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.LaunchResult": {
+      "properties": {
+        "launch_url": {
+          "type": "string"
+        },
+        "provider_uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Provider": {
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.ProvidersResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Provider",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "identity.v1.Attribution": {
       "description": "Attribution records where a signup came from. The client's IP and user agent are taken\nfrom the request, not from here.",
       "properties": {
@@ -1071,6 +1376,217 @@
         ]
       }
     },
+    "/v1/casino/categories": {
+      "get": {
+        "operationId": "casino.v1.CasinoPublicService.ListCategories",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CategoriesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListCategories returns the brand's active categories, in the brand's priority order.",
+        "tags": [
+          "casino.v1.CasinoPublicService"
+        ]
+      }
+    },
+    "/v1/casino/games": {
+      "get": {
+        "operationId": "casino.v1.CasinoPublicService.ListGames",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "provider_uuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "category_uuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListGames returns a page of the brand's active games, filtered by provider, category or\nname (search).",
+        "tags": [
+          "casino.v1.CasinoPublicService"
+        ]
+      }
+    },
+    "/v1/casino/games/{game_uuid}/launch": {
+      "post": {
+        "operationId": "casino.v1.CasinoPublicService.LaunchGame",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoPublicService.LaunchGameBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.LaunchGameResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "LaunchGame returns the provider's URL that opens the game. A real-money launch needs\nplayer_id and player_token; a demo launch (demo true) needs neither.",
+        "tags": [
+          "casino.v1.CasinoPublicService"
+        ]
+      }
+    },
+    "/v1/casino/games/{game_uuid}/limits": {
+      "get": {
+        "operationId": "casino.v1.CasinoPublicService.GetEffectiveGameLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetEffectiveGameLimits returns a game's stake and win limits in a currency: the game's\nown for the brand, else the brand's, else the operator's (source says which).",
+        "tags": [
+          "casino.v1.CasinoPublicService"
+        ]
+      }
+    },
+    "/v1/casino/providers": {
+      "get": {
+        "operationId": "casino.v1.CasinoPublicService.ListProviders",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "query",
+            "name": "brand_id",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.ProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListProviders returns the brand's active providers, in the brand's priority order.",
+        "tags": [
+          "casino.v1.CasinoPublicService"
+        ]
+      }
+    },
     "/v1/challenge": {
       "post": {
         "operationId": "identity.v1.AuthService.CreateChallenge",
@@ -1716,6 +2232,9 @@
   },
   "swagger": "2.0",
   "tags": [
+    {
+      "name": "casino.v1.CasinoPublicService"
+    },
     {
       "name": "identity.v1.AuthService"
     },

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+// Player casino API: the brand's lobby and game launch, which the player apps call through
+// api-gateway-service's player profile. Requests name their brand in brand_id.
+package casino.v1;
+
+import "google/api/annotations.proto";
+import "casino/v1/casino.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/v1;casinov1";
+
+// CasinoPublicService is the brand's lobby: its providers, categories and games, a game's
+// stake limits, and launching a game.
+service CasinoPublicService {
+  // ListProviders returns the brand's active providers, in the brand's priority order.
+  rpc ListProviders(ListPublicProvidersRequest) returns (ProvidersResponse) {
+    option (google.api.http) = {get: "/v1/casino/providers"};
+  }
+
+  // ListCategories returns the brand's active categories, in the brand's priority order.
+  rpc ListCategories(ListPublicCategoriesRequest) returns (CategoriesResponse) {
+    option (google.api.http) = {get: "/v1/casino/categories"};
+  }
+
+  // ListGames returns a page of the brand's active games, filtered by provider, category or
+  // name (search).
+  rpc ListGames(ListPublicGamesRequest) returns (BrandGamesResponse) {
+    option (google.api.http) = {get: "/v1/casino/games"};
+  }
+
+  // GetEffectiveGameLimits returns a game's stake and win limits in a currency: the game's
+  // own for the brand, else the brand's, else the operator's (source says which).
+  rpc GetEffectiveGameLimits(GetEffectiveGameLimitsRequest) returns (GameLimitsResponse) {
+    option (google.api.http) = {get: "/v1/casino/games/{game_uuid}/limits"};
+  }
+
+  // LaunchGame returns the provider's URL that opens the game. A real-money launch needs
+  // player_id and player_token; a demo launch (demo true) needs neither.
+  rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse) {
+    option (google.api.http) = {
+      post: "/v1/casino/games/{game_uuid}/launch"
+      body: "*"
+    };
+  }
+}

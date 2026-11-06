@@ -4,7 +4,8 @@ package casino.provider.v1;
 
 import "google/protobuf/struct.proto";
 
-option go_package = "touchvas/casino-provider-service/contracts/gen/casino_provider/v1;providerv1";
+// Internal: casino-service calls this API of casino-provider-service. No gateway serves it.
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/provider/v1;providerv1";
 
 service CasinoProviderService {
   rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse);

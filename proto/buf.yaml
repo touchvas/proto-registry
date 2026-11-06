@@ -17,10 +17,17 @@ lint:
       # Sportsbook's player and admin services share response messages, under the names
       # sportsbook-service implements.
       - sportsbook/v1
+      # Likewise casino's, under the names casino-service and casino-provider-service implement.
+      - casino/v1
+      - casino/provider/v1
     RPC_REQUEST_STANDARD_NAME:
       - sportsbook/v1
+      - casino/v1
+      - casino/provider/v1
     RPC_RESPONSE_STANDARD_NAME:
       - sportsbook/v1
+      - casino/v1
+      - casino/provider/v1
 breaking:
   use:
     - FILE

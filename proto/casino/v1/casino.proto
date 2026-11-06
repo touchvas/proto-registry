@@ -1,45 +1,18 @@
 syntax = "proto3";
 
+// Messages of casino's two public APIs: player.proto (CasinoPublicService, the player gateway)
+// and admin.proto (CasinoOperatorAdminService, the admin gateway). Both keep the package
+// casino.v1, so the gRPC method names casino-service serves don't change. casino-service runs
+// once per operator.
+//
+// Amounts are decimal strings. Every response carries status_code and status_description: a
+// request the service refuses still answers HTTP 200, with the reason there; only transport
+// failures are HTTP errors.
 package casino.v1;
 
 import "google/protobuf/struct.proto";
 
-option go_package = "touchvas/casino-service/contracts/gen/casino/v1;casinov1";
-
-// CasinoPublicService exposes the brand-specific catalogue and game launch
-// operations consumed by player-facing applications.
-service CasinoPublicService {
-  rpc ListProviders(ListPublicProvidersRequest) returns (ProvidersResponse);
-  rpc ListCategories(ListPublicCategoriesRequest) returns (CategoriesResponse);
-  rpc ListGames(ListPublicGamesRequest) returns (BrandGamesResponse);
-  rpc GetEffectiveGameLimits(GetEffectiveGameLimitsRequest) returns (GameLimitsResponse);
-  rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse);
-}
-
-// CasinoOperatorAdminService exposes the backoffice operations for the single
-// operator represented by this casino-service deployment. Identity-service
-// authorization will be attached as a unary interceptor before production.
-service CasinoOperatorAdminService {
-  rpc ListAvailableProviders(EmptyRequest) returns (AvailableProvidersResponse);
-  rpc SyncProviderGames(SyncProviderGamesRequest) returns (SyncGamesResponse);
-  rpc ListProviderGames(ProviderRequest) returns (GamesResponse);
-  rpc CreateBrand(CreateBrandRequest) returns (BrandResponse);
-  rpc ListBrands(EmptyRequest) returns (BrandsResponse);
-  rpc UpdateBrand(UpdateBrandRequest) returns (BrandResponse);
-  rpc AssignBrandProvider(AssignBrandProviderRequest) returns (BrandProviderResponse);
-  rpc UpdateBrandProvider(UpdateBrandProviderRequest) returns (BrandProviderResponse);
-  rpc DisableBrandProvider(BrandProviderRequest) returns (OperationResponse);
-  rpc ConfigureTransactionRoute(ConfigureTransactionRouteRequest) returns (OperationResponse);
-  rpc CreateCategory(CreateCategoryRequest) returns (CategoryResponse);
-  rpc ListCategories(ListAdminCategoriesRequest) returns (CategoriesResponse);
-  rpc UpdateCategory(UpdateCategoryRequest) returns (CategoryResponse);
-  rpc ConfigureBrandGame(ConfigureBrandGameRequest) returns (BrandGameResponse);
-  rpc RemoveBrandGame(BrandGameRequest) returns (OperationResponse);
-  rpc ListBrandGames(ListBrandGamesRequest) returns (BrandGamesResponse);
-  rpc ConfigureOperatorLimits(ConfigureOperatorLimitsRequest) returns (GameLimitsResponse);
-  rpc ConfigureBrandLimits(ConfigureBrandLimitsRequest) returns (GameLimitsResponse);
-  rpc ConfigureBrandGameLimits(ConfigureBrandGameLimitsRequest) returns (GameLimitsResponse);
-}
+option go_package = "github.com/touchvas/proto-registry/gen/go/casino/v1;casinov1";
 
 message EmptyRequest {}
 

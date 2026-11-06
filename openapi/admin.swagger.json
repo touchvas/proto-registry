@@ -30,6 +30,646 @@
       },
       "type": "object"
     },
+    "casino.v1.AvailableProvider": {
+      "properties": {
+        "environment": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.AvailableProvidersResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.AvailableProvider",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Brand": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGame": {
+      "properties": {
+        "brand_status": {
+          "type": "string"
+        },
+        "categories": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "game": {
+          "$ref": "#/definitions/casino.v1.Game"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGamePage": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.BrandGame",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "per_page": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "total": {
+          "format": "uint64",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGameResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.BrandGame"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandGamesResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.BrandGamePage"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandProviderAccount": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "provider_account_uuid": {
+          "type": "string"
+        },
+        "provider_endpoint_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_uuid": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandProviderResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.BrandProviderAccount"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.Brand"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.BrandsResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Brand",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.AssignBrandProviderBody": {
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "provider_config": {
+          "type": "object"
+        },
+        "provider_uuid": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.ConfigureBrandGameBody": {
+      "properties": {
+        "category_uuids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.CreateCategoryBody": {
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.SyncProviderGamesBody": {
+      "properties": {
+        "batch_size": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.UpdateBrandBody": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.UpdateBrandProviderBody": {
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CasinoOperatorAdminService.UpdateCategoryBody": {
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CategoriesResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Category",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Category": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operator_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "priority": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CategoryResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.Category"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.ConfigureTransactionRouteRequest": {
+      "properties": {
+        "authentication_key": {
+          "type": "string"
+        },
+        "authentication_key_version": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.CreateBrandRequest": {
+      "properties": {
+        "brand_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.Game": {
+      "properties": {
+        "id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "metadata_json": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider_game_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_game_uuid": {
+          "type": "string"
+        },
+        "provider_id": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_status": {
+          "type": "string"
+        },
+        "provider_uuid": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "thumbnail_url": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GameLimits": {
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "maximum_stake": {
+          "type": "string"
+        },
+        "maximum_win": {
+          "type": "string"
+        },
+        "minimum_stake": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GameLimitsInput": {
+      "properties": {
+        "maximum_stake": {
+          "type": "string"
+        },
+        "maximum_win": {
+          "type": "string"
+        },
+        "minimum_stake": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GameLimitsResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.GameLimits"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.GamesResponse": {
+      "properties": {
+        "data": {
+          "items": {
+            "$ref": "#/definitions/casino.v1.Game",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.OperationResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.OperationResult"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.OperationResult": {
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.SyncGamesResponse": {
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/casino.v1.SyncResult"
+        },
+        "status_code": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "casino.v1.SyncResult": {
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        },
+        "fetched_count": {
+          "format": "uint64",
+          "type": "string"
+        },
+        "provider_uuid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "identity.admin.v1.Admin": {
       "description": "Admin is a back-office user.",
       "properties": {
@@ -4460,6 +5100,743 @@
         ]
       }
     },
+    "/v1/casino/available-providers": {
+      "get": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ListAvailableProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.AvailableProvidersResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListAvailableProviders returns the provider integrations registered in\ncasino-provider-service, which the operator may assign to its brands.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands": {
+      "get": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ListBrands",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBrands returns every brand of the operator.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      },
+      "post": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.CreateBrand",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CreateBrandRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateBrand registers one of the operator's brands with the casino.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.UpdateBrand",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.UpdateBrandBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateBrand changes a brand's name or status.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/categories": {
+      "get": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ListCategories",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CategoriesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListCategories returns a brand's categories, active and inactive, in priority order.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      },
+      "post": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.CreateCategory",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.CreateCategoryBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CategoryResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateCategory adds a lobby category to a brand.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/categories/{category_uuid}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.UpdateCategory",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "category_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.UpdateCategoryBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CategoryResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateCategory changes a category's name, image, priority or status.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/games": {
+      "get": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ListBrandGames",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "provider_uuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "per_page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListBrandGames returns a page of a brand's games, active and inactive.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/games/{game_uuid}": {
+      "delete": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.RemoveBrandGame",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "game_uuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.OperationResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "RemoveBrandGame removes a game from a brand's lobby. The provider's game stays.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      },
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandGame",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "game_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.ConfigureBrandGameBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandGameResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfigureBrandGame adds a provider's game to a brand's lobby, or changes how the brand\npresents it and its categories.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/games/{game_uuid}/limits/{currency}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandGameLimits",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "game_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "limits",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfigureBrandGameLimits sets one game's limits for a brand in a currency, overriding\nthe brand's and the operator's.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/limits/{currency}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandLimits",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "limits",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfigureBrandLimits sets a brand's limits in a currency, overriding the operator's.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/providers": {
+      "post": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.AssignBrandProvider",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.AssignBrandProviderBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandProviderResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "AssignBrandProvider gives a brand a provider, with the provider's configuration (its\ncredentials), which is validated and stored encrypted.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/providers/{provider_uuid}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.UpdateBrandProvider",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "provider_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.UpdateBrandProviderBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.BrandProviderResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "UpdateBrandProvider changes how a brand presents a provider, or its status. It doesn't\nchange the provider's configuration.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/brands/{brand_id}/providers/{provider_uuid}/disable": {
+      "post": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.DisableBrandProvider",
+        "parameters": [
+          {
+            "format": "uint64",
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "provider_uuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.OperationResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "DisableBrandProvider removes a provider from a brand's lobby.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/limits/{currency}": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureOperatorLimits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "limits",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GameLimitsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfigureOperatorLimits sets the operator's limits in a currency, which apply where\nneither the brand nor the game has its own.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/providers/{provider_uuid}/games": {
+      "get": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ListProviderGames",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_uuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.GamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ListProviderGames returns a provider's imported games, including those no brand offers\nyet.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/providers/{provider_uuid}/sync": {
+      "post": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.SyncProviderGames",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.CasinoOperatorAdminService.SyncProviderGamesBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.SyncGamesResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "SyncProviderGames imports a provider's game catalogue. Games keep their UUIDs across\nsyncs.",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
+    "/v1/casino/transaction-route": {
+      "put": {
+        "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureTransactionRoute",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/casino.v1.ConfigureTransactionRouteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/casino.v1.OperationResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ConfigureTransactionRoute sets where providers' bet and win transactions go, and the key\nthat signs them (stored encrypted).",
+        "tags": [
+          "casino.v1.CasinoOperatorAdminService"
+        ]
+      }
+    },
     "/v1/challenge": {
       "post": {
         "operationId": "identity.admin.v1.AuthService.CreateChallenge",
@@ -5184,6 +6561,9 @@
   },
   "swagger": "2.0",
   "tags": [
+    {
+      "name": "casino.v1.CasinoOperatorAdminService"
+    },
     {
       "name": "identity.admin.v1.AccountService"
     },

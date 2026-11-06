@@ -9,9 +9,9 @@ OPENAPI_RAW := $(OPENAPI_DIR)/raw
 # The protos each api-gateway-service profile serves (its routes.Player and routes.Admin).
 # A module's new public API is added here too, or its endpoints are missing from the docs.
 # Entries are directories, or single files where one package holds both profiles' services
-# (sportsbook/v1).
-PLAYER_PROTOS := proto/identity/v1 proto/platform/v1 proto/wallet/player/v1 proto/sportsbook/v1/player.proto
-ADMIN_PROTOS := proto/identity/admin/v1 proto/platform/admin/v1 proto/wallet/admin/v1 proto/sportsbook/v1/admin.proto
+# (sportsbook/v1, casino/v1).
+PLAYER_PROTOS := proto/identity/v1 proto/platform/v1 proto/wallet/player/v1 proto/sportsbook/v1/player.proto proto/casino/v1/player.proto
+ADMIN_PROTOS := proto/identity/admin/v1 proto/platform/admin/v1 proto/wallet/admin/v1 proto/sportsbook/v1/admin.proto proto/casino/v1/admin.proto
 
 .PHONY: all
 all: generate

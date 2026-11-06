@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: casino-provider/casino_provider.proto
+// source: casino/provider/v1/casino_provider.proto
 
 package providerv1
 
@@ -197,7 +197,7 @@ var CasinoProviderService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "casino-provider/casino_provider.proto",
+	Metadata: "casino/provider/v1/casino_provider.proto",
 }
 
 const (
@@ -538,5 +538,5 @@ var CasinoProviderRegistryService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "casino-provider/casino_provider.proto",
+	Metadata: "casino/provider/v1/casino_provider.proto",
 }

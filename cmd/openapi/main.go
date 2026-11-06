@@ -57,7 +57,7 @@ var profiles = map[string]struct {
 // 	"`{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`."
 
 // codedErrorPackages answer errors as {code, number, message}; the others as {"error"}.
-var codedErrorPackages = []string{"wallet.", "casino."}
+var codedErrorPackages = []string{"wallet."}
 
 func main() {
 	image := flag.String("image", "", "file descriptor set of the protos (buf build --as-file-descriptor-set)")
