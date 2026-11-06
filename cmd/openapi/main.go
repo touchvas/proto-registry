@@ -52,9 +52,6 @@ var profiles = map[string]struct {
 	},
 }
 
-const common = "Amounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; " +
-	"a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet and casino, " +
-	"`{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`."
 
 // codedErrorPackages answer errors as {code, number, message}; the others as {"error"}.
 var codedErrorPackages = []string{"wallet.", "casino."}
