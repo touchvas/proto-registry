@@ -39,19 +39,22 @@ var profiles = map[string]struct {
 	"player": {
 		title: "Player API",
 		description: "What the player apps call, through api-gateway-service's player profile. " +
-			"Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer <token>` once logged in.\n\n" + common,
+			"Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer <token>` once logged in.\n\n" ,
 		brandHeader:      "X-Brand-Code",
 		brandDescription: "The brand's code, e.g. betxyz-ke. Sent on every request.",
 	},
 	"admin": {
 		title: "Back-office API",
 		description: "What the back office calls, through api-gateway-service's admin profile. " +
-			"Send `Authorization: Bearer <token>` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\n" + common,
+			"Send `Authorization: Bearer <token>` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\n" ,
 		brandHeader:      "X-Act-As-Brand",
 		brandDescription: "The ID of the brand to work on, for staff on several brands. SUPER_ADMIN must always send it.",
 	},
 }
 
+// const common = "Amounts are JSON numbers in the currency's units (940.5 is KES 940.50), with at most 4 decimals and no exponent; " +
+// 	"a numeric string (\"940.5\") is accepted too. Errors from identity are `{\"error\": \"...\"}`; from wallet and casino, " +
+// 	"`{\"code\": \"...\", \"number\": 0, \"message\": \"...\"}`."
 
 // codedErrorPackages answer errors as {code, number, message}; the others as {"error"}.
 var codedErrorPackages = []string{"wallet.", "casino."}
