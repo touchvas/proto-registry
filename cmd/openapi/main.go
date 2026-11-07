@@ -46,9 +46,9 @@ var profiles = map[string]struct {
 	"admin": {
 		title: "Back-office API",
 		description: "What the back office calls, through api-gateway-service's admin profile. " +
-			"Send `Authorization: Bearer <token>` from the admin login; staff on several brands (and SUPER_ADMIN, always) name the brand they work on in `X-Act-As-Brand`.\n\n" ,
+			"Send `Authorization: Bearer <token>` from the admin login; staff on several brands name the brand they work on in `X-Act-As-Brand`. Platform staff (SUPER_ADMIN) don't send it: they work on no operator's brand.\n\n" ,
 		brandHeader:      "X-Act-As-Brand",
-		brandDescription: "The ID of the brand to work on, for staff on several brands. SUPER_ADMIN must always send it.",
+		brandDescription: "The ID of the brand to work on, for staff on several brands. Platform staff (SUPER_ADMIN) don't send it.",
 	},
 }
 
