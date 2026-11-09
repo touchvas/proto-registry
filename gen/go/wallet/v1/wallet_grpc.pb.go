@@ -8,8 +8,9 @@
 // payments call to move player money. Every call carries the brand (the tenant) in the
 // "x-tenant-id" metadata key.
 //
-// Amounts are int64 at 4 decimal places of the wallet's currency, as in wallet-service:
-// 1 KES = 10000.
+// Amounts are decimal strings in the currency's units, in requests and responses alike: "40"
+// is KES 40 and "150.5" is KES 150.50. At most 4 decimals, no exponent; anything else is
+// refused with RESULT_CODE_INVALID_AMOUNT, never rounded. Never build one from a float.
 //
 // Business outcomes (insufficient funds, a duplicate, a suspended player) come back as gRPC OK
 // with a ResultCode in the response. A non-OK gRPC status means the request was not processed

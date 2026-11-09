@@ -4,8 +4,9 @@ syntax = "proto3";
 // payments call to move player money. Every call carries the brand (the tenant) in the
 // "x-tenant-id" metadata key.
 //
-// Amounts are int64 at 4 decimal places of the wallet's currency, as in wallet-service:
-// 1 KES = 10000.
+// Amounts are decimal strings in the currency's units, in requests and responses alike: "40"
+// is KES 40 and "150.5" is KES 150.50. At most 4 decimals, no exponent; anything else is
+// refused with RESULT_CODE_INVALID_AMOUNT, never rounded. Never build one from a float.
 //
 // Business outcomes (insufficient funds, a duplicate, a suspended player) come back as gRPC OK
 // with a ResultCode in the response. A non-OK gRPC status means the request was not processed
@@ -229,12 +230,12 @@ enum PayoutStatus {
 message Balance {
   string player_id = 1;
   string currency = 2;
-  int64 cash_balance = 3;
-  int64 winnings_balance = 4;
+  string cash_balance = 3;
+  string winnings_balance = 4;
   // cash_balance + winnings_balance.
-  int64 total_balance = 5;
+  string total_balance = 5;
   // What the player can withdraw: the winnings balance.
-  int64 withdrawable_balance = 6;
+  string withdrawable_balance = 6;
   WalletStatus status = 7;
   // Goes up on every posting; a higher version is always the newer balance.
   int64 version = 8;
@@ -242,7 +243,7 @@ message Balance {
 
 message DebitRequest {
   string player_id = 1;
-  int64 amount = 2;
+  string amount = 2;
   // ISO 4217; must equal the wallet's currency.
   string currency = 3;
   Source source = 4;
@@ -259,7 +260,7 @@ message DebitRequest {
 
 message CreditRequest {
   string player_id = 1;
-  int64 amount = 2;
+  string amount = 2;
   string currency = 3;
   Source source = 4;
   Reason reason = 5;
@@ -294,8 +295,8 @@ message PostingResponse {
   // Set whenever the wallet was found, including on refusals such as INSUFFICIENT_FUNDS.
   Balance balance = 4;
   // What this posting moved (signed); set on OK and DUPLICATE_TRANSACTION.
-  int64 cash_delta = 5;
-  int64 winnings_delta = 6;
+  string cash_delta = 5;
+  string winnings_delta = 6;
 }
 
 message GetBalanceRequest {
@@ -327,10 +328,10 @@ message Transaction {
   string reverses_id = 9;
   // Set on a transaction that has been rolled back: the rollback's wallet transaction ID.
   string reversed_by_id = 10;
-  int64 cash_delta = 11;
-  int64 winnings_delta = 12;
-  int64 cash_after = 13;
-  int64 winnings_after = 14;
+  string cash_delta = 11;
+  string winnings_delta = 12;
+  string cash_after = 13;
+  string winnings_after = 14;
   string currency = 15;
   string description = 16;
   google.protobuf.Timestamp created_at = 17;
@@ -345,7 +346,7 @@ message TransactionResponse {
 message HoldWithdrawalRequest {
   string player_id = 1;
   // What the player asked to receive, before charges and tax.
-  int64 amount = 2;
+  string amount = 2;
   string currency = 3;
   // Payments' request ID; a repeat returns the original hold.
   string idempotency_key = 4;
@@ -365,11 +366,11 @@ message HoldWithdrawalResponse {
   // Set on OK: PENDING_APPROVAL or APPROVED.
   WithdrawalStatus status = 4;
   // What payments pays out. Can be less than amount when the brand's redirect rule applies.
-  int64 approved_amount = 5;
-  int64 charge = 6;
-  int64 tax = 7;
+  string approved_amount = 5;
+  string charge = 6;
+  string tax = 7;
   // Taken from winnings: approved_amount + charge + tax.
-  int64 held_amount = 8;
+  string held_amount = 8;
   Balance balance = 9;
   // Set with RESULT_CODE_WITHDRAWAL_COOLDOWN.
   int64 retry_after_seconds = 10;
@@ -383,7 +384,7 @@ message CreditDepositRequest {
     // unknown number registers an unverified player.
     string msisdn = 2;
   }
-  int64 amount = 3;
+  string amount = 3;
   string currency = 4;
   // Payments' transaction ID; the idempotency key.
   string payment_id = 5;
@@ -397,7 +398,7 @@ message CreditDepositRequest {
   map<string, string> metadata = 11;
   // What the payer paid the provider for this payment. Refunded as cashback on the first
   // deposits of the day when the brand has cashback on.
-  int64 transaction_charge = 12;
+  string transaction_charge = 12;
   string payer_name = 13;
 }
 
@@ -423,7 +424,7 @@ message PayoutResultResponse {
 
 message HasDepositedRequest {
   string player_id = 1;
-  int64 minimum_amount = 2;
+  string minimum_amount = 2;
   // Optional window; the default is all time.
   google.protobuf.Timestamp from = 3;
   google.protobuf.Timestamp to = 4;
@@ -433,5 +434,5 @@ message HasDepositedResponse {
   ResultCode code = 1;
   string message = 2;
   bool has_deposited = 3;
-  int64 total_deposited = 4;
+  string total_deposited = 4;
 }
