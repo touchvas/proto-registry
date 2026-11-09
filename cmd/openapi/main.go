@@ -35,8 +35,6 @@ var profiles = map[string]struct {
 	title, description string
 	// brandHeader is how a client of this gateway names a brand.
 	brandHeader, brandDescription string
-	// loginBrandDescription, when set, adds X-Brand-Code: how to name a brand before there is a session.
-	loginBrandDescription string
 }{
 	"player": {
 		title: "Player API",
@@ -48,10 +46,9 @@ var profiles = map[string]struct {
 	"admin": {
 		title: "Back-office API",
 		description: "What the back office calls, through api-gateway-service's admin profile. " +
-			"Log in with the brand's code in `X-Brand-Code`, then send `Authorization: Bearer <token>`; staff on several brands name the brand they work on in `X-Act-As-Brand`. Platform staff (SUPER_ADMIN) don't send it: they work on no operator's brand.\n\n" ,
-		brandHeader:           "X-Act-As-Brand",
-		brandDescription:      "The ID of the brand to work on, for staff on several brands. Platform staff (SUPER_ADMIN) don't send it.",
-		loginBrandDescription: "The code of the brand to log in to, e.g. betxyz-ke. Must be the token's brand if you keep it set after logging in. Platform staff don't use it: they log in on the platform's back-office domain.",
+			"Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer <token>`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n" ,
+		brandHeader:      "X-Brand-Code",
+		brandDescription: "The code or ID of the brand to log in to or work on, e.g. betxyz-ke. Platform staff (SUPER_ADMIN) leave it empty.",
 	},
 }
 
@@ -179,18 +176,12 @@ func finish(doc map[string]any, files *protoregistry.Files, profile string, prot
 	doc["tags"] = tagList(tags)
 
 	p := profiles[profile]
-	definitions := map[string]any{
+	doc["securityDefinitions"] = map[string]any{
 		"bearer": map[string]any{"type": "apiKey", "in": "header", "name": "Authorization",
 			"description": "`Bearer <token>`, the token login returns."},
 		"brand": map[string]any{"type": "apiKey", "in": "header", "name": p.brandHeader, "description": p.brandDescription},
 	}
-	security := map[string]any{"bearer": []any{}, "brand": []any{}}
-	if p.loginBrandDescription != "" {
-		definitions["loginBrand"] = map[string]any{"type": "apiKey", "in": "header", "name": "X-Brand-Code", "description": p.loginBrandDescription}
-		security["loginBrand"] = []any{}
-	}
-	doc["securityDefinitions"] = definitions
-	doc["security"] = []any{security}
+	doc["security"] = []any{map[string]any{"bearer": []any{}, "brand": []any{}}}
 
 	prune(doc, defs)
 	return nil

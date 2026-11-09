@@ -8,7 +8,8 @@
 // profile, at the paths identity's REST API has today (/v1/admin), with the same JSON. It runs
 // on identity's admin port, which only the admin gateway can reach.
 //
-// Admins work on the brand of the site they log in on, or switch with X-Act-As-Brand.
+// Admins work on the brand of the site they log in on, or switch by naming one of their brands
+// in X-Brand-Code.
 
 package identityadminv1
 
@@ -920,12 +921,13 @@ var PlayerService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	UserService_ListUsers_FullMethodName         = "/identity.admin.v1.UserService/ListUsers"
-	UserService_CreateUser_FullMethodName        = "/identity.admin.v1.UserService/CreateUser"
-	UserService_GetUser_FullMethodName           = "/identity.admin.v1.UserService/GetUser"
-	UserService_UpdateUser_FullMethodName        = "/identity.admin.v1.UserService/UpdateUser"
-	UserService_SetUserEnabled_FullMethodName    = "/identity.admin.v1.UserService/SetUserEnabled"
-	UserService_ResetUserPassword_FullMethodName = "/identity.admin.v1.UserService/ResetUserPassword"
+	UserService_ListUsers_FullMethodName           = "/identity.admin.v1.UserService/ListUsers"
+	UserService_CreateUser_FullMethodName          = "/identity.admin.v1.UserService/CreateUser"
+	UserService_CreateOperatorAdmin_FullMethodName = "/identity.admin.v1.UserService/CreateOperatorAdmin"
+	UserService_GetUser_FullMethodName             = "/identity.admin.v1.UserService/GetUser"
+	UserService_UpdateUser_FullMethodName          = "/identity.admin.v1.UserService/UpdateUser"
+	UserService_SetUserEnabled_FullMethodName      = "/identity.admin.v1.UserService/SetUserEnabled"
+	UserService_ResetUserPassword_FullMethodName   = "/identity.admin.v1.UserService/ResetUserPassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -939,6 +941,8 @@ type UserServiceClient interface {
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	// CreateUser creates a back-office user. Needs admin_user:write. 201.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	// CreateOperatorAdmin creates an ADMIN on all of an operator's brands, for platform staff onboarding it.
+	CreateOperatorAdmin(ctx context.Context, in *CreateOperatorAdminRequest, opts ...grpc.CallOption) (*CreateOperatorAdminResponse, error)
 	// GetUser reads a back-office user. Needs admin_user:read.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	// UpdateUser changes the fields sent. Needs admin_user:write.
@@ -973,6 +977,16 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateUserResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateOperatorAdmin(ctx context.Context, in *CreateOperatorAdminRequest, opts ...grpc.CallOption) (*CreateOperatorAdminResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateOperatorAdminResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateOperatorAdmin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1030,6 +1044,8 @@ type UserServiceServer interface {
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	// CreateUser creates a back-office user. Needs admin_user:write. 201.
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	// CreateOperatorAdmin creates an ADMIN on all of an operator's brands, for platform staff onboarding it.
+	CreateOperatorAdmin(context.Context, *CreateOperatorAdminRequest) (*CreateOperatorAdminResponse, error)
 	// GetUser reads a back-office user. Needs admin_user:read.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	// UpdateUser changes the fields sent. Needs admin_user:write.
@@ -1055,6 +1071,9 @@ func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersReque
 }
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServiceServer) CreateOperatorAdmin(context.Context, *CreateOperatorAdminRequest) (*CreateOperatorAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOperatorAdmin not implemented")
 }
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
@@ -1121,6 +1140,24 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateOperatorAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOperatorAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateOperatorAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateOperatorAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateOperatorAdmin(ctx, req.(*CreateOperatorAdminRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1211,6 +1248,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _UserService_CreateUser_Handler,
+		},
+		{
+			MethodName: "CreateOperatorAdmin",
+			Handler:    _UserService_CreateOperatorAdmin_Handler,
 		},
 		{
 			MethodName: "GetUser",

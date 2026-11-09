@@ -10,7 +10,8 @@
 // wallet's admin port, which only the admin gateway can reach.
 //
 // Every RPC needs a back-office session holding the permission it names. The brand is the
-// session's, or the one in X-Act-As-Brand (a SUPER_ADMIN must always name it).
+// session's, or one of its brands named in X-Brand-Code. Platform staff (SUPER_ADMIN) are
+// refused: they work on no operator's brand.
 //
 // Amounts are in the currency's units (940.5 is KES 940.50) and exact: held as decimal
 // strings, written and read as JSON numbers (touchvas.api.v1.json_number), at most 4

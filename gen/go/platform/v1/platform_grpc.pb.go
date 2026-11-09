@@ -41,8 +41,8 @@ type RegistryServiceClient interface {
 	// ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
 	// other host.
 	ResolveDomain(ctx context.Context, in *ResolveDomainRequest, opts ...grpc.CallOption) (*ResolveDomainResponse, error)
-	// ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-Code or
-	// staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+	// ResolveBrand finds a brand by its ID or code, as a client names it in X-Brand-Code.
+	// NOT_FOUND for an unknown brand and for the platform tenant.
 	ResolveBrand(ctx context.Context, in *ResolveBrandRequest, opts ...grpc.CallOption) (*ResolveBrandResponse, error)
 	// GetBrand reads a brand and its settings, whatever its status: callers decide what an
 	// inactive brand may do. NOT_FOUND for an unknown brand.
@@ -110,8 +110,8 @@ type RegistryServiceServer interface {
 	// ResolveDomain finds the brand an active registered domain belongs to. NOT_FOUND for any
 	// other host.
 	ResolveDomain(context.Context, *ResolveDomainRequest) (*ResolveDomainResponse, error)
-	// ResolveBrand finds a brand by its ID or code, as a native app names it in X-Brand-Code or
-	// staff in X-Act-As-Brand. NOT_FOUND for an unknown brand and for the platform tenant.
+	// ResolveBrand finds a brand by its ID or code, as a client names it in X-Brand-Code.
+	// NOT_FOUND for an unknown brand and for the platform tenant.
 	ResolveBrand(context.Context, *ResolveBrandRequest) (*ResolveBrandResponse, error)
 	// GetBrand reads a brand and its settings, whatever its status: callers decide what an
 	// inactive brand may do. NOT_FOUND for an unknown brand.

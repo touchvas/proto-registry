@@ -1174,6 +1174,23 @@
     "identity.admin.v1.StopAttackModeResponse": {
       "type": "object"
     },
+    "identity.admin.v1.UserService.CreateOperatorAdminBody": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "msisdn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "identity.admin.v1.UserService.ResetUserPasswordBody": {
       "properties": {
         "new_password": {
@@ -2911,7 +2928,7 @@
     }
   },
   "info": {
-    "description": "What the back office calls, through api-gateway-service's admin profile. Log in with the brand's code in `X-Brand-Code`, then send `Authorization: Bearer \u003ctoken\u003e`; staff on several brands name the brand they work on in `X-Act-As-Brand`. Platform staff (SUPER_ADMIN) don't send it: they work on no operator's brand.\n\n",
+    "description": "What the back office calls, through api-gateway-service's admin profile. Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer \u003ctoken\u003e`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n",
     "title": "Back-office API",
     "version": "v1"
   },
@@ -3784,6 +3801,45 @@
         "summary": "DisableTotp turns the authenticator app off with a current code. 204.",
         "tags": [
           "identity.admin.v1.AccountService"
+        ]
+      }
+    },
+    "/v1/admin/operators/{operator_id}/admins": {
+      "post": {
+        "operationId": "identity.admin.v1.UserService.CreateOperatorAdmin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operator_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.UserService.CreateOperatorAdminBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/identity.admin.v1.Admin"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "CreateOperatorAdmin creates an ADMIN on all of an operator's brands, for platform staff onboarding it.",
+        "tags": [
+          "identity.admin.v1.UserService"
         ]
       }
     },
@@ -6542,8 +6598,7 @@
   "security": [
     {
       "bearer": [],
-      "brand": [],
-      "loginBrand": []
+      "brand": []
     }
   ],
   "securityDefinitions": {
@@ -6554,13 +6609,7 @@
       "type": "apiKey"
     },
     "brand": {
-      "description": "The ID of the brand to work on, for staff on several brands. Platform staff (SUPER_ADMIN) don't send it.",
-      "in": "header",
-      "name": "X-Act-As-Brand",
-      "type": "apiKey"
-    },
-    "loginBrand": {
-      "description": "The code of the brand to log in to, e.g. betxyz-ke. Must be the token's brand if you keep it set after logging in. Platform staff don't use it: they log in on the platform's back-office domain.",
+      "description": "The code or ID of the brand to log in to or work on, e.g. betxyz-ke. Platform staff (SUPER_ADMIN) leave it empty.",
       "in": "header",
       "name": "X-Brand-Code",
       "type": "apiKey"
