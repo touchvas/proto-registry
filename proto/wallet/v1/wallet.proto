@@ -1,0 +1,437 @@
+syntax = "proto3";
+
+// wallet.v1 is the internal API that game services (sportsbook, casino, jackpot), bonus and
+// payments call to move player money. Every call carries the brand (the tenant) in the
+// "x-tenant-id" metadata key.
+//
+// Amounts are int64 at 4 decimal places of the wallet's currency, as in wallet-service:
+// 1 KES = 10000.
+//
+// Business outcomes (insufficient funds, a duplicate, a suspended player) come back as gRPC OK
+// with a ResultCode in the response. A non-OK gRPC status means the request was not processed
+// (auth, transport or infrastructure); retry it with the same request.
+//
+package wallet.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/wallet/v1;walletv1";
+
+service WalletService {
+  // Debit takes a stake: cash first, then winnings. Idempotent on (source, external_txn_id):
+  // a repeat returns the original result with RESULT_CODE_DUPLICATE_TRANSACTION.
+  rpc Debit(DebitRequest) returns (PostingResponse);
+
+  // Credit pays a win. The reason decides the bucket (wins go to winnings). A casino debit can
+  // have many credits: each credit carries the round_id and its own external_txn_id.
+  rpc Credit(CreditRequest) returns (PostingResponse);
+
+  // Rollback reverses one earlier debit or credit, restoring the exact cash and winnings it
+  // moved. A rollback of a transaction that never arrived is recorded, so the original is
+  // refused if it turns up later.
+  rpc Rollback(RollbackRequest) returns (PostingResponse);
+
+  // GetBalance reads the player's balances.
+  rpc GetBalance(GetBalanceRequest) returns (BalanceResponse);
+
+  // GetTransaction finds a posting by the caller's own ID.
+  rpc GetTransaction(GetTransactionRequest) returns (TransactionResponse);
+
+  // HoldWithdrawal is called by payments before it contacts any provider. Wallet checks the
+  // brand's withdrawal rules and holds amount + charge + tax from winnings. Payments pays out
+  // only on WITHDRAWAL_STATUS_APPROVED, and only approved_amount.
+  rpc HoldWithdrawal(HoldWithdrawalRequest) returns (HoldWithdrawalResponse);
+
+  // CreditDeposit is called by payments after a payment is COMPLETED and saved. Idempotent on
+  // payment_id. A paybill payment naming a number no player holds registers an unverified
+  // player in identity and opens their wallet.
+  rpc CreditDeposit(CreditDepositRequest) returns (PostingResponse);
+
+  // PayoutResult is called by payments when a payout is COMPLETED or FAILED. A failure
+  // refunds the held amount once.
+  rpc PayoutResult(PayoutResultRequest) returns (PayoutResultResponse);
+
+  // HasDeposited tells bonus and others whether the player has deposited at least
+  // minimum_amount.
+  rpc HasDeposited(HasDepositedRequest) returns (HasDepositedResponse);
+}
+
+// ResultCode numbers never change meaning once released. 1xxx request and idempotency,
+// 2xxx funds, 3xxx wallet and player state, 4xxx transaction links, 5xxx cashier, 6xxx back
+// office, 9xxx system.
+// Callers branch on the code and never parse the message.
+enum ResultCode {
+  RESULT_CODE_UNSPECIFIED = 0;
+  RESULT_CODE_OK = 1;
+
+  // Same (source, external_txn_id) and same payload already posted; the original result is
+  // returned. Treat as success.
+  RESULT_CODE_DUPLICATE_TRANSACTION = 1001;
+  // Same ID but a different amount, player, reason or direction. Never retry.
+  RESULT_CODE_IDEMPOTENCY_CONFLICT = 1002;
+  RESULT_CODE_INVALID_REQUEST = 1100;
+  RESULT_CODE_INVALID_AMOUNT = 1101;
+  RESULT_CODE_CURRENCY_MISMATCH = 1102;
+  // The reason isn't allowed for this source or this RPC.
+  RESULT_CODE_REASON_NOT_ALLOWED = 1103;
+
+  RESULT_CODE_INSUFFICIENT_FUNDS = 2001;
+  RESULT_CODE_SPEND_LIMIT_EXCEEDED = 2002;
+
+  RESULT_CODE_WALLET_NOT_FOUND = 3001;
+  RESULT_CODE_WALLET_FROZEN = 3002;
+  RESULT_CODE_WALLET_CLOSED = 3003;
+  // Identity status CLOSED or PENDING_VERIFICATION.
+  RESULT_CODE_PLAYER_INACTIVE = 3004;
+  RESULT_CODE_PLAYER_SUSPENDED = 3005;
+  RESULT_CODE_PLAYER_SELF_EXCLUDED = 3006;
+  // A paybill deposit's phone number matches no player in the brand.
+  RESULT_CODE_PLAYER_NOT_FOUND = 3007;
+
+  // Rollback or lookup of an unknown transaction. For a rollback, treat as done.
+  RESULT_CODE_TRANSACTION_NOT_FOUND = 4001;
+  // The original already has a rollback with a different ID. Treat as done.
+  RESULT_CODE_ALREADY_ROLLED_BACK = 4002;
+  // The original arrived after its rollback. The player is not charged.
+  RESULT_CODE_TRANSACTION_ROLLED_BACK = 4003;
+  // A credit names a round or debit that doesn't exist.
+  RESULT_CODE_ROUND_NOT_FOUND = 4004;
+  // A credit for a round whose debits are all rolled back.
+  RESULT_CODE_ROUND_ROLLED_BACK = 4005;
+  // Rollback of a debit whose round already has credits. Roll back the credits first.
+  RESULT_CODE_ROUND_HAS_CREDITS = 4006;
+
+  RESULT_CODE_WITHDRAWALS_DISABLED = 5001;
+  RESULT_CODE_BELOW_MINIMUM = 5002;
+  RESULT_CODE_ABOVE_MAXIMUM = 5003;
+  RESULT_CODE_DAILY_AMOUNT_LIMIT = 5004;
+  RESULT_CODE_DAILY_COUNT_LIMIT = 5005;
+  // Too soon after the last withdrawal; see retry_after_seconds.
+  RESULT_CODE_WITHDRAWAL_COOLDOWN = 5006;
+  // The player hasn't deposited the brand's minimum needed to withdraw.
+  RESULT_CODE_DEPOSIT_REQUIRED = 5007;
+  // Approve or reject on a withdrawal that is no longer pending (back office).
+  RESULT_CODE_WITHDRAWAL_NOT_PENDING = 5008;
+  RESULT_CODE_WITHDRAWAL_NOT_FOUND = 5009;
+  // A payout result that contradicts the one already recorded (COMPLETED, then FAILED).
+  RESULT_CODE_PAYOUT_RESULT_CONFLICT = 5010;
+
+  // The approver's authenticator-app or SMS code is wrong or already used.
+  RESULT_CODE_SECOND_FACTOR_INVALID = 6001;
+  // The approver has neither an authenticator app nor SMS codes turned on in identity.
+  RESULT_CODE_SECOND_FACTOR_REQUIRED = 6002;
+  // Too many wrong codes; the approver is locked out for a while.
+  RESULT_CODE_SECOND_FACTOR_LOCKED = 6003;
+  // Maker-checker: whoever made an adjustment can't approve it.
+  RESULT_CODE_MAKER_CANNOT_APPROVE = 6004;
+  RESULT_CODE_ADJUSTMENT_NOT_FOUND = 6005;
+  RESULT_CODE_ADJUSTMENT_NOT_PENDING = 6006;
+  // Settings were changed by someone else since they were read; read them again.
+  RESULT_CODE_SETTINGS_CONFLICT = 6007;
+  RESULT_CODE_DEPOSIT_NOT_FOUND = 6008;
+  // The deposit was already credited, so there is nothing to retry.
+  RESULT_CODE_DEPOSIT_NOT_FAILED = 6009;
+  // An SMS code was sent moments ago; use it, or ask again after identity's resend window.
+  RESULT_CODE_SECOND_FACTOR_COOLDOWN = 6010;
+
+  // No valid x-tenant-id.
+  RESULT_CODE_TENANT_UNKNOWN = 9001;
+  RESULT_CODE_TENANT_INACTIVE = 9002;
+  // Lock wait timeout or the tenant's concurrency budget is full. Retry the same request.
+  RESULT_CODE_BUSY = 9003;
+  // Retry the same request.
+  RESULT_CODE_INTERNAL = 9999;
+}
+
+// Source is the calling service. Idempotency is per (tenant, source, external_txn_id).
+enum Source {
+  SOURCE_UNSPECIFIED = 0;
+  SOURCE_SPORTSBOOK = 1;
+  SOURCE_CASINO = 2;
+  SOURCE_JACKPOT = 3;
+  SOURCE_BONUS = 4;
+  SOURCE_PAYMENTS = 5;
+  SOURCE_BACKOFFICE = 6;
+}
+
+// Reason is the reference_id. It fixes the direction, the bucket and
+// whether a round is needed. Only the reasons marked "Debit" or "Credit" may be sent to
+// those RPCs; the rest are posted by wallet itself.
+enum Reason {
+  REASON_UNSPECIFIED = 0;
+
+  // Debit: cash first, then winnings. Opens or joins the round.
+  REASON_SPORTS_BET = 1;
+  REASON_CASINO_BET = 2;
+  REASON_JACKPOT_BET = 3;
+
+  // Credit to winnings; needs a round with a debit.
+  REASON_SPORTS_WIN = 10;
+  REASON_CASINO_WIN = 11;
+  REASON_JACKPOT_WIN = 12;
+  REASON_CASHOUT = 13;
+
+  // Credit to winnings with no round: the stake never touched the wallet.
+  REASON_FREE_SPIN_WIN = 20;
+  REASON_PROMO_WIN = 21;
+  REASON_FREEBET_WIN = 22;
+  REASON_BONUS_WIN = 23;
+
+  // Debit, sportsbook resettlement: winnings first, then cash. Needs a round.
+  REASON_WIN_REVERSAL = 30;
+
+  // Posted by wallet itself.
+  REASON_DEPOSIT = 40;
+  REASON_DEPOSIT_TAX = 41;
+  REASON_WITHDRAWAL_HOLD = 50;
+  REASON_WITHDRAWAL_CHARGE = 51;
+  REASON_WITHDRAWAL_TAX = 52;
+  REASON_WITHDRAWAL_REFUND = 53;
+  REASON_ADJUSTMENT_CREDIT = 60;
+  REASON_ADJUSTMENT_DEBIT = 61;
+  REASON_MIGRATION_OPENING = 70;
+  REASON_ROLLBACK = 80;
+}
+
+enum Direction {
+  DIRECTION_UNSPECIFIED = 0;
+  DIRECTION_DEBIT = 1;
+  DIRECTION_CREDIT = 2;
+}
+
+enum WalletStatus {
+  WALLET_STATUS_UNSPECIFIED = 0;
+  WALLET_STATUS_ACTIVE = 1;
+  // No debits; credits and rollbacks still apply.
+  WALLET_STATUS_FROZEN = 2;
+  WALLET_STATUS_CLOSED = 3;
+}
+
+enum WithdrawalStatus {
+  WITHDRAWAL_STATUS_UNSPECIFIED = 0;
+  // Held; waits for the back office. Payments waits for withdrawal.approved or .rejected.
+  WITHDRAWAL_STATUS_PENDING_APPROVAL = 1;
+  // Held; payments sends the payout for approved_amount.
+  WITHDRAWAL_STATUS_APPROVED = 2;
+  // Rejected in the back office and refunded.
+  WITHDRAWAL_STATUS_REJECTED = 3;
+  WITHDRAWAL_STATUS_COMPLETED = 4;
+  // The payout failed and the held amount was refunded.
+  WITHDRAWAL_STATUS_FAILED = 5;
+}
+
+enum PayoutStatus {
+  PAYOUT_STATUS_UNSPECIFIED = 0;
+  PAYOUT_STATUS_COMPLETED = 1;
+  PAYOUT_STATUS_FAILED = 2;
+}
+
+message Balance {
+  string player_id = 1;
+  string currency = 2;
+  int64 cash_balance = 3;
+  int64 winnings_balance = 4;
+  // cash_balance + winnings_balance.
+  int64 total_balance = 5;
+  // What the player can withdraw: the winnings balance.
+  int64 withdrawable_balance = 6;
+  WalletStatus status = 7;
+  // Goes up on every posting; a higher version is always the newer balance.
+  int64 version = 8;
+}
+
+message DebitRequest {
+  string player_id = 1;
+  int64 amount = 2;
+  // ISO 4217; must equal the wallet's currency.
+  string currency = 3;
+  Source source = 4;
+  Reason reason = 5;
+  // The caller's ID for this posting; the idempotency key, unique per source.
+  string external_txn_id = 6;
+  // Groups a bet's debit with its credits (casino round, bet slip).
+  string round_id = 7;
+  string description = 8;
+  string ip_address = 9;
+  // Game ID, provider and so on; stored and passed on in events.
+  map<string, string> metadata = 10;
+}
+
+message CreditRequest {
+  string player_id = 1;
+  int64 amount = 2;
+  string currency = 3;
+  Source source = 4;
+  Reason reason = 5;
+  // Unique per credit: two wins in one round are two IDs.
+  string external_txn_id = 6;
+  // Required unless the reason needs no round.
+  string round_id = 7;
+  string description = 8;
+  string ip_address = 9;
+  map<string, string> metadata = 10;
+  // Optional: the external_txn_id of the debit this credit settles, when a round has several.
+  string debit_txn_id = 11;
+}
+
+message RollbackRequest {
+  string player_id = 1;
+  Source source = 2;
+  // The rollback's own ID; the idempotency key.
+  string external_txn_id = 3;
+  // The external_txn_id of the debit or credit to reverse, from the same source.
+  string original_external_txn_id = 4;
+  string description = 5;
+  string ip_address = 6;
+  map<string, string> metadata = 7;
+}
+
+message PostingResponse {
+  ResultCode code = 1;
+  string message = 2;
+  // Wallet's ID for the ledger row; set on OK and DUPLICATE_TRANSACTION.
+  string transaction_id = 3;
+  // Set whenever the wallet was found, including on refusals such as INSUFFICIENT_FUNDS.
+  Balance balance = 4;
+  // What this posting moved (signed); set on OK and DUPLICATE_TRANSACTION.
+  int64 cash_delta = 5;
+  int64 winnings_delta = 6;
+}
+
+message GetBalanceRequest {
+  string player_id = 1;
+}
+
+message BalanceResponse {
+  ResultCode code = 1;
+  string message = 2;
+  Balance balance = 3;
+}
+
+message GetTransactionRequest {
+  Source source = 1;
+  string external_txn_id = 2;
+}
+
+message Transaction {
+  string id = 1;
+  string player_id = 2;
+  Direction direction = 3;
+  Reason reason = 4;
+  Source source = 5;
+  string external_txn_id = 6;
+  string round_id = 7;
+  // The wallet transaction ID of the debit a credit settles, when known.
+  string debit_id = 8;
+  // Set on a rollback: the wallet transaction ID it reverses.
+  string reverses_id = 9;
+  // Set on a transaction that has been rolled back: the rollback's wallet transaction ID.
+  string reversed_by_id = 10;
+  int64 cash_delta = 11;
+  int64 winnings_delta = 12;
+  int64 cash_after = 13;
+  int64 winnings_after = 14;
+  string currency = 15;
+  string description = 16;
+  google.protobuf.Timestamp created_at = 17;
+}
+
+message TransactionResponse {
+  ResultCode code = 1;
+  string message = 2;
+  Transaction transaction = 3;
+}
+
+message HoldWithdrawalRequest {
+  string player_id = 1;
+  // What the player asked to receive, before charges and tax.
+  int64 amount = 2;
+  string currency = 3;
+  // Payments' request ID; a repeat returns the original hold.
+  string idempotency_key = 4;
+  // The phone number or account the payout goes to.
+  string destination = 5;
+  // Payments' provider name, e.g. MPESA, AIRTEL.
+  string provider = 6;
+  // APP, WEB or USSD.
+  string origin = 7;
+  string ip_address = 8;
+}
+
+message HoldWithdrawalResponse {
+  ResultCode code = 1;
+  string message = 2;
+  string withdrawal_id = 3;
+  // Set on OK: PENDING_APPROVAL or APPROVED.
+  WithdrawalStatus status = 4;
+  // What payments pays out. Can be less than amount when the brand's redirect rule applies.
+  int64 approved_amount = 5;
+  int64 charge = 6;
+  int64 tax = 7;
+  // Taken from winnings: approved_amount + charge + tax.
+  int64 held_amount = 8;
+  Balance balance = 9;
+  // Set with RESULT_CODE_WITHDRAWAL_COOLDOWN.
+  int64 retry_after_seconds = 10;
+}
+
+message CreditDepositRequest {
+  oneof player {
+    // STK deposits: the player who started it.
+    string player_id = 1;
+    // Paybill deposits: the account reference, which is the player's phone number. An
+    // unknown number registers an unverified player.
+    string msisdn = 2;
+  }
+  int64 amount = 3;
+  string currency = 4;
+  // Payments' transaction ID; the idempotency key.
+  string payment_id = 5;
+  // Payments' idempotency key for the collection request, when there was one.
+  string idempotency_key = 6;
+  string provider = 7;
+  string provider_tx_id = 8;
+  // The phone number that paid, which can differ from the account.
+  string payer_msisdn = 9;
+  google.protobuf.Timestamp completed_at = 10;
+  map<string, string> metadata = 11;
+  // What the payer paid the provider for this payment. Refunded as cashback on the first
+  // deposits of the day when the brand has cashback on.
+  int64 transaction_charge = 12;
+  string payer_name = 13;
+}
+
+message PayoutResultRequest {
+  string withdrawal_id = 1;
+  // Payments' transaction ID for the payout.
+  string payment_id = 2;
+  PayoutStatus status = 3;
+  string provider_tx_id = 4;
+  string failure_reason = 5;
+  // The name the provider reports for the recipient, kept for reconciliation.
+  string recipient_name = 6;
+  google.protobuf.Timestamp occurred_at = 7;
+}
+
+message PayoutResultResponse {
+  ResultCode code = 1;
+  string message = 2;
+  // COMPLETED or FAILED (refunded).
+  WithdrawalStatus status = 3;
+  Balance balance = 4;
+}
+
+message HasDepositedRequest {
+  string player_id = 1;
+  int64 minimum_amount = 2;
+  // Optional window; the default is all time.
+  google.protobuf.Timestamp from = 3;
+  google.protobuf.Timestamp to = 4;
+}
+
+message HasDepositedResponse {
+  ResultCode code = 1;
+  string message = 2;
+  bool has_deposited = 3;
+  int64 total_deposited = 4;
+}
