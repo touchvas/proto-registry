@@ -2911,7 +2911,7 @@
     }
   },
   "info": {
-    "description": "What the back office calls, through api-gateway-service's admin profile. Send `Authorization: Bearer \u003ctoken\u003e` from the admin login; staff on several brands name the brand they work on in `X-Act-As-Brand`. Platform staff (SUPER_ADMIN) don't send it: they work on no operator's brand.\n\n",
+    "description": "What the back office calls, through api-gateway-service's admin profile. Log in with the brand's code in `X-Brand-Code`, then send `Authorization: Bearer \u003ctoken\u003e`; staff on several brands name the brand they work on in `X-Act-As-Brand`. Platform staff (SUPER_ADMIN) don't send it: they work on no operator's brand.\n\n",
     "title": "Back-office API",
     "version": "v1"
   },
@@ -6542,7 +6542,8 @@
   "security": [
     {
       "bearer": [],
-      "brand": []
+      "brand": [],
+      "loginBrand": []
     }
   ],
   "securityDefinitions": {
@@ -6556,6 +6557,12 @@
       "description": "The ID of the brand to work on, for staff on several brands. Platform staff (SUPER_ADMIN) don't send it.",
       "in": "header",
       "name": "X-Act-As-Brand",
+      "type": "apiKey"
+    },
+    "loginBrand": {
+      "description": "The code of the brand to log in to, e.g. betxyz-ke. Must be the token's brand if you keep it set after logging in. Platform staff don't use it: they log in on the platform's back-office domain.",
+      "in": "header",
+      "name": "X-Brand-Code",
       "type": "apiKey"
     }
   },
