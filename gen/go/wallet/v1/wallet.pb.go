@@ -744,10 +744,9 @@ type DebitRequest struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	PlayerId string                 `protobuf:"bytes,1,opt,name=player_id,json=playerId,proto3" json:"player_id,omitempty"`
 	Amount   string                 `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	// ISO 4217; must equal the wallet's currency.
-	Currency string `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
-	Source   Source `protobuf:"varint,4,opt,name=source,proto3,enum=wallet.v1.Source" json:"source,omitempty"`
-	Reason   Reason `protobuf:"varint,5,opt,name=reason,proto3,enum=wallet.v1.Reason" json:"reason,omitempty"`
+	Currency string                 `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
+	Source   Source                 `protobuf:"varint,4,opt,name=source,proto3,enum=wallet.v1.Source" json:"source,omitempty"`
+	Reason   Reason                 `protobuf:"varint,5,opt,name=reason,proto3,enum=wallet.v1.Reason" json:"reason,omitempty"`
 	// The caller's ID for this posting; the idempotency key, unique per source.
 	ExternalTxnId string `protobuf:"bytes,6,opt,name=external_txn_id,json=externalTxnId,proto3" json:"external_txn_id,omitempty"`
 	// Groups a bet's debit with its credits (casino round, bet slip).

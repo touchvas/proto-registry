@@ -244,7 +244,6 @@ message Balance {
 message DebitRequest {
   string player_id = 1;
   string amount = 2;
-  // ISO 4217; must equal the wallet's currency.
   string currency = 3;
   Source source = 4;
   Reason reason = 5;
