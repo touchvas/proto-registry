@@ -159,13 +159,13 @@ message FreespinRequest {
 }
 
 
-message Profiles {
+message FreeSpinProfile {
   int64 account_id = 1;
   int64 profile_id = 2;
 }
 
 message FreespinsRewardForMany {
-  repeated Profiles profiles = 1;
+  repeated FreeSpinProfile profiles = 1;
   int64 bonus_id = 2;
   int64 amount = 3;
   string game_id = 4;
@@ -194,7 +194,7 @@ message CancelFreeSpinsRequest {
   string bonus_id = 1;
   int64 provider_id = 2;
   int64 account_id = 3;
-  repeated Profiles profiles = 4;
+  repeated FreeSpinProfile profiles = 4;
   string game_id = 5;
   string Currency = 6;
   repeated ExtraParam extra_params = 7;
