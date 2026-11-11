@@ -35,6 +35,7 @@ const (
 	WalletService_Debit_FullMethodName          = "/wallet.v1.WalletService/Debit"
 	WalletService_Credit_FullMethodName         = "/wallet.v1.WalletService/Credit"
 	WalletService_Rollback_FullMethodName       = "/wallet.v1.WalletService/Rollback"
+	WalletService_Adjust_FullMethodName         = "/wallet.v1.WalletService/Adjust"
 	WalletService_GetBalance_FullMethodName     = "/wallet.v1.WalletService/GetBalance"
 	WalletService_GetTransaction_FullMethodName = "/wallet.v1.WalletService/GetTransaction"
 	WalletService_HoldWithdrawal_FullMethodName = "/wallet.v1.WalletService/HoldWithdrawal"
@@ -57,6 +58,13 @@ type WalletServiceClient interface {
 	// moved. A rollback of a transaction that never arrived is recorded, so the original is
 	// refused if it turns up later.
 	Rollback(ctx context.Context, in *RollbackRequest, opts ...grpc.CallOption) (*PostingResponse, error)
+	// Adjust corrects a player's balance outside a bet, either way: a casino provider's
+	// correction of a settled game, for example. The source and direction pick the reason. A
+	// credit goes to winnings; a debit takes winnings first, then cash, and is refused with
+	// RESULT_CODE_INSUFFICIENT_FUNDS rather than take the balance below zero. Applies to a
+	// frozen wallet and whatever the player's status. Idempotent on (source, external_txn_id);
+	// Rollback reverses it like any other posting.
+	Adjust(ctx context.Context, in *AdjustRequest, opts ...grpc.CallOption) (*PostingResponse, error)
 	// GetBalance reads the player's balances.
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	// GetTransaction finds a posting by the caller's own ID.
@@ -109,6 +117,16 @@ func (c *walletServiceClient) Rollback(ctx context.Context, in *RollbackRequest,
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostingResponse)
 	err := c.cc.Invoke(ctx, WalletService_Rollback_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *walletServiceClient) Adjust(ctx context.Context, in *AdjustRequest, opts ...grpc.CallOption) (*PostingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostingResponse)
+	err := c.cc.Invoke(ctx, WalletService_Adjust_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -189,6 +207,13 @@ type WalletServiceServer interface {
 	// moved. A rollback of a transaction that never arrived is recorded, so the original is
 	// refused if it turns up later.
 	Rollback(context.Context, *RollbackRequest) (*PostingResponse, error)
+	// Adjust corrects a player's balance outside a bet, either way: a casino provider's
+	// correction of a settled game, for example. The source and direction pick the reason. A
+	// credit goes to winnings; a debit takes winnings first, then cash, and is refused with
+	// RESULT_CODE_INSUFFICIENT_FUNDS rather than take the balance below zero. Applies to a
+	// frozen wallet and whatever the player's status. Idempotent on (source, external_txn_id);
+	// Rollback reverses it like any other posting.
+	Adjust(context.Context, *AdjustRequest) (*PostingResponse, error)
 	// GetBalance reads the player's balances.
 	GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error)
 	// GetTransaction finds a posting by the caller's own ID.
@@ -225,6 +250,9 @@ func (UnimplementedWalletServiceServer) Credit(context.Context, *CreditRequest) 
 }
 func (UnimplementedWalletServiceServer) Rollback(context.Context, *RollbackRequest) (*PostingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Rollback not implemented")
+}
+func (UnimplementedWalletServiceServer) Adjust(context.Context, *AdjustRequest) (*PostingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Adjust not implemented")
 }
 func (UnimplementedWalletServiceServer) GetBalance(context.Context, *GetBalanceRequest) (*BalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBalance not implemented")
@@ -315,6 +343,24 @@ func _WalletService_Rollback_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WalletServiceServer).Rollback(ctx, req.(*RollbackRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WalletService_Adjust_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdjustRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServiceServer).Adjust(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WalletService_Adjust_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServiceServer).Adjust(ctx, req.(*AdjustRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -445,6 +491,10 @@ var WalletService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Rollback",
 			Handler:    _WalletService_Rollback_Handler,
+		},
+		{
+			MethodName: "Adjust",
+			Handler:    _WalletService_Adjust_Handler,
 		},
 		{
 			MethodName: "GetBalance",

@@ -32,6 +32,14 @@ service WalletService {
   // refused if it turns up later.
   rpc Rollback(RollbackRequest) returns (PostingResponse);
 
+  // Adjust corrects a player's balance outside a bet, either way: a casino provider's
+  // correction of a settled game, for example. The source and direction pick the reason. A
+  // credit goes to winnings; a debit takes winnings first, then cash, and is refused with
+  // RESULT_CODE_INSUFFICIENT_FUNDS rather than take the balance below zero. Applies to a
+  // frozen wallet and whatever the player's status. Idempotent on (source, external_txn_id);
+  // Rollback reverses it like any other posting.
+  rpc Adjust(AdjustRequest) returns (PostingResponse);
+
   // GetBalance reads the player's balances.
   rpc GetBalance(GetBalanceRequest) returns (BalanceResponse);
 
@@ -183,6 +191,10 @@ enum Reason {
   // Debit, sportsbook resettlement: winnings first, then cash. Needs a round.
   REASON_WIN_REVERSAL = 30;
 
+  // Adjust, casino: a credit to winnings, or a debit from winnings first, then cash.
+  REASON_CASINO_ADJUSTMENT_CREDIT = 31;
+  REASON_CASINO_ADJUSTMENT_DEBIT = 32;
+
   // Posted by wallet itself.
   REASON_DEPOSIT = 40;
   REASON_DEPOSIT_TAX = 41;
@@ -286,6 +298,27 @@ message RollbackRequest {
   string description = 5;
   string ip_address = 6;
   map<string, string> metadata = 7;
+}
+
+message AdjustRequest {
+  string player_id = 1;
+  // Positive; direction says which way it moves.
+  string amount = 2;
+  string currency = 3;
+  // Only SOURCE_CASINO adjusts for now;
+  Source source = 4;
+  // DIRECTION_CREDIT adds to the balance; DIRECTION_DEBIT takes from it.
+  Direction direction = 5;
+  // The adjustment's own ID; the idempotency key, unique per source.
+  string external_txn_id = 6;
+  // Optional: if there is a round being corrected. The adjustment then counts as one of the round's
+  // postings, so a debit with a credit adjustment in its round can't be rolled back before it.
+  string round_id = 7;
+  // Required: why the balance is adjusted. Kept on the ledger row.
+  string description = 8;
+  string ip_address = 9;
+  // The provider's references (parent transaction, game) and so on.
+  map<string, string> metadata = 10;
 }
 
 message PostingResponse {
