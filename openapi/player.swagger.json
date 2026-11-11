@@ -1196,6 +1196,49 @@
       },
       "type": "object"
     },
+    "wallet.player.v1.CreateDepositRequest": {
+      "properties": {
+        "amount": {
+          "description": "Whole currency units, without cents. Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Deposit": {
+      "properties": {
+        "amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "msisdn": {
+          "description": "The phone number the prompt went to.",
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING until the player pays or the prompt fails, then COMPLETED (credited) or FAILED.",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "wallet.player.v1.Limits": {
       "description": "0 means no limit; a raised or removed limit shows as pending until pending_from.",
       "properties": {
@@ -1245,6 +1288,15 @@
             "type": "object"
           },
           "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.RequestWithdrawalRequest": {
+      "properties": {
+        "amount": {
+          "description": "Whole currency units, without cents. Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
         }
       },
       "type": "object"
@@ -1300,6 +1352,46 @@
           "type": "string"
         },
         "winnings_delta": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "wallet.player.v1.Withdrawal": {
+      "description": "What was taken from winnings is approved_amount + charge + tax; approved_amount is paid out.",
+      "properties": {
+        "amount": {
+          "description": "What the player asked for. Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "approved_amount": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "charge": {
+          "description": "Up to 4 decimals; a numeric string is accepted too.",
+          "type": "number"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "destination": {
+          "description": "The phone number it is paid to.",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "description": "PENDING_APPROVAL (waiting for the back office), APPROVED (being paid out), COMPLETED,\nor FAILED and REJECTED (both refunded).",
+          "type": "string"
+        },
+        "tax": {
           "description": "Up to 4 decimals; a numeric string is accepted too.",
           "type": "number"
         }
@@ -1648,6 +1740,70 @@
         "summary": "GetPublicConfig returns the settings of the request's brand (the one the gateway\nresolved) that a player app needs before signup.",
         "tags": [
           "platform.v1.BrandService"
+        ]
+      }
+    },
+    "/v1/deposits": {
+      "post": {
+        "operationId": "wallet.player.v1.WalletService.CreateDeposit",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.CreateDepositRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Deposit"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "CreateDeposit Initiates a deposit( per the brand's payment provider) for amount to the player's own phone number. \nWallet makes the deposit's id, so every call is a new deposit and a new prompt: disable the\nbutton while one is in flight.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/deposits/{id}": {
+      "get": {
+        "operationId": "wallet.player.v1.WalletService.GetDeposit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Deposit"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "GetDeposit returns one of the player's deposits made with CreateDeposit.",
+        "tags": [
+          "wallet.player.v1.WalletService"
         ]
       }
     },
@@ -2201,6 +2357,39 @@
           }
         },
         "summary": "GetWithdrawalSettings returns the brand's withdrawal limits, charges and tax, for the\nwithdraw form.",
+        "tags": [
+          "wallet.player.v1.WalletService"
+        ]
+      }
+    },
+    "/v1/withdrawals": {
+      "post": {
+        "operationId": "wallet.player.v1.WalletService.RequestWithdrawal",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.RequestWithdrawalRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/wallet.player.v1.Withdrawal"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/CodedError"
+            }
+          }
+        },
+        "summary": "RequestWithdrawal pays amount from winnings to the player's own phone number, under the\nbrand's withdrawal settings (GetWithdrawalSettings). Wallet makes the withdrawal's id. A\nwithdrawal sooner than the brand's interval after the last is refused with\nRESULT_CODE_WITHDRAWAL_COOLDOWN.",
         "tags": [
           "wallet.player.v1.WalletService"
         ]

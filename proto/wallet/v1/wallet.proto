@@ -116,6 +116,8 @@ enum ResultCode {
   RESULT_CODE_WITHDRAWAL_NOT_FOUND = 5009;
   // A payout result that contradicts the one already recorded (COMPLETED, then FAILED).
   RESULT_CODE_PAYOUT_RESULT_CONFLICT = 5010;
+  // The brand takes no deposits or withdrawals from the site: it has no payments account.
+  RESULT_CODE_PAYMENTS_UNAVAILABLE = 5011;
 
   // The approver's authenticator-app or SMS code is wrong or already used.
   RESULT_CODE_SECOND_FACTOR_INVALID = 6001;

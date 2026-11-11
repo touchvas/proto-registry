@@ -57,6 +57,37 @@ service WalletService {
       response_body: "limits"
     };
   }
+
+  // CreateDeposit Initiates a deposit( per the brand's payment provider) for amount to the player's own phone number. 
+  // Wallet makes the deposit's id, so every call is a new deposit and a new prompt: disable the
+  // button while one is in flight.
+  rpc CreateDeposit(CreateDepositRequest) returns (CreateDepositResponse) {
+    option (google.api.http) = {
+      post: "/v1/deposits"
+      body: "*"
+      response_body: "deposit"
+    };
+  }
+
+  // GetDeposit returns one of the player's deposits made with CreateDeposit.
+  rpc GetDeposit(GetDepositRequest) returns (GetDepositResponse) {
+    option (google.api.http) = {
+      get: "/v1/deposits/{id}"
+      response_body: "deposit"
+    };
+  }
+
+  // RequestWithdrawal pays amount from winnings to the player's own phone number, under the
+  // brand's withdrawal settings (GetWithdrawalSettings). Wallet makes the withdrawal's id. A
+  // withdrawal sooner than the brand's interval after the last is refused with
+  // RESULT_CODE_WITHDRAWAL_COOLDOWN.
+  rpc RequestWithdrawal(RequestWithdrawalRequest) returns (RequestWithdrawalResponse) {
+    option (google.api.http) = {
+      post: "/v1/withdrawals"
+      body: "*"
+      response_body: "withdrawal"
+    };
+  }
 }
 
 message GetBalanceRequest {}
@@ -157,4 +188,60 @@ message SetLimitsRequest {
 
 message SetLimitsResponse {
   Limits limits = 1;
+}
+
+message CreateDepositRequest {
+  // Whole currency units, without cents.
+  string amount = 1 [(touchvas.api.v1.json_number) = true];
+}
+
+message CreateDepositResponse {
+  Deposit deposit = 1;
+}
+
+message GetDepositRequest {
+  string id = 1;
+}
+
+message GetDepositResponse {
+  Deposit deposit = 1;
+}
+
+message Deposit {
+  string id = 1;
+  string amount = 2 [(touchvas.api.v1.json_number) = true];
+  string currency = 3;
+  // PENDING until the player pays or the prompt fails, then COMPLETED (credited) or FAILED.
+  string status = 4;
+  // The phone number the prompt went to.
+  string msisdn = 5;
+  optional string failure_reason = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message RequestWithdrawalRequest {
+  // Whole currency units, without cents.
+  string amount = 1 [(touchvas.api.v1.json_number) = true];
+}
+
+message RequestWithdrawalResponse {
+  Withdrawal withdrawal = 1;
+}
+
+// What was taken from winnings is approved_amount + charge + tax; approved_amount is paid out.
+message Withdrawal {
+  string id = 1;
+  // What the player asked for.
+  string amount = 2 [(touchvas.api.v1.json_number) = true];
+  string approved_amount = 3 [(touchvas.api.v1.json_number) = true];
+  string charge = 4 [(touchvas.api.v1.json_number) = true];
+  string tax = 5 [(touchvas.api.v1.json_number) = true];
+  string currency = 6;
+  // PENDING_APPROVAL (waiting for the back office), APPROVED (being paid out), COMPLETED,
+  // or FAILED and REJECTED (both refunded).
+  string status = 7;
+  // The phone number it is paid to.
+  string destination = 8;
+  google.protobuf.Timestamp created_at = 9;
 }

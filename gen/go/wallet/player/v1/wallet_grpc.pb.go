@@ -32,6 +32,9 @@ const (
 	WalletService_GetWithdrawalSettings_FullMethodName = "/wallet.player.v1.WalletService/GetWithdrawalSettings"
 	WalletService_GetLimits_FullMethodName             = "/wallet.player.v1.WalletService/GetLimits"
 	WalletService_SetLimits_FullMethodName             = "/wallet.player.v1.WalletService/SetLimits"
+	WalletService_CreateDeposit_FullMethodName         = "/wallet.player.v1.WalletService/CreateDeposit"
+	WalletService_GetDeposit_FullMethodName            = "/wallet.player.v1.WalletService/GetDeposit"
+	WalletService_RequestWithdrawal_FullMethodName     = "/wallet.player.v1.WalletService/RequestWithdrawal"
 )
 
 // WalletServiceClient is the client API for WalletService service.
@@ -53,6 +56,17 @@ type WalletServiceClient interface {
 	// SetLimits sets the daily spend limit (0 removes it). Lowering applies at once; raising or
 	// removing applies after the brand's cooling-off hours.
 	SetLimits(ctx context.Context, in *SetLimitsRequest, opts ...grpc.CallOption) (*SetLimitsResponse, error)
+	// CreateDeposit Initiates a deposit( per the brand's payment provider) for amount to the player's own phone number.
+	// Wallet makes the deposit's id, so every call is a new deposit and a new prompt: disable the
+	// button while one is in flight.
+	CreateDeposit(ctx context.Context, in *CreateDepositRequest, opts ...grpc.CallOption) (*CreateDepositResponse, error)
+	// GetDeposit returns one of the player's deposits made with CreateDeposit.
+	GetDeposit(ctx context.Context, in *GetDepositRequest, opts ...grpc.CallOption) (*GetDepositResponse, error)
+	// RequestWithdrawal pays amount from winnings to the player's own phone number, under the
+	// brand's withdrawal settings (GetWithdrawalSettings). Wallet makes the withdrawal's id. A
+	// withdrawal sooner than the brand's interval after the last is refused with
+	// RESULT_CODE_WITHDRAWAL_COOLDOWN.
+	RequestWithdrawal(ctx context.Context, in *RequestWithdrawalRequest, opts ...grpc.CallOption) (*RequestWithdrawalResponse, error)
 }
 
 type walletServiceClient struct {
@@ -113,6 +127,36 @@ func (c *walletServiceClient) SetLimits(ctx context.Context, in *SetLimitsReques
 	return out, nil
 }
 
+func (c *walletServiceClient) CreateDeposit(ctx context.Context, in *CreateDepositRequest, opts ...grpc.CallOption) (*CreateDepositResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateDepositResponse)
+	err := c.cc.Invoke(ctx, WalletService_CreateDeposit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *walletServiceClient) GetDeposit(ctx context.Context, in *GetDepositRequest, opts ...grpc.CallOption) (*GetDepositResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDepositResponse)
+	err := c.cc.Invoke(ctx, WalletService_GetDeposit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *walletServiceClient) RequestWithdrawal(ctx context.Context, in *RequestWithdrawalRequest, opts ...grpc.CallOption) (*RequestWithdrawalResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RequestWithdrawalResponse)
+	err := c.cc.Invoke(ctx, WalletService_RequestWithdrawal_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WalletServiceServer is the server API for WalletService service.
 // All implementations must embed UnimplementedWalletServiceServer
 // for forward compatibility.
@@ -132,6 +176,17 @@ type WalletServiceServer interface {
 	// SetLimits sets the daily spend limit (0 removes it). Lowering applies at once; raising or
 	// removing applies after the brand's cooling-off hours.
 	SetLimits(context.Context, *SetLimitsRequest) (*SetLimitsResponse, error)
+	// CreateDeposit Initiates a deposit( per the brand's payment provider) for amount to the player's own phone number.
+	// Wallet makes the deposit's id, so every call is a new deposit and a new prompt: disable the
+	// button while one is in flight.
+	CreateDeposit(context.Context, *CreateDepositRequest) (*CreateDepositResponse, error)
+	// GetDeposit returns one of the player's deposits made with CreateDeposit.
+	GetDeposit(context.Context, *GetDepositRequest) (*GetDepositResponse, error)
+	// RequestWithdrawal pays amount from winnings to the player's own phone number, under the
+	// brand's withdrawal settings (GetWithdrawalSettings). Wallet makes the withdrawal's id. A
+	// withdrawal sooner than the brand's interval after the last is refused with
+	// RESULT_CODE_WITHDRAWAL_COOLDOWN.
+	RequestWithdrawal(context.Context, *RequestWithdrawalRequest) (*RequestWithdrawalResponse, error)
 	mustEmbedUnimplementedWalletServiceServer()
 }
 
@@ -156,6 +211,15 @@ func (UnimplementedWalletServiceServer) GetLimits(context.Context, *GetLimitsReq
 }
 func (UnimplementedWalletServiceServer) SetLimits(context.Context, *SetLimitsRequest) (*SetLimitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetLimits not implemented")
+}
+func (UnimplementedWalletServiceServer) CreateDeposit(context.Context, *CreateDepositRequest) (*CreateDepositResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDeposit not implemented")
+}
+func (UnimplementedWalletServiceServer) GetDeposit(context.Context, *GetDepositRequest) (*GetDepositResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeposit not implemented")
+}
+func (UnimplementedWalletServiceServer) RequestWithdrawal(context.Context, *RequestWithdrawalRequest) (*RequestWithdrawalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestWithdrawal not implemented")
 }
 func (UnimplementedWalletServiceServer) mustEmbedUnimplementedWalletServiceServer() {}
 func (UnimplementedWalletServiceServer) testEmbeddedByValue()                       {}
@@ -268,6 +332,60 @@ func _WalletService_SetLimits_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WalletService_CreateDeposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServiceServer).CreateDeposit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WalletService_CreateDeposit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServiceServer).CreateDeposit(ctx, req.(*CreateDepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WalletService_GetDeposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServiceServer).GetDeposit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WalletService_GetDeposit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServiceServer).GetDeposit(ctx, req.(*GetDepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WalletService_RequestWithdrawal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestWithdrawalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServiceServer).RequestWithdrawal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WalletService_RequestWithdrawal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServiceServer).RequestWithdrawal(ctx, req.(*RequestWithdrawalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WalletService_ServiceDesc is the grpc.ServiceDesc for WalletService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -294,6 +412,18 @@ var WalletService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetLimits",
 			Handler:    _WalletService_SetLimits_Handler,
+		},
+		{
+			MethodName: "CreateDeposit",
+			Handler:    _WalletService_CreateDeposit_Handler,
+		},
+		{
+			MethodName: "GetDeposit",
+			Handler:    _WalletService_GetDeposit_Handler,
+		},
+		{
+			MethodName: "RequestWithdrawal",
+			Handler:    _WalletService_RequestWithdrawal_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
