@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+// Sportsbook's event catalogue: the sports, countries and competitions on offer, their events,
+// and an event's markets and odds. sportsbook-api serves it; the player apps call it through
+// api-gateway-service's player profile, without a session. Bets themselves are placed with
+// SportsbookPlayerService (player.proto), which sportsbook-service serves.
+//
+// The package, service, method and message names are the ones sportsbook-api implements, so
+// its gRPC method names don't change. IDs are the odds feed's, as strings. Odds are decimal.
+package sportsbook.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/sportsbook/v1;sportsbookv1";
+
+// EventQueryService reads the catalogue.
+service EventQueryService {
+  // GetEventWithMarkets returns an event with its open markets and their outcomes, as a flat
+  // list (markets) or grouped by market type (market_groups).
+  rpc GetEventWithMarkets(GetEventWithMarketsRequest) returns (GetEventWithMarketsResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/events/{event_id}"};
+  }
+
+  // GetSportsBook returns the sports, countries and competitions that have events, with how
+  // many each has: the sportsbook's menu.
+  rpc GetSportsBook(SportsBookRequest) returns (SportsBookResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/menu"};
+  }
+
+  // GetEvents returns a page of events with their main markets, filtered by sport, country,
+  // competition, start time and category, and the filters that still have events.
+  rpc GetEvents(EventsRequest) returns (EventsResponse) {
+    option (google.api.http) = {get: "/v1/sportsbook/events"};
+  }
+}
+
+message GetEventWithMarketsRequest {
+  string event_id = 1;
+  // "type" groups the markets by market type, in market_groups.
+  string group_by = 2;
+  // Only the markets of a category: "main", "handicaps", "firsthalf", "corners".
+  string category = 3;
+  // Only these market types, by ID or slug (e.g. "1", "1x2", "totals"). Repeat the query
+  // parameter for several: market_type=1x2&market_type=totals.
+  repeated string market_type = 4;
+  // Only the top markets, as a flat list.
+  bool collapsed = 5;
+}
+
+message GetEventWithMarketsResponse {
+  EventMetadata event = 1;
+  repeated Market markets = 2;
+  repeated MarketType market_groups = 3;
+}
+
+message EventMetadata {
+  string id = 1;
+  string game_id = 2;
+  string name = 3;
+  string start_time = 4;
+  string status = 5;
+  string competition_id = 6;
+  string competition_name = 7;
+  string competition_slug = 8;
+  string country_id = 9;
+  string country_name = 10;
+  string country_slug = 11;
+  string sport_id = 12;
+  string sport_name = 13;
+  string sport_slug = 14;
+}
+
+// A market type and its markets (one per line, e.g. each total's over/under).
+message MarketType {
+  string id = 1;
+  string name = 2;
+  int32 priority = 3;
+  repeated Market markets = 4;
+}
+
+message Market {
+  string id = 1;
+  // e.g. "1X2", "Over/Under 2.5".
+  string name = 2;
+  // The market's line (the feed's specifiers); empty for a market without one.
+  string line = 3;
+  string status = 4;
+  string market_type_id = 5;
+  string market_type_name = 6;
+  repeated Outcome outcomes = 7;
+}
+
+message Outcome {
+  string id = 1;
+  // e.g. "Home", "Draw", "Away".
+  string name = 2;
+  string slug = 3;
+  // Decimal odds.
+  double price = 4;
+  string status = 5;
+}
+
+message SportsBookRequest {
+  // "Prematch", "Live", or empty for both.
+  string product = 1;
+}
+
+message SportsBookResponse {
+  repeated SportMeta sports = 1;
+  repeated CountryMeta countries = 2;
+  repeated CompetitionMeta competitions = 3;
+}
+
+message SportMeta {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  int32 events_count = 4;
+  int32 priority = 5;
+}
+
+message CountryMeta {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  int32 events_count = 4;
+  int32 priority = 5;
+}
+
+message CompetitionMeta {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  int32 events_count = 4;
+  int32 priority = 5;
+  string country_id = 6;
+  string country_name = 7;
+  string sport_id = 8;
+  string sport_name = 9;
+}
+
+message MarketTypeMeta {
+  string id = 1;
+  string name = 2;
+  int32 priority = 3;
+}
+
+message EventsRequest {
+  // Only these market types on each event, by ID or slug (e.g. "1", "1x2", "totals"). Repeat
+  // the query parameter for several.
+  repeated string market_type = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  // "Prematch", "Live", or empty for both.
+  string product = 4;
+  string sport_id = 5;
+  string country_id = 6;
+  string competition_id = 7;
+  // Events starting within "3hr", "12hr", "1d" or "3d", or on a date ("2026-11-16").
+  string time = 8;
+  // "highlights", "popular", "upcoming" or "countries".
+  string category = 9;
+}
+
+message EventsResponse {
+  repeated SportEvent events = 1;
+  Meta meta = 2;
+  // The sports, countries, competitions and market types within the other filters.
+  repeated SportMeta sports = 3;
+  repeated CountryMeta countries = 4;
+  repeated CompetitionMeta competitions = 5;
+  repeated MarketTypeMeta markets = 6;
+}
+
+message SportEvent {
+  string id = 1;
+  string name = 2;
+  string start_time = 3;
+  string status = 4;
+  string competition_id = 5;
+  string competition_name = 6;
+  string competition_slug = 7;
+  string country_id = 8;
+  string country_name = 9;
+  string country_slug = 10;
+  string sport_id = 11;
+  string sport_name = 12;
+  string sport_slug = 13;
+  string game_id = 14;
+  // How many markets the event has; markets carries only the requested types.
+  int32 total_markets = 15;
+  repeated EventMarketType markets = 16;
+}
+
+message EventMarketType {
+  string id = 1;
+  string name = 2;
+  int32 priority = 3;
+  repeated Market lines = 4;
+}
+
+// The page and the filters the events were read with.
+message Meta {
+  int32 page = 1;
+  int32 page_size = 2;
+  int32 total_pages = 3;
+  int32 total_count = 4;
+  string product = 5;
+  string sport_id = 6;
+  string country_id = 7;
+  string competition_id = 8;
+  repeated string market_type = 9;
+  string time = 10;
+  string category = 11;
+}

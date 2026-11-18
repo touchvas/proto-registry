@@ -15,7 +15,7 @@ lint:
       - identity/v1/player.proto
       - identity/admin/v1/admin.proto
       # Sportsbook's player and admin services share response messages, under the names
-      # sportsbook-service implements.
+      # sportsbook-service implements; events.proto keeps the names sportsbook-api implements.
       - sportsbook/v1
       # Likewise casino's, under the names casino-service and casino-provider-service implement.
       - casino/v1

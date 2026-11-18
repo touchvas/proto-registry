@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+// Sportsbook's bet slip check: whether the player's selections can still be bet on, at what
+// odds. sportsbook-api serves it; the player apps call it through api-gateway-service's player
+// profile, without a session, before placing the bet (SportsbookPlayerService.PlaceBet).
+//
+// The package, service, method and message names are the ones sportsbook-api implements, so
+// its gRPC method names don't change.
+package sportsbook.betslip.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/touchvas/proto-registry/gen/go/sportsbook/betslip/v1;betslipv1";
+
+// BetSlipService checks bet slips.
+service BetSlipService {
+  // ValidateBetSlip checks each selection against the current markets: is_valid is false, with
+  // the reason, for one whose market is closed or whose odds moved (current_price is the odds
+  // now). The slip is valid only when every selection is.
+  rpc ValidateBetSlip(ValidateBetSlipRequest) returns (ValidateBetSlipResponse) {
+    option (google.api.http) = {
+      post: "/v1/sportsbook/betslip/validate"
+      body: "*"
+    };
+  }
+}
+
+// A selection as the event's markets (sportsbook.v1.EventQueryService) name it.
+message BetslipSelectionInput {
+  string event_id = 1;
+  string market_type_id = 2;
+  string market_id = 3;
+  string line = 4;
+  string outcome_id = 5;
+  // The decimal odds the player saw.
+  double price = 6;
+}
+
+message ValidateBetSlipRequest {
+  // At least one.
+  repeated BetslipSelectionInput selections = 1;
+}
+
+message BetslipValidationResult {
+  string event_id = 1;
+  string market_type_id = 2;
+  string market_id = 3;
+  string line = 4;
+  string outcome_id = 5;
+  bool is_valid = 6;
+  // The decimal odds now.
+  double current_price = 7;
+  // Why the selection is refused; empty when valid. One of EVENT_NOT_FOUND, EVENT_CLOSED,
+  // MARKET_NOT_FOUND, MARKET_SUSPENDED, OUTCOME_NOT_FOUND, OUTCOME_SUSPENDED, PRICE_CHANGED,
+  // RELATED_CONTINGENCY_SAME_MARKET (two selections from one market).
+  string rejection_reason = 8;
+}
+
+message ValidateBetSlipResponse {
+  bool is_valid = 1;
+  repeated BetslipValidationResult selections = 2;
+}

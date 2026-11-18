@@ -8,6 +8,9 @@
 // gateway) and admin.proto (SportsbookAdminService, the admin gateway). Both keep the package
 // sportsbook.v1, so the gRPC method names sportsbook-service serves don't change.
 //
+// The package also holds events.proto, the event catalogue sportsbook-api serves, with its own
+// messages.
+//
 // Amounts and odds are decimal strings. Every response carries status_code and
 // status_description: a request the service refuses (a closed market, a stake over the limit)
 // still answers HTTP 200, with the reason there; only transport failures are HTTP errors.

@@ -789,6 +789,92 @@
       },
       "type": "object"
     },
+    "sportsbook.betslip.v1.BetslipSelectionInput": {
+      "description": "A selection as the event's markets (sportsbook.v1.EventQueryService) name it.",
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "line": {
+          "type": "string"
+        },
+        "market_id": {
+          "type": "string"
+        },
+        "market_type_id": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "price": {
+          "description": "The decimal odds the player saw.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.betslip.v1.BetslipValidationResult": {
+      "properties": {
+        "current_price": {
+          "description": "The decimal odds now.",
+          "format": "double",
+          "type": "number"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "is_valid": {
+          "type": "boolean"
+        },
+        "line": {
+          "type": "string"
+        },
+        "market_id": {
+          "type": "string"
+        },
+        "market_type_id": {
+          "type": "string"
+        },
+        "outcome_id": {
+          "type": "string"
+        },
+        "rejection_reason": {
+          "description": "Why the selection is refused; empty when valid. One of EVENT_NOT_FOUND, EVENT_CLOSED,\nMARKET_NOT_FOUND, MARKET_SUSPENDED, OUTCOME_NOT_FOUND, OUTCOME_SUSPENDED, PRICE_CHANGED,\nRELATED_CONTINGENCY_SAME_MARKET (two selections from one market).",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.betslip.v1.ValidateBetSlipRequest": {
+      "properties": {
+        "selections": {
+          "description": "At least one.",
+          "items": {
+            "$ref": "#/definitions/sportsbook.betslip.v1.BetslipSelectionInput",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.betslip.v1.ValidateBetSlipResponse": {
+      "properties": {
+        "is_valid": {
+          "type": "boolean"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.betslip.v1.BetslipValidationResult",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "sportsbook.v1.BetPage": {
       "properties": {
         "bets": {
@@ -1024,6 +1110,175 @@
       },
       "type": "object"
     },
+    "sportsbook.v1.CompetitionMeta": {
+      "properties": {
+        "country_id": {
+          "type": "string"
+        },
+        "country_name": {
+          "type": "string"
+        },
+        "events_count": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "sport_name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.CountryMeta": {
+      "properties": {
+        "events_count": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "slug": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.EventMarketType": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.Market",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.EventMetadata": {
+      "properties": {
+        "competition_id": {
+          "type": "string"
+        },
+        "competition_name": {
+          "type": "string"
+        },
+        "competition_slug": {
+          "type": "string"
+        },
+        "country_id": {
+          "type": "string"
+        },
+        "country_name": {
+          "type": "string"
+        },
+        "country_slug": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "sport_name": {
+          "type": "string"
+        },
+        "sport_slug": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.EventsResponse": {
+      "properties": {
+        "competitions": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.CompetitionMeta",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "countries": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.CountryMeta",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.SportEvent",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "markets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.MarketTypeMeta",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "$ref": "#/definitions/sportsbook.v1.Meta"
+        },
+        "sports": {
+          "description": "The sports, countries, competitions and market types within the other filters.",
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.SportMeta",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "sportsbook.v1.GetBetslipResponse": {
       "properties": {
         "data": {
@@ -1039,6 +1294,28 @@
       },
       "type": "object"
     },
+    "sportsbook.v1.GetEventWithMarketsResponse": {
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/sportsbook.v1.EventMetadata"
+        },
+        "market_groups": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.MarketType",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "markets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.Market",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "sportsbook.v1.ListBetsResponse": {
       "properties": {
         "data": {
@@ -1049,6 +1326,145 @@
           "type": "integer"
         },
         "status_description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.Market": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "line": {
+          "description": "The market's line (the feed's specifiers); empty for a market without one.",
+          "type": "string"
+        },
+        "market_type_id": {
+          "type": "string"
+        },
+        "market_type_name": {
+          "type": "string"
+        },
+        "name": {
+          "description": "e.g. \"1X2\", \"Over/Under 2.5\".",
+          "type": "string"
+        },
+        "outcomes": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.Outcome",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.MarketType": {
+      "description": "A market type and its markets (one per line, e.g. each total's over/under).",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "markets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.Market",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.MarketTypeMeta": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.Meta": {
+      "description": "The page and the filters the events were read with.",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "competition_id": {
+          "type": "string"
+        },
+        "country_id": {
+          "type": "string"
+        },
+        "market_type": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "page": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "page_size": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "product": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "total_count": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "total_pages": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.Outcome": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "description": "e.g. \"Home\", \"Draw\", \"Away\".",
+          "type": "string"
+        },
+        "price": {
+          "description": "Decimal odds.",
+          "format": "double",
+          "type": "number"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "status": {
           "type": "string"
         }
       },
@@ -1142,6 +1558,113 @@
         },
         "specifier": {
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.SportEvent": {
+      "properties": {
+        "competition_id": {
+          "type": "string"
+        },
+        "competition_name": {
+          "type": "string"
+        },
+        "competition_slug": {
+          "type": "string"
+        },
+        "country_id": {
+          "type": "string"
+        },
+        "country_name": {
+          "type": "string"
+        },
+        "country_slug": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "markets": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.EventMarketType",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sport_id": {
+          "type": "string"
+        },
+        "sport_name": {
+          "type": "string"
+        },
+        "sport_slug": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "total_markets": {
+          "description": "How many markets the event has; markets carries only the requested types.",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.SportMeta": {
+      "properties": {
+        "events_count": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "slug": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sportsbook.v1.SportsBookResponse": {
+      "properties": {
+        "competitions": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.CompetitionMeta",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "countries": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.CountryMeta",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "sports": {
+          "items": {
+            "$ref": "#/definitions/sportsbook.v1.SportMeta",
+            "type": "object"
+          },
+          "type": "array"
         }
       },
       "type": "object"
@@ -2233,6 +2756,223 @@
         ]
       }
     },
+    "/v1/sportsbook/betslip/validate": {
+      "post": {
+        "operationId": "sportsbook.betslip.v1.BetSlipService.ValidateBetSlip",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sportsbook.betslip.v1.ValidateBetSlipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.betslip.v1.ValidateBetSlipResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "ValidateBetSlip checks each selection against the current markets: is_valid is false, with\nthe reason, for one whose market is closed or whose odds moved (current_price is the odds\nnow). The slip is valid only when every selection is.",
+        "tags": [
+          "sportsbook.betslip.v1.BetSlipService"
+        ]
+      }
+    },
+    "/v1/sportsbook/events": {
+      "get": {
+        "operationId": "sportsbook.v1.EventQueryService.GetEvents",
+        "parameters": [
+          {
+            "collectionFormat": "multi",
+            "description": "Only these market types on each event, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat\nthe query parameter for several.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "market_type",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "format": "int32",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "\"Prematch\", \"Live\", or empty for both.",
+            "in": "query",
+            "name": "product",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "sport_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "country_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "competition_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Events starting within \"3hr\", \"12hr\", \"1d\" or \"3d\", or on a date (\"2026-11-16\").",
+            "in": "query",
+            "name": "time",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "\"highlights\", \"popular\", \"upcoming\" or \"countries\".",
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.EventsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetEvents returns a page of events with their main markets, filtered by sport, country,\ncompetition, start time and category, and the filters that still have events.",
+        "tags": [
+          "sportsbook.v1.EventQueryService"
+        ]
+      }
+    },
+    "/v1/sportsbook/events/{event_id}": {
+      "get": {
+        "operationId": "sportsbook.v1.EventQueryService.GetEventWithMarkets",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "\"type\" groups the markets by market type, in market_groups.",
+            "in": "query",
+            "name": "group_by",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Only the markets of a category: \"main\", \"handicaps\", \"firsthalf\", \"corners\".",
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "collectionFormat": "multi",
+            "description": "Only these market types, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat the query\nparameter for several: market_type=1x2\u0026market_type=totals.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "market_type",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Only the top markets, as a flat list.",
+            "in": "query",
+            "name": "collapsed",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.GetEventWithMarketsResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetEventWithMarkets returns an event with its open markets and their outcomes, as a flat\nlist (markets) or grouped by market type (market_groups).",
+        "tags": [
+          "sportsbook.v1.EventQueryService"
+        ]
+      }
+    },
+    "/v1/sportsbook/menu": {
+      "get": {
+        "operationId": "sportsbook.v1.EventQueryService.GetSportsBook",
+        "parameters": [
+          {
+            "description": "\"Prematch\", \"Live\", or empty for both.",
+            "in": "query",
+            "name": "product",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/sportsbook.v1.SportsBookResponse"
+            }
+          },
+          "default": {
+            "description": "The request failed; the HTTP status says how.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "summary": "GetSportsBook returns the sports, countries and competitions that have events, with how\nmany each has: the sportsbook's menu.",
+        "tags": [
+          "sportsbook.v1.EventQueryService"
+        ]
+      }
+    },
     "/v1/transactions": {
       "get": {
         "operationId": "wallet.player.v1.WalletService.ListTransactions",
@@ -2435,6 +3175,12 @@
     },
     {
       "name": "platform.v1.BrandService"
+    },
+    {
+      "name": "sportsbook.betslip.v1.BetSlipService"
+    },
+    {
+      "name": "sportsbook.v1.EventQueryService"
     },
     {
       "name": "sportsbook.v1.SportsbookPlayerService"

@@ -10,7 +10,7 @@ OPENAPI_RAW := $(OPENAPI_DIR)/raw
 # A module's new public API is added here too, or its endpoints are missing from the docs.
 # Entries are directories, or single files where one package holds both profiles' services
 # (sportsbook/v1, casino/v1).
-PLAYER_PROTOS := proto/identity/v1 proto/platform/v1 proto/wallet/player/v1 proto/sportsbook/v1/player.proto proto/casino/v1/player.proto
+PLAYER_PROTOS := proto/identity/v1 proto/platform/v1 proto/wallet/player/v1 proto/sportsbook/v1/player.proto proto/sportsbook/v1/events.proto proto/sportsbook/betslip/v1 proto/casino/v1/player.proto
 ADMIN_PROTOS := proto/identity/admin/v1 proto/platform/admin/v1 proto/wallet/admin/v1 proto/sportsbook/v1/admin.proto proto/casino/v1/admin.proto
 
 .PHONY: all
