@@ -59,7 +59,7 @@ message LaunchGameRequest {
   string request_id = 1;
   reserved 2, 3;
   uint64 operator_id = 4;
-  uint64 brand_id = 5;
+  string brand_id = 5;
   // Required only when demo is false.
   uint64 player_id = 6;
   // Required only when demo is false. This is the casino's internal player
@@ -87,7 +87,7 @@ message GetGamesRequest {
   string request_id = 1;
   reserved 2, 3;
   uint64 operator_id = 4;
-  uint64 brand_id = 5;
+  string brand_id = 5;
   uint32 page = 6;
   uint32 per_page = 7;
   bool has_status = 8;
@@ -123,7 +123,7 @@ message SyncGamesRequest {
   string request_id = 1;
   string provider_uuid = 2;
   uint64 operator_id = 3;
-  uint64 brand_id = 4;
+  string brand_id = 4;
   google.protobuf.Struct provider_config = 5;
   // Provider page size and streamed batch size. Defaults to 200; maximum 500.
   uint32 batch_size = 6;
@@ -155,7 +155,7 @@ message UpsertProviderRequest {
 message UpsertBrandRequest {
   string request_id = 1;
   uint64 operator_id = 2;
-  uint64 brand_id = 3;
+  string brand_id = 3;
   string name = 4;
   string status = 5;
 }
@@ -164,7 +164,7 @@ message UpsertBrandProviderAccountRequest {
   string request_id = 1;
   string provider_account_uuid = 2;
   uint64 operator_id = 3;
-  uint64 brand_id = 4;
+  string brand_id = 4;
   string provider_uuid = 5;
   string environment = 6;
   string status = 7;

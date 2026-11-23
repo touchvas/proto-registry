@@ -69,7 +69,6 @@
     "casino.v1.Brand": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "created_at": {
@@ -183,7 +182,6 @@
     "casino.v1.BrandProviderAccount": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "display_name": {
@@ -349,7 +347,6 @@
           "type": "integer"
         },
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         }
       },
@@ -424,7 +421,6 @@
     "casino.v1.Category": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "id": {
@@ -490,7 +486,6 @@
     "casino.v1.CreateBrandRequest": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "name": {
@@ -1293,7 +1288,7 @@
       "type": "object"
     },
     "identity.v1.IssuedSession": {
-      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer <token>\".",
       "properties": {
         "expires_at": {
           "format": "date-time",
@@ -2928,7 +2923,7 @@
     }
   },
   "info": {
-    "description": "What the back office calls, through api-gateway-service's admin profile. Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer \u003ctoken\u003e`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n",
+    "description": "What the back office calls, through api-gateway-service's admin profile. Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer <token>`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n",
     "title": "Back-office API",
     "version": "v1"
   },
@@ -5238,7 +5233,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.UpdateBrand",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5278,7 +5272,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.ListCategories",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5308,7 +5301,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.CreateCategory",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5348,7 +5340,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.UpdateCategory",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5394,7 +5385,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.ListBrandGames",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5452,7 +5442,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.RemoveBrandGame",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5488,7 +5477,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandGame",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5534,7 +5522,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandGameLimits",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5586,7 +5573,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.ConfigureBrandLimits",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5632,7 +5618,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.AssignBrandProvider",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5672,7 +5657,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.UpdateBrandProvider",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -5718,7 +5702,6 @@
         "operationId": "casino.v1.CasinoOperatorAdminService.DisableBrandProvider",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -6603,7 +6586,7 @@
   ],
   "securityDefinitions": {
     "bearer": {
-      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
+      "description": "`Bearer <token>`, the token login returns.",
       "in": "header",
       "name": "Authorization",
       "type": "apiKey"

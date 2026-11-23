@@ -100,7 +100,6 @@
     "casino.v1.CasinoPublicService.LaunchGameBody": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "country": {
@@ -150,7 +149,6 @@
     "casino.v1.Category": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "id": {
@@ -452,7 +450,7 @@
       "type": "object"
     },
     "identity.v1.IssuedSession": {
-      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer <token>\".",
       "properties": {
         "expires_at": {
           "format": "date-time",
@@ -1963,7 +1961,7 @@
     }
   },
   "info": {
-    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer \u003ctoken\u003e` once logged in.\n\n",
+    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer <token>` once logged in.\n\n",
     "title": "Player API",
     "version": "v1"
   },
@@ -1996,7 +1994,6 @@
         "operationId": "casino.v1.CasinoPublicService.ListCategories",
         "parameters": [
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2028,7 +2025,6 @@
         "operationId": "casino.v1.CasinoPublicService.ListGames",
         "parameters": [
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2137,7 +2133,6 @@
             "type": "string"
           },
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2175,7 +2170,6 @@
         "operationId": "casino.v1.CasinoPublicService.ListProviders",
         "parameters": [
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2904,7 +2898,7 @@
           },
           {
             "collectionFormat": "multi",
-            "description": "Only these market types, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat the query\nparameter for several: market_type=1x2\u0026market_type=totals.",
+            "description": "Only these market types, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat the query\nparameter for several: market_type=1x2&market_type=totals.",
             "in": "query",
             "items": {
               "type": "string"
@@ -3147,7 +3141,7 @@
   ],
   "securityDefinitions": {
     "bearer": {
-      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
+      "description": "`Bearer <token>`, the token login returns.",
       "in": "header",
       "name": "Authorization",
       "type": "apiKey"

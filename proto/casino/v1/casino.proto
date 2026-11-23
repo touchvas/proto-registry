@@ -19,20 +19,20 @@ message EmptyRequest {}
 message ProviderRequest { string provider_uuid = 1; }
 
 message BrandProviderRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string provider_uuid = 2;
 }
 
 message BrandGameRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string game_uuid = 2;
 }
 
-message ListPublicProvidersRequest { uint64 brand_id = 1; }
-message ListPublicCategoriesRequest { uint64 brand_id = 1; }
+message ListPublicProvidersRequest { string brand_id = 1; }
+message ListPublicCategoriesRequest { string brand_id = 1; }
 
 message ListPublicGamesRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string provider_uuid = 2;
   string category_uuid = 3;
   string search = 4;
@@ -41,13 +41,13 @@ message ListPublicGamesRequest {
 }
 
 message GetEffectiveGameLimitsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string game_uuid = 2;
   string currency = 3;
 }
 
 message LaunchGameRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string game_uuid = 2;
   uint64 player_id = 3;
   string player_token = 4;
@@ -60,24 +60,24 @@ message LaunchGameRequest {
 
 message SyncProviderGamesRequest {
   string provider_uuid = 1;
-  uint64 brand_id = 2;
+  string brand_id = 2;
   uint32 batch_size = 3;
 }
 
 message CreateBrandRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string name = 2;
   string status = 3;
 }
 
 message UpdateBrandRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string name = 2;
   string status = 3;
 }
 
 message AssignBrandProviderRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string provider_uuid = 2;
   google.protobuf.Struct provider_config = 3;
   string display_name = 4;
@@ -87,7 +87,7 @@ message AssignBrandProviderRequest {
 }
 
 message UpdateBrandProviderRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string provider_uuid = 2;
   string display_name = 3;
   string image_url = 4;
@@ -103,17 +103,17 @@ message ConfigureTransactionRouteRequest {
 }
 
 message CreateCategoryRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string name = 2;
   string image_url = 3;
   uint32 priority = 4;
   string status = 5;
 }
 
-message ListAdminCategoriesRequest { uint64 brand_id = 1; }
+message ListAdminCategoriesRequest { string brand_id = 1; }
 
 message UpdateCategoryRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string category_uuid = 2;
   string name = 3;
   string image_url = 4;
@@ -122,7 +122,7 @@ message UpdateCategoryRequest {
 }
 
 message ConfigureBrandGameRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string game_uuid = 2;
   string display_name = 3;
   string image_url = 4;
@@ -132,7 +132,7 @@ message ConfigureBrandGameRequest {
 }
 
 message ListBrandGamesRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string provider_uuid = 2;
   string search = 3;
   uint32 page = 4;
@@ -152,13 +152,13 @@ message ConfigureOperatorLimitsRequest {
 }
 
 message ConfigureBrandLimitsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string currency = 2;
   GameLimitsInput limits = 3;
 }
 
 message ConfigureBrandGameLimitsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string game_uuid = 2;
   string currency = 3;
   GameLimitsInput limits = 4;
@@ -168,7 +168,7 @@ message Brand {
   uint64 id = 1;
   string uuid = 2;
   uint64 operator_id = 3;
-  uint64 brand_id = 4;
+  string brand_id = 4;
   string name = 5;
   string status = 6;
   string created_at = 7;
@@ -197,7 +197,7 @@ message BrandProviderAccount {
   uint64 id = 1;
   string provider_account_uuid = 2;
   uint64 operator_id = 3;
-  uint64 brand_id = 4;
+  string brand_id = 4;
   uint64 provider_id = 5;
   string provider_uuid = 6;
   uint64 provider_endpoint_id = 7;
@@ -226,7 +226,7 @@ message Category {
   uint64 id = 1;
   string uuid = 2;
   uint64 operator_id = 3;
-  uint64 brand_id = 4;
+  string brand_id = 4;
   string name = 5;
   string image_url = 6;
   uint32 priority = 7;

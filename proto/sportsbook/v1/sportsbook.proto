@@ -36,7 +36,7 @@ message PricedSelection {
 }
 
 message PlaceBetRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string stake = 2;
   string source = 3;
   repeated SelectionRequest selections = 4;
@@ -62,7 +62,7 @@ message PlaceBetResponse {
 }
 
 message PlayerListBetsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string placement_status = 2;
   string settlement_status = 3;
   uint32 page = 4;
@@ -70,7 +70,7 @@ message PlayerListBetsRequest {
 }
 
 message AdminListBetsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   uint64 player_id = 2;
   string placement_status = 3;
   string settlement_status = 4;
@@ -84,7 +84,7 @@ message BetSummary {
   string bet_uuid = 3;
   string reference = 4;
   uint64 operator_id = 5;
-  uint64 brand_id = 6;
+  string brand_id = 6;
   uint64 player_id = 7;
   string placement_status = 8;
   string settlement_status = 9;
@@ -115,14 +115,14 @@ message ListBetsResponse {
 }
 
 message PlayerGetBetslipRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   // Accepts bet_uuid, public reference, or operation_id.
   string identifier = 2;
 }
 
 message AdminGetBetslipRequest {
   // Zero searches every brand owned by this operator deployment.
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string identifier = 2;
 }
 
@@ -184,12 +184,12 @@ message SetOperatorLimitsRequest {
 }
 
 message SetBrandLimitsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   BetLimits limits = 2;
 }
 
 message GetEffectiveLimitsRequest {
-  uint64 brand_id = 1;
+  string brand_id = 1;
   string currency = 2;
 }
 

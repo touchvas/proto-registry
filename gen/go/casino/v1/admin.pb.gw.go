@@ -204,10 +204,7 @@ func request_CasinoOperatorAdminService_UpdateBrand_0(ctx context.Context, marsh
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := client.UpdateBrand(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -225,10 +222,7 @@ func local_request_CasinoOperatorAdminService_UpdateBrand_0(ctx context.Context,
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := server.UpdateBrand(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -249,10 +243,7 @@ func request_CasinoOperatorAdminService_AssignBrandProvider_0(ctx context.Contex
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := client.AssignBrandProvider(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -270,10 +261,7 @@ func local_request_CasinoOperatorAdminService_AssignBrandProvider_0(ctx context.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := server.AssignBrandProvider(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -294,10 +282,7 @@ func request_CasinoOperatorAdminService_UpdateBrandProvider_0(ctx context.Contex
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["provider_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "provider_uuid")
@@ -323,10 +308,7 @@ func local_request_CasinoOperatorAdminService_UpdateBrandProvider_0(ctx context.
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["provider_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "provider_uuid")
@@ -352,10 +334,7 @@ func request_CasinoOperatorAdminService_DisableBrandProvider_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["provider_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "provider_uuid")
@@ -378,10 +357,7 @@ func local_request_CasinoOperatorAdminService_DisableBrandProvider_0(ctx context
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["provider_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "provider_uuid")
@@ -437,10 +413,7 @@ func request_CasinoOperatorAdminService_CreateCategory_0(ctx context.Context, ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := client.CreateCategory(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -458,10 +431,7 @@ func local_request_CasinoOperatorAdminService_CreateCategory_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := server.CreateCategory(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -479,10 +449,7 @@ func request_CasinoOperatorAdminService_ListCategories_0(ctx context.Context, ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := client.ListCategories(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -497,10 +464,7 @@ func local_request_CasinoOperatorAdminService_ListCategories_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	msg, err := server.ListCategories(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -521,10 +485,7 @@ func request_CasinoOperatorAdminService_UpdateCategory_0(ctx context.Context, ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["category_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "category_uuid")
@@ -550,10 +511,7 @@ func local_request_CasinoOperatorAdminService_UpdateCategory_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["category_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "category_uuid")
@@ -582,10 +540,7 @@ func request_CasinoOperatorAdminService_ConfigureBrandGame_0(ctx context.Context
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
@@ -611,10 +566,7 @@ func local_request_CasinoOperatorAdminService_ConfigureBrandGame_0(ctx context.C
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
@@ -640,10 +592,7 @@ func request_CasinoOperatorAdminService_RemoveBrandGame_0(ctx context.Context, m
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
@@ -666,10 +615,7 @@ func local_request_CasinoOperatorAdminService_RemoveBrandGame_0(ctx context.Cont
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
@@ -697,10 +643,7 @@ func request_CasinoOperatorAdminService_ListBrandGames_0(ctx context.Context, ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -721,10 +664,7 @@ func local_request_CasinoOperatorAdminService_ListBrandGames_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -796,10 +736,7 @@ func request_CasinoOperatorAdminService_ConfigureBrandLimits_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["currency"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "currency")
@@ -825,10 +762,7 @@ func local_request_CasinoOperatorAdminService_ConfigureBrandLimits_0(ctx context
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["currency"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "currency")
@@ -857,10 +791,7 @@ func request_CasinoOperatorAdminService_ConfigureBrandGameLimits_0(ctx context.C
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
@@ -894,10 +825,7 @@ func local_request_CasinoOperatorAdminService_ConfigureBrandGameLimits_0(ctx con
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
-	}
+	protoReq.BrandId = val
 	val, ok = pathParams["game_uuid"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "game_uuid")
