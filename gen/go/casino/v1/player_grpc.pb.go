@@ -5,7 +5,8 @@
 // source: casino/v1/player.proto
 
 // Player casino API: the brand's lobby and game launch, which the player apps call through
-// api-gateway-service's player profile. Requests name their brand in brand_id.
+// api-gateway-service's player profile. the gateway resolves brand
+// from the player's token, the site's domain or the app's X-Brand-Code header.
 
 package casinov1
 
@@ -46,8 +47,8 @@ type CasinoPublicServiceClient interface {
 	// GetEffectiveGameLimits returns a game's stake and win limits in a currency: the game's
 	// own for the brand, else the brand's, else the operator's (source says which).
 	GetEffectiveGameLimits(ctx context.Context, in *GetEffectiveGameLimitsRequest, opts ...grpc.CallOption) (*GameLimitsResponse, error)
-	// LaunchGame returns the provider's URL that opens the game. A real-money launch needs
-	// player_id and player_token; a demo launch (demo true) needs neither.
+	// LaunchGame returns the provider's URL that opens the game. A real-money launch needs the
+	// player's session (Authorization: Bearer <token>); a demo launch (demo true) needs none.
 	LaunchGame(ctx context.Context, in *LaunchGameRequest, opts ...grpc.CallOption) (*LaunchGameResponse, error)
 }
 
@@ -126,8 +127,8 @@ type CasinoPublicServiceServer interface {
 	// GetEffectiveGameLimits returns a game's stake and win limits in a currency: the game's
 	// own for the brand, else the brand's, else the operator's (source says which).
 	GetEffectiveGameLimits(context.Context, *GetEffectiveGameLimitsRequest) (*GameLimitsResponse, error)
-	// LaunchGame returns the provider's URL that opens the game. A real-money launch needs
-	// player_id and player_token; a demo launch (demo true) needs neither.
+	// LaunchGame returns the provider's URL that opens the game. A real-money launch needs the
+	// player's session (Authorization: Bearer <token>); a demo launch (demo true) needs none.
 	LaunchGame(context.Context, *LaunchGameRequest) (*LaunchGameResponse, error)
 	mustEmbedUnimplementedCasinoPublicServiceServer()
 }

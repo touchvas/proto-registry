@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 // Player casino API: the brand's lobby and game launch, which the player apps call through
-// api-gateway-service's player profile. Requests name their brand in brand_id.
+// api-gateway-service's player profile. the gateway resolves brand 
+// from the player's token, the site's domain or the app's X-Brand-Code header.
 package casino.v1;
 
 import "google/api/annotations.proto";
@@ -34,8 +35,8 @@ service CasinoPublicService {
     option (google.api.http) = {get: "/v1/casino/games/{game_uuid}/limits"};
   }
 
-  // LaunchGame returns the provider's URL that opens the game. A real-money launch needs
-  // player_id and player_token; a demo launch (demo true) needs neither.
+  // LaunchGame returns the provider's URL that opens the game. A real-money launch needs the
+  // player's session (Authorization: Bearer <token>); a demo launch (demo true) needs none.
   rpc LaunchGame(LaunchGameRequest) returns (LaunchGameResponse) {
     option (google.api.http) = {
       post: "/v1/casino/games/{game_uuid}/launch"

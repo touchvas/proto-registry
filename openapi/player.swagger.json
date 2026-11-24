@@ -98,14 +98,13 @@
       "type": "object"
     },
     "casino.v1.CasinoPublicService.LaunchGameBody": {
+      "description": "A real-money launch is the session's player: casino-service takes the player from the\nAuthorization header's token, so the request names neither the player nor the token.",
       "properties": {
-        "brand_id": {
-          "type": "string"
-        },
         "country": {
           "type": "string"
         },
         "currency": {
+          "description": "The player's currency; a real-money launch in another currency is refused.",
           "type": "string"
         },
         "demo": {
@@ -115,12 +114,6 @@
           "type": "string"
         },
         "language": {
-          "type": "string"
-        },
-        "player_id": {
-          "type": "string"
-        },
-        "player_token": {
           "type": "string"
         }
       },
@@ -1989,14 +1982,6 @@
     "/v1/casino/categories": {
       "get": {
         "operationId": "casino.v1.CasinoPublicService.ListCategories",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "brand_id",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2021,12 +2006,6 @@
       "get": {
         "operationId": "casino.v1.CasinoPublicService.ListGames",
         "parameters": [
-          {
-            "in": "query",
-            "name": "brand_id",
-            "required": false,
-            "type": "string"
-          },
           {
             "in": "query",
             "name": "provider_uuid",
@@ -2113,7 +2092,7 @@
             }
           }
         },
-        "summary": "LaunchGame returns the provider's URL that opens the game. A real-money launch needs\nplayer_id and player_token; a demo launch (demo true) needs neither.",
+        "summary": "LaunchGame returns the provider's URL that opens the game. A real-money launch needs the\nplayer's session (Authorization: Bearer \u003ctoken\u003e); a demo launch (demo true) needs none.",
         "tags": [
           "casino.v1.CasinoPublicService"
         ]
@@ -2127,12 +2106,6 @@
             "in": "path",
             "name": "game_uuid",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "brand_id",
-            "required": false,
             "type": "string"
           },
           {
@@ -2165,14 +2138,6 @@
     "/v1/casino/providers": {
       "get": {
         "operationId": "casino.v1.CasinoPublicService.ListProviders",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "brand_id",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "A successful response.",

@@ -5,7 +5,8 @@
 // source: casino/v1/player.proto
 
 // Player casino API: the brand's lobby and game launch, which the player apps call through
-// api-gateway-service's player profile. Requests name their brand in brand_id.
+// api-gateway-service's player profile. the gateway resolves brand
+// from the player's token, the site's domain or the app's X-Brand-Code header.
 
 package casinov1
 

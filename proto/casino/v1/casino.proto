@@ -28,11 +28,22 @@ message BrandGameRequest {
   string game_uuid = 2;
 }
 
-message ListPublicProvidersRequest { string brand_id = 1; }
-message ListPublicCategoriesRequest { string brand_id = 1; }
+// The player API's requests carry no brand: api-gateway-service resolves it from the player's
+// token, the site's domain or the app's X-Brand-Code and passes it to casino-service, which
+// ignores any brand a client names. Its fields are reserved so their numbers aren't reused.
+message ListPublicProvidersRequest {
+  reserved 1;
+  reserved "brand_id";
+}
+
+message ListPublicCategoriesRequest {
+  reserved 1;
+  reserved "brand_id";
+}
 
 message ListPublicGamesRequest {
-  string brand_id = 1;
+  reserved 1;
+  reserved "brand_id";
   string provider_uuid = 2;
   string category_uuid = 3;
   string search = 4;
@@ -41,16 +52,19 @@ message ListPublicGamesRequest {
 }
 
 message GetEffectiveGameLimitsRequest {
-  string brand_id = 1;
+  reserved 1;
+  reserved "brand_id";
   string game_uuid = 2;
   string currency = 3;
 }
 
+// A real-money launch is the session's player: casino-service takes the player from the
+// Authorization header's token, so the request names neither the player nor the token.
 message LaunchGameRequest {
-  string brand_id = 1;
+  reserved 1, 3, 4;
+  reserved "brand_id", "player_id", "player_token";
   string game_uuid = 2;
-  string player_id = 3;
-  string player_token = 4;
+  // The player's currency; a real-money launch in another currency is refused.
   string currency = 5;
   bool demo = 6;
   string country = 7;
