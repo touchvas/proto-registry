@@ -118,7 +118,6 @@
           "type": "string"
         },
         "player_id": {
-          "format": "uint64",
           "type": "string"
         },
         "player_token": {

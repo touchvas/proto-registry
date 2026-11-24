@@ -49,7 +49,7 @@ message GetEffectiveGameLimitsRequest {
 message LaunchGameRequest {
   string brand_id = 1;
   string game_uuid = 2;
-  uint64 player_id = 3;
+  string player_id = 3;
   string player_token = 4;
   string currency = 5;
   bool demo = 6;

@@ -61,7 +61,7 @@ message LaunchGameRequest {
   uint64 operator_id = 4;
   string brand_id = 5;
   // Required only when demo is false.
-  uint64 player_id = 6;
+  string player_id = 6;
   // Required only when demo is false. This is the casino's internal player
   // credential; provider-service never forwards or stores it.
   string player_token = 7;
