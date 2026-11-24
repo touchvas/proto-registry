@@ -1288,7 +1288,7 @@
       "type": "object"
     },
     "identity.v1.IssuedSession": {
-      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer <token>\".",
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
       "properties": {
         "expires_at": {
           "format": "date-time",
@@ -1732,7 +1732,6 @@
           "type": "string"
         },
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "created_at": {
@@ -2923,7 +2922,7 @@
     }
   },
   "info": {
-    "description": "What the back office calls, through api-gateway-service's admin profile. Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer <token>`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n",
+    "description": "What the back office calls, through api-gateway-service's admin profile. Name the brand in `X-Brand-Code` to log in to it, then send `Authorization: Bearer \u003ctoken\u003e`; staff on several brands switch by naming another of theirs. Platform staff (SUPER_ADMIN) leave it empty, to log in and after: they work on no operator's brand.\n\n",
     "title": "Back-office API",
     "version": "v1"
   },
@@ -6366,7 +6365,6 @@
         "operationId": "sportsbook.v1.SportsbookAdminService.ListBets",
         "parameters": [
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -6438,7 +6436,6 @@
           },
           {
             "description": "Zero searches every brand owned by this operator deployment.",
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -6470,7 +6467,6 @@
         "operationId": "sportsbook.v1.SportsbookAdminService.GetEffectiveLimits",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -6506,7 +6502,6 @@
         "operationId": "sportsbook.v1.SportsbookAdminService.SetBrandLimits",
         "parameters": [
           {
-            "format": "uint64",
             "in": "path",
             "name": "brand_id",
             "required": true,
@@ -6586,7 +6581,7 @@
   ],
   "securityDefinitions": {
     "bearer": {
-      "description": "`Bearer <token>`, the token login returns.",
+      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
       "in": "header",
       "name": "Authorization",
       "type": "apiKey"

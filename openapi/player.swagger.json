@@ -450,7 +450,7 @@
       "type": "object"
     },
     "identity.v1.IssuedSession": {
-      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer <token>\".",
+      "description": "IssuedSession is a player session: send the token as \"Authorization: Bearer \u003ctoken\u003e\".",
       "properties": {
         "expires_at": {
           "format": "date-time",
@@ -945,7 +945,6 @@
           "type": "string"
         },
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "created_at": {
@@ -1471,7 +1470,6 @@
     "sportsbook.v1.PlaceBetRequest": {
       "properties": {
         "brand_id": {
-          "format": "uint64",
           "type": "string"
         },
         "selections": {
@@ -1961,7 +1959,7 @@
     }
   },
   "info": {
-    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer <token>` once logged in.\n\n",
+    "description": "What the player apps call, through api-gateway-service's player profile. Send `X-Brand-Code` (the brand's code, e.g. betxyz-ke) on every request, and `Authorization: Bearer \u003ctoken\u003e` once logged in.\n\n",
     "title": "Player API",
     "version": "v1"
   },
@@ -2627,7 +2625,6 @@
         "operationId": "sportsbook.v1.SportsbookPlayerService.ListBets",
         "parameters": [
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2723,7 +2720,6 @@
             "type": "string"
           },
           {
-            "format": "uint64",
             "in": "query",
             "name": "brand_id",
             "required": false,
@@ -2898,7 +2894,7 @@
           },
           {
             "collectionFormat": "multi",
-            "description": "Only these market types, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat the query\nparameter for several: market_type=1x2&market_type=totals.",
+            "description": "Only these market types, by ID or slug (e.g. \"1\", \"1x2\", \"totals\"). Repeat the query\nparameter for several: market_type=1x2\u0026market_type=totals.",
             "in": "query",
             "items": {
               "type": "string"
@@ -3141,7 +3137,7 @@
   ],
   "securityDefinitions": {
     "bearer": {
-      "description": "`Bearer <token>`, the token login returns.",
+      "description": "`Bearer \u003ctoken\u003e`, the token login returns.",
       "in": "header",
       "name": "Authorization",
       "type": "apiKey"

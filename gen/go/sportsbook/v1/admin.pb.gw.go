@@ -166,7 +166,7 @@ func request_SportsbookAdminService_SetBrandLimits_0(ctx context.Context, marsha
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
+	protoReq.BrandId, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
 	}
@@ -187,7 +187,7 @@ func local_request_SportsbookAdminService_SetBrandLimits_0(ctx context.Context, 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
+	protoReq.BrandId, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
 	}
@@ -210,7 +210,7 @@ func request_SportsbookAdminService_GetEffectiveLimits_0(ctx context.Context, ma
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
+	protoReq.BrandId, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
 	}
@@ -234,7 +234,7 @@ func local_request_SportsbookAdminService_GetEffectiveLimits_0(ctx context.Conte
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "brand_id")
 	}
-	protoReq.BrandId, err = runtime.Uint64(val)
+	protoReq.BrandId, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "brand_id", err)
 	}
